@@ -229,13 +229,6 @@ func (m ManifestGenerator) GenerateManifest(
 			requireSSL = mongoOps["ssl_enabled"].(bool)
 		}
 	}
-	if group.AuthAgentPassword == "" {
-		var err error
-		group.AuthAgentPassword, err = GenerateString(32)
-		if err != nil {
-			panic(err)
-		}
-	}
 	caCert := ""
 	if mongoOps["ssl_ca_cert"] != "" {
 		caCert = mongoOps["ssl_ca_cert"].(string)
@@ -309,7 +302,6 @@ func (m ManifestGenerator) GenerateManifest(
 						"agent_api_key":    group.AgentAPIKey,
 						"api_key":          apiKey,
 						"auth_key":         authKey,
-						"auth_pwd":         group.AuthAgentPassword,
 						"username":         username,
 						"group_id":         group.ID,
 						"plan_id":          planID,

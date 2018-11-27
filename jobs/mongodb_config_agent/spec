@@ -67,8 +67,6 @@ properties:
     description: "Plan identifier"
   mongo_ops.admin_password:
     description: "Admin password for mongo"
-  mongo_ops.auth_pwd:
-    description: "Password for mongo automation agent"
   mongo_ops.engine_version:
     description: "Engine version"
   mongo_ops.routers:
