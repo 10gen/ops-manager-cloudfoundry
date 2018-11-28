@@ -1,4 +1,5 @@
 *.iml
+/junkFiles
 stemcells/
 manifests/bosh-warden*
 *.pivotal
