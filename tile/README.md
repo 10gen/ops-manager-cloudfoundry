@@ -6,7 +6,7 @@
 
 The following should be installed on your local machine
 - [bosh-cli](https://bosh.io/docs/cli-v2.html)
-- [tile-generator](https://github.com/cf-platform-eng/tile-generator)
+- [tile-generator](https://github.com/emiloserdov/tile-generator)
 - [yq](https://github.com/mikefarah/yq)
 
 ## Build Tile

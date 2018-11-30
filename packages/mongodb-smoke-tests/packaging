@@ -1,6 +1,6 @@
 set -e
 
-PACKAGE_NAME=github.com/cf-platform-eng/mongodb-on-demand-release
+PACKAGE_NAME=github.com/emiloserdov/mongodb-on-demand-release
 PACKAGE_DIR=${BOSH_INSTALL_TARGET}/src/${PACKAGE_NAME}/src/smoke-tests
 
 mkdir -p $PACKAGE_DIR

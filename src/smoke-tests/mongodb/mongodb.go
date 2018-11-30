@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/cf-platform-eng/mongodb-on-demand-release/src/smoke-tests/retry"
+	"github.com/emiloserdov/mongodb-on-demand-release/src/smoke-tests/retry"
 	"github.com/onsi/gomega/gexec"
 	"github.com/pivotal-cf-experimental/cf-test-helpers/runner"
 )

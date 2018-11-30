@@ -3,6 +3,6 @@
 set -e
 set -x
 
-go install -v github.com/cf-platform-eng/mongodb-on-demand-release/src/smoke-tests/vendor/github.com/onsi/ginkgo/ginkgo
+go install -v github.com/emiloserdov/mongodb-on-demand-release/src/smoke-tests/vendor/github.com/onsi/ginkgo/ginkgo
 
 CF_COLOR=false CF_VERBOSE_OUTPUT=true ginkgo -r -v -noColor=true -keepGoing=true -trace=true -slowSpecThreshold=300 service

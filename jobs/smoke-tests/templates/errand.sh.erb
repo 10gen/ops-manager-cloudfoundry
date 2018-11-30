@@ -4,7 +4,7 @@ set -e
 
 export GOROOT=$(readlink -nf /var/vcap/packages/golang-1.11-linux)
 export GOPATH=/var/vcap/packages/mongodb-smoke-tests
-export PACKAGE_NAME=github.com/cf-platform-eng/mongodb-on-demand-release
+export PACKAGE_NAME=github.com/emiloserdov/mongodb-on-demand-release
 export PATH=${GOROOT}/bin:${GOPATH}/bin:/var/vcap/packages/cf-cli-6-linux/bin:${PATH}
 
 export CF_COLOR=false

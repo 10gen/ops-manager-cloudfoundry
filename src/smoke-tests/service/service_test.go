@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cf-platform-eng/mongodb-on-demand-release/src/smoke-tests/mongodb"
-	"github.com/cf-platform-eng/mongodb-on-demand-release/src/smoke-tests/service/reporter"
+	"github.com/emiloserdov/mongodb-on-demand-release/src/smoke-tests/mongodb"
+	"github.com/emiloserdov/mongodb-on-demand-release/src/smoke-tests/service/reporter"
 	"github.com/pborman/uuid"
 
-	smokeTestCF "github.com/cf-platform-eng/mongodb-on-demand-release/src/smoke-tests/cf"
+	smokeTestCF "github.com/emiloserdov/mongodb-on-demand-release/src/smoke-tests/cf"
 	"github.com/pivotal-cf-experimental/cf-test-helpers/services"
 
 	. "github.com/onsi/ginkgo"

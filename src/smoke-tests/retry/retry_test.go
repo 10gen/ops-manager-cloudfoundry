@@ -10,7 +10,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gexec"
 
-	"github.com/cf-platform-eng/mongodb-on-demand-release/src/smoke-tests/retry"
+	"github.com/emiloserdov/mongodb-on-demand-release/src/smoke-tests/retry"
 )
 
 func SucceedingSession() *gexec.Session {

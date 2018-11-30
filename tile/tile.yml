@@ -1,20 +1,16 @@
----
 name: mongodb-on-demand
 icon_file: resources/icon.png
 label: MongoDB-On-Demand
-description: 'MongoDB On Demand'
+description: MongoDB On Demand
 metadata_version: 1.8
 service_broker: true
 minimum_version_for_upgrade: 1.0.1
-
 stemcell_criteria:
   os: ubuntu-trusty
-  version: '3586'
-
+  version: "3586"
 properties:
 - name: broker_basic_auth
   type: simple_credentials
-
 forms:
 - name: mongodb_ops_form
   label: MongoDB On-Demand
@@ -24,10 +20,11 @@ forms:
     type: string
     configurable: true
     label: MongoDB Ops Manager URL
-    description: This will be the URL for your MongoDB Ops Manager. Please ensure that it is reachable.
+    description: This will be the URL for your MongoDB Ops Manager. Please ensure
+      that it is reachable.
     constraints:
-    - must_match_regex: '^https?://.*$'
-      error_message: 'MongoDB Ops Manager address should start with "http://" or "https://"'
+    - must_match_regex: ^https?://.*$
+      error_message: MongoDB Ops Manager address should start with "http://" or "https://"
   - name: username
     type: string
     configurable: true
@@ -42,12 +39,15 @@ forms:
     type: boolean
     configurable: true
     label: Backup enabled by default
-    description: Enables or disables backup by default for Replica Set and Sharded Cluster service plans. Can be overwritten by "enable_backup" parameter at service creation time.
+    description: Enables or disables backup by default for Replica Set and Sharded
+      Cluster service plans. Can be overwritten by "enable_backup" parameter at service
+      creation time.
   - name: ssl_enabled
     type: boolean
     configurable: true
     label: SSL enabled by default
-    description: Enables or disables SSL by default for all service plans. Can be overwritten by "ssl_enabled" parameter at service creation time.
+    description: Enables or disables SSL by default for all service plans. Can be
+      overwritten by "ssl_enabled" parameter at service creation time.
   - name: tags
     type: collection
     optional: true
@@ -59,8 +59,10 @@ forms:
       type: string
       label: Tag name
       constraints:
-      - must_match_regex: '^[A-Z,0-9,.,_,-]{1,32}$'
-        error_message: 'Tag name must contain either: uppercase letters [A-Z], numbers [0-9], . (period), _ (underscore), - (dash). Tag names are limited to 32 characters.'
+      - must_match_regex: ^[A-Z,0-9,.,_,-]{1,32}$
+        error_message: 'Tag name must contain either: uppercase letters [A-Z], numbers
+          [0-9], . (period), _ (underscore), - (dash). Tag names are limited to 32
+          characters.'
   - name: az_multi_select
     type: service_network_az_multi_select
     optional: false
@@ -81,7 +83,9 @@ forms:
     configurable: true
     default: false
     label: Disable BOSH DNS
-    description: 'Enabling the BOSH DNS plugin is recommended. However, if you experience issues with BOSH DNS, you can disable the plugin and rollback to the configuration with plain IP addresses.'
+    description: Enabling the BOSH DNS plugin is recommended. However, if you experience
+      issues with BOSH DNS, you can disable the plugin and rollback to the configuration
+      with plain IP addresses.
 - name: plan_standalone
   label: Standalone Service Plan
   description: Standalone service plan configuration
@@ -102,8 +106,8 @@ forms:
     label: Small disk type
     description: Select the Disk Type for the standalone small service plan.
     resource_definitions:
-      - name: persistent_disk
-        default: 20_000
+    - name: persistent_disk
+      default: 20000
   - name: vm_type_standalone_medium
     type: vm_type_dropdown
     optional: false
@@ -120,8 +124,8 @@ forms:
     label: Medium disk type
     description: Select the Disk Type for the standalone medium service plan.
     resource_definitions:
-      - name: persistent_disk
-        default: 50_000
+    - name: persistent_disk
+      default: 50000
   - name: vm_type_standalone_large
     type: vm_type_dropdown
     optional: false
@@ -138,8 +142,8 @@ forms:
     label: Large disk type
     description: Select the Disk Type for the standalone large service plan.
     resource_definitions:
-      - name: persistent_disk
-        default: 200_000
+    - name: persistent_disk
+      default: 200000
 - name: plan_replica_set
   label: Replica Set Service Plan
   description: Replica Set service plan configuration
@@ -160,8 +164,8 @@ forms:
     label: Small disk type
     description: Select the Disk Type for the replica set small service plan.
     resource_definitions:
-      - name: persistent_disk
-        default: 20_000
+    - name: persistent_disk
+      default: 20000
   - name: vm_type_replica_set_medium
     type: vm_type_dropdown
     optional: false
@@ -178,8 +182,8 @@ forms:
     label: Medium disk type
     description: Select the Disk Type for the replica set medium service plan.
     resource_definitions:
-      - name: persistent_disk
-        default: 50_000
+    - name: persistent_disk
+      default: 50000
   - name: vm_type_replica_set_large
     type: vm_type_dropdown
     optional: false
@@ -196,8 +200,8 @@ forms:
     label: Large disk type
     description: Select the Disk Type for the replica set large service plan.
     resource_definitions:
-      - name: persistent_disk
-        default: 200_000
+    - name: persistent_disk
+      default: 200000
 - name: plan_sharded_cluster
   label: Sharded Cluster Service Plan
   description: Sharded Cluster service plan configuration
@@ -218,8 +222,8 @@ forms:
     label: Small disk type
     description: Select the Disk Type for the sharded cluster small service plan.
     resource_definitions:
-      - name: persistent_disk
-        default: 20_000
+    - name: persistent_disk
+      default: 20000
   - name: vm_type_sharded_cluster_medium
     type: vm_type_dropdown
     optional: false
@@ -236,8 +240,8 @@ forms:
     label: Medium disk type
     description: Select the Disk Type for the sharded cluster medium service plan.
     resource_definitions:
-      - name: persistent_disk
-        default: 50_000
+    - name: persistent_disk
+      default: 50000
   - name: vm_type_sharded_cluster_large
     type: vm_type_dropdown
     optional: false
@@ -254,8 +258,8 @@ forms:
     label: Large disk type
     description: Select the Disk Type for the sharded cluster large service plan.
     resource_definitions:
-      - name: persistent_disk
-        default: 200_000
+    - name: persistent_disk
+      default: 200000
 - name: mongodb_syslog_form
   label: Syslog
   description: Forwards syslog messages to a syslog server
@@ -296,13 +300,15 @@ forms:
     configurable: true
     optional: true
     label: Permitted Peer
-    description: 'Either the accepted fingerprint (SHA1) or name of remote peer, e.g. *.example.com'
+    description: Either the accepted fingerprint (SHA1) or name of remote peer, e.g.
+      *.example.com
   - name: syslog_ca_cert
     type: ca_certificate
     configurable: true
     optional: true
     label: SSL Certificate
-    description: This certificate will ensure that logs get securely transported to the syslog destination
+    description: This certificate will ensure that logs get securely transported to
+      the syslog destination
 - name: mongodb_security_form
   label: Security
   description: Configure MongoDB to support TLS/SSL
@@ -312,24 +318,24 @@ forms:
     optional: true
     configurable: true
     label: RSA certificate
-    description: If you wish MongoDB to use SSL, provide an SSL certificate and private key in PEM format here.
+    description: If you wish MongoDB to use SSL, provide an SSL certificate and private
+      key in PEM format here.
   - name: ca_cert
     type: ca_certificate
     optional: true
     configurable: true
     label: SSL Certificate Authority Certificate (PEM format)
-    description: If you wish MongoDB to use SSL, provide an SSL certificate-authority certificate in PEM format here.
-
+    description: If you wish MongoDB to use SSL, provide an SSL certificate-authority
+      certificate in PEM format here.
 requires_product_versions:
 - name: cf
-  version: ">= 1.10"
-
+  version: '>= 1.10'
 runtime_configs:
 - name: mongodb-dns-aliases
   runtime_config:
     releases:
     - name: mongodb
-      version: "1.0.8"
+      version: 1.2.0
     addons:
     - name: mongodb-dns-aliases
       include:
@@ -345,19 +351,18 @@ runtime_configs:
         release: mongodb
         properties:
           aliases:
-          - domain: '_.mongodb.internal'
+          - domain: _.mongodb.internal
             targets:
-            - deployment: 'service-instance_*'
+            - deployment: service-instance_*
               domain: bosh
               instance_group: mongod_node
               network: (( $self.service_network ))
               query: _
-            - deployment: 'service-instance_*'
+            - deployment: service-instance_*
               domain: bosh
               instance_group: mongodb-config-agent
               network: (( $self.service_network ))
               query: _
-
 packages:
 - name: bpm
   type: bosh-release
@@ -373,7 +378,7 @@ packages:
   path: resources/syslog-migration-11.1.1-ubuntu-trusty-3586.36.tgz
 - name: mongodb
   type: bosh-release
-  path: resources/mongodb-1.0.8.tgz
+  path: resources/mongodb-1.2.0.tgz
   jobs:
   - name: broker
     label: MongoDB-ODB
@@ -386,34 +391,34 @@ packages:
       release: on-demand-service-broker
       colocated: true
       post_deploy: true
-      run_default: on
+      run_default: true
       instances:
       - broker/first
-      label: 'On Demand Service Broker Registrar'
+      label: On Demand Service Broker Registrar
     - name: upgrade-all-service-instances
       release: on-demand-service-broker
       colocated: true
       post_deploy: true
-      run_default: on
+      run_default: true
       instances:
       - broker/first
-      label: 'Upgrade all instances deployed by the On Demand Service Broker'
+      label: Upgrade all instances deployed by the On Demand Service Broker
     - name: delete-all-service-instances
       release: on-demand-service-broker
       colocated: true
       pre_delete: true
-      run_default: on
+      run_default: true
       instances:
       - broker/first
-      label: 'Delete all instances deployed by the On Demand Service Broker'
+      label: Delete all instances deployed by the On Demand Service Broker
     - name: deregister-broker
       release: on-demand-service-broker
       colocated: true
       pre_delete: true
-      run_default: on
+      run_default: true
       instances:
       - broker/first
-      label: 'On Demand Service Broker Deregistrar'
+      label: On Demand Service Broker Deregistrar
     max_in_flight: 1
     memory: 1024
     ephemeral_disk: 2048
@@ -438,12 +443,12 @@ packages:
             client_id: (( $self.uaa_client_name ))
             client_secret: (( $self.uaa_client_secret ))
       cf:
-        api_url: "https://api.(( ..cf.cloud_controller.system_domain.value ))"
+        api_url: https://api.(( ..cf.cloud_controller.system_domain.value ))
         admin_username: (( ..cf.uaa.admin_credentials.identity ))
         admin_password: (( ..cf.uaa.admin_credentials.password ))
-        url: "https://api.(( ..cf.cloud_controller.system_domain.value ))"
+        url: https://api.(( ..cf.cloud_controller.system_domain.value ))
         authentication:
-          url: "https://uaa.(( ..cf.cloud_controller.system_domain.value ))"
+          url: https://uaa.(( ..cf.cloud_controller.system_domain.value ))
           user_credentials:
             username: (( ..cf.uaa.admin_credentials.identity ))
             password: (( ..cf.uaa.admin_credentials.password ))
@@ -458,7 +463,7 @@ packages:
       service_deployment:
         releases:
         - name: mongodb
-          version: "1.0.8"
+          version: 1.2.0
           jobs:
           - mongod_node
           - mongodb_config_agent
@@ -466,27 +471,28 @@ packages:
           - cleanup_service
           - configure_backups
         - name: pcf-mongodb-helpers
-          version: "0.0.1"
+          version: 0.0.1
           jobs:
           - bosh-dns-enable
         - name: syslog-migration
-          version: "11.1.1"
+          version: 11.1.1
           jobs:
           - syslog_forwarder
         - name: bpm
-          version: "0.13.0"
+          version: 0.13.0
           jobs:
           - bpm
         stemcell:
           os: ubuntu-trusty
-          version: "(( $self.stemcell_version ))"
+          version: (( $self.stemcell_version ))
       service_catalog:
         id: D94A086D-203D-4966-A6F1-60A9E2300F72
         service_name: mongodb-odb
         service_description: MongoDB Service
         bindable: true
         plan_updatable: true
-        tags: [mongodb]
+        tags:
+        - mongodb
         metadata:
           display_name: MongoDB
           image_url: data:image/png;base64,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
@@ -506,10 +512,12 @@ packages:
           lifecycle_errands:
             post_deploy:
             - name: configure_backups
-              instances: [mongodb-config-agent/0]
+              instances:
+              - mongodb-config-agent/0
             pre_delete:
             - name: cleanup_service
-              instances: [mongodb-config-agent/0]
+              instances:
+              - mongodb-config-agent/0
           metadata:
             display_name: Standalone Small
             bullets: []
@@ -517,8 +525,10 @@ packages:
           - name: mongod_node
             vm_type: (( .properties.vm_type_standalone_small.value ))
             instances: 1
-            persistent_disk_type: (( .properties.disk_type_standalone_small.value ))
-            networks: [(( $self.service_network ))]
+            persistent_disk_type: (( .properties.disk_type_standalone_small.value
+              ))
+            networks:
+            - (( $self.service_network ))
             azs: (( .properties.az_multi_select.value ))
             vm_extensions: (( .properties.vm_extensions.value ))
           properties:
@@ -527,11 +537,12 @@ packages:
               url: (( .properties.url.value ))
               username: (( .properties.username.value ))
               api_key: (( .properties.api_key.value ))
-              tags:  (( .properties.tags.value || [] ))
-              backup_enabled:  false
+              tags: (( .properties.tags.value || [] ))
+              backup_enabled: false
               ssl_enabled: (( .properties.ssl_enabled.value ))
               ssl_ca_cert: (( .properties.ca_cert.value || "" ))
-              ssl_pem: (( .properties.rsa_certificate.cert_and_private_key_pems || "" ))
+              ssl_pem: (( .properties.rsa_certificate.cert_and_private_key_pems ||
+                "" ))
               bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
             syslog:
               address: (( .properties.syslog_address.value || "" ))
@@ -546,10 +557,12 @@ packages:
           lifecycle_errands:
             post_deploy:
             - name: configure_backups
-              instances: [mongodb-config-agent/0]
+              instances:
+              - mongodb-config-agent/0
             pre_delete:
             - name: cleanup_service
-              instances: [mongodb-config-agent/0]
+              instances:
+              - mongodb-config-agent/0
           metadata:
             display_name: Standalone Medium
             bullets: []
@@ -557,8 +570,10 @@ packages:
           - name: mongod_node
             vm_type: (( .properties.vm_type_standalone_medium.value ))
             instances: 1
-            persistent_disk_type: (( .properties.disk_type_standalone_medium.value ))
-            networks: [(( $self.service_network ))]
+            persistent_disk_type: (( .properties.disk_type_standalone_medium.value
+              ))
+            networks:
+            - (( $self.service_network ))
             azs: (( .properties.az_multi_select.value ))
             vm_extensions: (( .properties.vm_extensions.value ))
           properties:
@@ -567,11 +582,12 @@ packages:
               url: (( .properties.url.value ))
               username: (( .properties.username.value ))
               api_key: (( .properties.api_key.value ))
-              tags:  (( .properties.tags.value || [] ))
-              backup_enabled:  false
+              tags: (( .properties.tags.value || [] ))
+              backup_enabled: false
               ssl_enabled: (( .properties.ssl_enabled.value ))
               ssl_ca_cert: (( .properties.ca_cert.value || "" ))
-              ssl_pem: (( .properties.rsa_certificate.cert_and_private_key_pems || "" ))
+              ssl_pem: (( .properties.rsa_certificate.cert_and_private_key_pems ||
+                "" ))
               bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
             syslog:
               address: (( .properties.syslog_address.value || "" ))
@@ -586,10 +602,12 @@ packages:
           lifecycle_errands:
             post_deploy:
             - name: configure_backups
-              instances: [mongodb-config-agent/0]
+              instances:
+              - mongodb-config-agent/0
             pre_delete:
             - name: cleanup_service
-              instances: [mongodb-config-agent/0]
+              instances:
+              - mongodb-config-agent/0
           metadata:
             display_name: Standalone Large
             bullets: []
@@ -597,8 +615,10 @@ packages:
           - name: mongod_node
             vm_type: (( .properties.vm_type_standalone_large.value ))
             instances: 1
-            persistent_disk_type: (( .properties.disk_type_standalone_large.value ))
-            networks: [(( $self.service_network ))]
+            persistent_disk_type: (( .properties.disk_type_standalone_large.value
+              ))
+            networks:
+            - (( $self.service_network ))
             azs: (( .properties.az_multi_select.value ))
             vm_extensions: (( .properties.vm_extensions.value ))
           properties:
@@ -607,11 +627,12 @@ packages:
               url: (( .properties.url.value ))
               username: (( .properties.username.value ))
               api_key: (( .properties.api_key.value ))
-              tags:  (( .properties.tags.value || [] ))
-              backup_enabled:  false
+              tags: (( .properties.tags.value || [] ))
+              backup_enabled: false
               ssl_enabled: (( .properties.ssl_enabled.value ))
               ssl_ca_cert: (( .properties.ca_cert.value || "" ))
-              ssl_pem: (( .properties.rsa_certificate.cert_and_private_key_pems || "" ))
+              ssl_pem: (( .properties.rsa_certificate.cert_and_private_key_pems ||
+                "" ))
               bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
             syslog:
               address: (( .properties.syslog_address.value || "" ))
@@ -626,10 +647,12 @@ packages:
           lifecycle_errands:
             post_deploy:
             - name: configure_backups
-              instances: [mongodb-config-agent/0]
+              instances:
+              - mongodb-config-agent/0
             pre_delete:
             - name: cleanup_service
-              instances: [mongodb-config-agent/0]
+              instances:
+              - mongodb-config-agent/0
           metadata:
             display_name: Replica Set Small
             bullets: []
@@ -637,8 +660,10 @@ packages:
           - name: mongod_node
             vm_type: (( .properties.vm_type_replica_set_small.value ))
             instances: 3
-            persistent_disk_type: (( .properties.disk_type_replica_set_small.value ))
-            networks: [(( $self.service_network ))]
+            persistent_disk_type: (( .properties.disk_type_replica_set_small.value
+              ))
+            networks:
+            - (( $self.service_network ))
             azs: (( .properties.az_multi_select.value ))
             vm_extensions: (( .properties.vm_extensions.value ))
           properties:
@@ -647,11 +672,12 @@ packages:
               url: (( .properties.url.value ))
               username: (( .properties.username.value ))
               api_key: (( .properties.api_key.value ))
-              tags:  (( .properties.tags.value || [] ))
+              tags: (( .properties.tags.value || [] ))
               backup_enabled: (( .properties.backup_enabled.value ))
               ssl_enabled: (( .properties.ssl_enabled.value ))
               ssl_ca_cert: (( .properties.ca_cert.value || "" ))
-              ssl_pem: (( .properties.rsa_certificate.cert_and_private_key_pems || "" ))
+              ssl_pem: (( .properties.rsa_certificate.cert_and_private_key_pems ||
+                "" ))
               bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
             syslog:
               address: (( .properties.syslog_address.value || "" ))
@@ -666,10 +692,12 @@ packages:
           lifecycle_errands:
             post_deploy:
             - name: configure_backups
-              instances: [mongodb-config-agent/0]
+              instances:
+              - mongodb-config-agent/0
             pre_delete:
             - name: cleanup_service
-              instances: [mongodb-config-agent/0]
+              instances:
+              - mongodb-config-agent/0
           metadata:
             display_name: Replica Set Medium
             bullets: []
@@ -677,8 +705,10 @@ packages:
           - name: mongod_node
             vm_type: (( .properties.vm_type_replica_set_medium.value ))
             instances: 3
-            persistent_disk_type: (( .properties.disk_type_replica_set_medium.value ))
-            networks: [(( $self.service_network ))]
+            persistent_disk_type: (( .properties.disk_type_replica_set_medium.value
+              ))
+            networks:
+            - (( $self.service_network ))
             azs: (( .properties.az_multi_select.value ))
             vm_extensions: (( .properties.vm_extensions.value ))
           properties:
@@ -687,11 +717,12 @@ packages:
               url: (( .properties.url.value ))
               username: (( .properties.username.value ))
               api_key: (( .properties.api_key.value ))
-              tags:  (( .properties.tags.value || [] ))
+              tags: (( .properties.tags.value || [] ))
               backup_enabled: (( .properties.backup_enabled.value ))
               ssl_enabled: (( .properties.ssl_enabled.value ))
               ssl_ca_cert: (( .properties.ca_cert.value || "" ))
-              ssl_pem: (( .properties.rsa_certificate.cert_and_private_key_pems || "" ))
+              ssl_pem: (( .properties.rsa_certificate.cert_and_private_key_pems ||
+                "" ))
               bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
             syslog:
               address: (( .properties.syslog_address.value || "" ))
@@ -706,10 +737,12 @@ packages:
           lifecycle_errands:
             post_deploy:
             - name: configure_backups
-              instances: [mongodb-config-agent/0]
+              instances:
+              - mongodb-config-agent/0
             pre_delete:
             - name: cleanup_service
-              instances: [mongodb-config-agent/0]
+              instances:
+              - mongodb-config-agent/0
           metadata:
             display_name: Replica Set Large
             bullets: []
@@ -717,8 +750,10 @@ packages:
           - name: mongod_node
             vm_type: (( .properties.vm_type_replica_set_large.value ))
             instances: 3
-            persistent_disk_type: (( .properties.disk_type_replica_set_large.value ))
-            networks: [(( $self.service_network ))]
+            persistent_disk_type: (( .properties.disk_type_replica_set_large.value
+              ))
+            networks:
+            - (( $self.service_network ))
             azs: (( .properties.az_multi_select.value ))
             vm_extensions: (( .properties.vm_extensions.value ))
           properties:
@@ -727,11 +762,12 @@ packages:
               url: (( .properties.url.value ))
               username: (( .properties.username.value ))
               api_key: (( .properties.api_key.value ))
-              tags:  (( .properties.tags.value || [] ))
+              tags: (( .properties.tags.value || [] ))
               backup_enabled: (( .properties.backup_enabled.value ))
               ssl_enabled: (( .properties.ssl_enabled.value ))
               ssl_ca_cert: (( .properties.ca_cert.value || "" ))
-              ssl_pem: (( .properties.rsa_certificate.cert_and_private_key_pems || "" ))
+              ssl_pem: (( .properties.rsa_certificate.cert_and_private_key_pems ||
+                "" ))
               bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
             syslog:
               address: (( .properties.syslog_address.value || "" ))
@@ -746,10 +782,12 @@ packages:
           lifecycle_errands:
             post_deploy:
             - name: configure_backups
-              instances: [mongodb-config-agent/0]
+              instances:
+              - mongodb-config-agent/0
             pre_delete:
             - name: cleanup_service
-              instances: [mongodb-config-agent/0]
+              instances:
+              - mongodb-config-agent/0
           metadata:
             display_name: Sharded Cluster Small
             bullets: []
@@ -759,8 +797,10 @@ packages:
           - name: mongod_node
             vm_type: (( .properties.vm_type_sharded_cluster_small.value ))
             instances: 15
-            persistent_disk_type: (( .properties.disk_type_sharded_cluster_small.value ))
-            networks: [(( $self.service_network ))]
+            persistent_disk_type: (( .properties.disk_type_sharded_cluster_small.value
+              ))
+            networks:
+            - (( $self.service_network ))
             azs: (( .properties.az_multi_select.value ))
             vm_extensions: (( .properties.vm_extensions.value ))
           properties:
@@ -769,11 +809,12 @@ packages:
               url: (( .properties.url.value ))
               username: (( .properties.username.value ))
               api_key: (( .properties.api_key.value ))
-              tags:  (( .properties.tags.value || [] ))
+              tags: (( .properties.tags.value || [] ))
               backup_enabled: (( .properties.backup_enabled.value ))
               ssl_enabled: (( .properties.ssl_enabled.value ))
               ssl_ca_cert: (( .properties.ca_cert.value || "" ))
-              ssl_pem: (( .properties.rsa_certificate.cert_and_private_key_pems || "" ))
+              ssl_pem: (( .properties.rsa_certificate.cert_and_private_key_pems ||
+                "" ))
               bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
             syslog:
               address: (( .properties.syslog_address.value || "" ))
@@ -788,10 +829,12 @@ packages:
           lifecycle_errands:
             post_deploy:
             - name: configure_backups
-              instances: [mongodb-config-agent/0]
+              instances:
+              - mongodb-config-agent/0
             pre_delete:
             - name: cleanup_service
-              instances: [mongodb-config-agent/0]
+              instances:
+              - mongodb-config-agent/0
           metadata:
             display_name: Sharded Cluster Medium
             bullets: []
@@ -801,8 +844,10 @@ packages:
           - name: mongod_node
             vm_type: (( .properties.vm_type_sharded_cluster_medium.value ))
             instances: 15
-            persistent_disk_type: (( .properties.disk_type_sharded_cluster_medium.value ))
-            networks: [(( $self.service_network ))]
+            persistent_disk_type: (( .properties.disk_type_sharded_cluster_medium.value
+              ))
+            networks:
+            - (( $self.service_network ))
             azs: (( .properties.az_multi_select.value ))
             vm_extensions: (( .properties.vm_extensions.value ))
           properties:
@@ -811,11 +856,12 @@ packages:
               url: (( .properties.url.value ))
               username: (( .properties.username.value ))
               api_key: (( .properties.api_key.value ))
-              tags:  (( .properties.tags.value || [] ))
+              tags: (( .properties.tags.value || [] ))
               backup_enabled: (( .properties.backup_enabled.value ))
               ssl_enabled: (( .properties.ssl_enabled.value ))
               ssl_ca_cert: (( .properties.ca_cert.value || "" ))
-              ssl_pem: (( .properties.rsa_certificate.cert_and_private_key_pems || "" ))
+              ssl_pem: (( .properties.rsa_certificate.cert_and_private_key_pems ||
+                "" ))
               bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
             syslog:
               address: (( .properties.syslog_address.value || "" ))
@@ -830,10 +876,12 @@ packages:
           lifecycle_errands:
             post_deploy:
             - name: configure_backups
-              instances: [mongodb-config-agent/0]
+              instances:
+              - mongodb-config-agent/0
             pre_delete:
             - name: cleanup_service
-              instances: [mongodb-config-agent/0]
+              instances:
+              - mongodb-config-agent/0
           metadata:
             display_name: Sharded Cluster Large
             bullets: []
@@ -843,8 +891,10 @@ packages:
           - name: mongod_node
             vm_type: (( .properties.vm_type_sharded_cluster_large.value ))
             instances: 15
-            persistent_disk_type: (( .properties.disk_type_sharded_cluster_large.value ))
-            networks: [(( $self.service_network ))]
+            persistent_disk_type: (( .properties.disk_type_sharded_cluster_large.value
+              ))
+            networks:
+            - (( $self.service_network ))
             azs: (( .properties.az_multi_select.value ))
             vm_extensions: (( .properties.vm_extensions.value ))
           properties:
@@ -853,11 +903,12 @@ packages:
               url: (( .properties.url.value ))
               username: (( .properties.username.value ))
               api_key: (( .properties.api_key.value ))
-              tags:  (( .properties.tags.value || [] ))
+              tags: (( .properties.tags.value || [] ))
               backup_enabled: (( .properties.backup_enabled.value ))
               ssl_enabled: (( .properties.ssl_enabled.value ))
               ssl_ca_cert: (( .properties.ca_cert.value || "" ))
-              ssl_pem: (( .properties.rsa_certificate.cert_and_private_key_pems || "" ))
+              ssl_pem: (( .properties.rsa_certificate.cert_and_private_key_pems ||
+                "" ))
               bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
             syslog:
               address: (( .properties.syslog_address.value || "" ))

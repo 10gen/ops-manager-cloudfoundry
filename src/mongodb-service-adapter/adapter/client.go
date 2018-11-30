@@ -11,7 +11,7 @@ import (
 	"net/http/httputil"
 	"strings"
 
-	"github.com/cf-platform-eng/mongodb-on-demand-release/src/mongodb-service-adapter/digest"
+	"github.com/emiloserdov/mongodb-on-demand-release/src/mongodb-service-adapter/digest"
 	"github.com/tidwall/gjson"
 )
 
