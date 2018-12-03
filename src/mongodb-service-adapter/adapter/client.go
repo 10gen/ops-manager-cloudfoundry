@@ -11,7 +11,7 @@ import (
 	"net/http/httputil"
 	"strings"
 
-	"github.com/emiloserdov/mongodb-on-demand-release/src/mongodb-service-adapter/digest"
+	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/digest"
 	"github.com/tidwall/gjson"
 )
 

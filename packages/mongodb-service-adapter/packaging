@@ -2,7 +2,7 @@ set -e
 
 source /var/vcap/packages/golang-*-linux/bosh/compile.env
 
-PACKAGE_NAME=github.com/emiloserdov/mongodb-on-demand-release
+PACKAGE_NAME=github.com/10gen/ops-manager-cloudfoundry
 
 mkdir -p "${GOPATH}/src/${PACKAGE_NAME}/src" "${BOSH_INSTALL_TARGET}/bin"
 mv "${BOSH_COMPILE_TARGET}/mongodb-service-adapter" "${GOPATH}/src/${PACKAGE_NAME}/src"

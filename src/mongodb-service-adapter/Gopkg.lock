@@ -9,17 +9,8 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/cf-platform-eng/mongodb-on-demand-release"
+  name = "github.com/10gen/ops-manager-cloudfoundry"
   packages = ["src/mongodb-service-adapter/digest"]
-  revision = "567f1ca40ec4c7236876f76be3802804c406e8a6"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/emiloserdov/mongodb-on-demand-release"
-  packages = [
-    "src/mongodb-service-adapter/adapter",
-    "src/mongodb-service-adapter/digest"
-  ]
   revision = "567f1ca40ec4c7236876f76be3802804c406e8a6"
 
 [[projects]]
@@ -97,6 +88,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a12a88a9584c90250740183533d215e674944917964f104761ce615fb67b7848"
+  inputs-digest = "6d537f32c02a2994fdcbe3148fbe23d9fa161de5b7f8db52111ef640c7d1b3b6"
   solver-name = "gps-cdcl"
   solver-version = 1
