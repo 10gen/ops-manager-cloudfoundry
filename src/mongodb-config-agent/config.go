@@ -9,21 +9,20 @@ import (
 )
 
 type Config struct {
-	ID                      string `json:"id"`
-	URL                     string `json:"url"`
-	Username                string `json:"username"`
-	APIKey                  string `json:"api_key"`
-	AuthKey                 string `json:"auth_key"`
-	AutomationAgentPassword string `json:"auth_pwd"`
-	GroupID                 string `json:"group"`
-	PlanID                  string `json:"plan"`
-	NodeAddresses           string `json:"nodes"`
-	AdminPassword           string `json:"admin_password"`
-	EngineVersion           string `json:"engine_version"`
-	Routers                 int    `json:"routers"`
-	ConfigServers           int    `json:"config_servers"`
-	Replicas                int    `json:"replicas"`
-	RequireSSL              bool   `json:"require_ssl"`
+	ID            string `json:"id"`
+	URL           string `json:"url"`
+	Username      string `json:"username"`
+	APIKey        string `json:"api_key"`
+	AuthKey       string `json:"auth_key"`
+	GroupID       string `json:"group"`
+	PlanID        string `json:"plan"`
+	NodeAddresses string `json:"nodes"`
+	AdminPassword string `json:"admin_password"`
+	EngineVersion string `json:"engine_version"`
+	Routers       int    `json:"routers"`
+	ConfigServers int    `json:"config_servers"`
+	Replicas      int    `json:"replicas"`
+	RequireSSL    bool   `json:"require_ssl"`
 }
 
 func LoadConfig(configFile string) (config *Config, err error) {
