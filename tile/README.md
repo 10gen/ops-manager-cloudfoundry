@@ -6,7 +6,7 @@
 
 The following should be installed on your local machine
 - [bosh-cli](https://bosh.io/docs/cli-v2.html)
-- [tile-generator](https://github.com/cf-platform-eng/tile-generator)
+- [tile-generator](https://github.com/emiloserdov/tile-generator)
 - [yq](https://github.com/mikefarah/yq)
 
 ## Build Tile
@@ -26,6 +26,7 @@ The following should be installed on your local machine
 
 3. Update build version:
 
+   Notice, that it should be in X.X.X format (for example: 3.2.1) 
     ```bash
     export VERSION_NUMBER=
     ```
