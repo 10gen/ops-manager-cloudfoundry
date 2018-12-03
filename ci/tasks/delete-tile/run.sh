@@ -4,7 +4,7 @@ set -euo pipefail
 
 base=$PWD
 
-PRODUCT="$(yq r $base/mongodb-on-demand-release/tile/tile.yml name)"
+PRODUCT="$(yq r $base/ops-manager-cloudfoundry/tile/tile.yml name)"
 
 om="om -t $PCF_URL -u $PCF_USERNAME -p $PCF_PASSWORD -k"
 

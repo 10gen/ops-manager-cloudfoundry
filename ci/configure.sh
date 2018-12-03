@@ -3,6 +3,6 @@
 set -eu
 
 fly -t altoros set-pipeline -n \
- -p mongodb-on-demand-release \
+ -p ops-manager-cloudfoundry \
  -c ./pipeline.yml \
- -l <(lpass show --note "pcf:mongodb-on-demand-release")
+ -l <(lpass show --note "pcf:ops-manager-cloudfoundry")

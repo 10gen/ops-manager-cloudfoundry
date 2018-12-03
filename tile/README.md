@@ -14,10 +14,10 @@ The following should be installed on your local machine
 1. Check out PCF MongoDB On Demand tile generator repo:
 
     ```bash
-    git clone https://github.com/Altoros/mongodb-on-demand-release.git
+    git clone https://github.com/Altoros/ops-manager-cloudfoundry.git
     ```
 
-2. Download the following releases into [tile/resources](https://github.com/Altoros/mongodb-on-demand-release/tree/master/tile/resources) folder.
+2. Download the following releases into [tile/resources](https://github.com/Altoros/ops-manager-cloudfoundry/tree/master/tile/resources) folder.
 
     - [Pivotal Cloud Foundry On Demand Service Broker Release](https://s3.amazonaws.com/mongodb-tile-ci/on-demand-service-broker-0.22.0-ubuntu-trusty-3586.36.tgz)
     - [Pivotal Cloud Foundry MongoDB Helpers Release](https://s3.amazonaws.com/mongodb-tile-ci/pcf-mongodb-helpers-0.0.1.tgz)
@@ -31,19 +31,19 @@ The following should be installed on your local machine
     export VERSION_NUMBER=
     ```
 
-4. Create release tarball and place it into [tile/resources](https://github.com/Altoros/mongodb-on-demand-release/tree/master/tile/resources) folder.
+4. Create release tarball and place it into [tile/resources](https://github.com/Altoros/ops-manager-cloudfoundry/tree/master/tile/resources) folder.
 
     ```bash
-    cd mongodb-on-demand-release
+    cd ops-manager-cloudfoundry
     tarball_path="$PWD/tile/resources/mongodb-${VERSION_NUMBER}.tgz"
     bosh -n create-release --sha2 --tarball="$tarball_path" --version="${VERSION_NUMBER}"
     ```
 
-5. Edit `tile.yml` file and check path and versions for mongodb-on-demand-release.
+5. Edit `tile.yml` file and check path and versions for ops-manager-cloudfoundry.
    Ensure that tile file configured with version which was specified in step 4.
 
     ```bash
-    cd mongodb-on-demand-release/tile
+    cd ops-manager-cloudfoundry/tile
     yq w -i tile.yml packages.[4].path "$(ls resources/mongodb-*.tgz)"
     yq w -i tile.yml packages.[4].jobs[0].properties.service_deployment.releases[0].version "${VERSION_NUMBER}"
     yq w -i tile.yml runtime_configs[0].runtime_config.releases[0].version "${VERSION_NUMBER}"

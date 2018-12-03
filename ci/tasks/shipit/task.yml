@@ -7,7 +7,7 @@ image_resource:
     repository: andreikrasnitski/ci
 
 inputs:
-- name: mongodb-on-demand-release
+- name: ops-manager-cloudfoundry
 - name: on-demand-service-broker-release
 - name: bpm-release
 - name: syslog-migration-release
@@ -18,4 +18,4 @@ outputs:
 - name: release
 
 run:
-  path: mongodb-on-demand-release/ci/tasks/shipit/run.sh
+  path: ops-manager-cloudfoundry/ci/tasks/shipit/run.sh

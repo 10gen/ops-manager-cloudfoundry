@@ -7,7 +7,7 @@ image_resource:
     repository: andreikrasnitski/ci
 
 inputs:
-- name: mongodb-on-demand-release
+- name: ops-manager-cloudfoundry
 
 run:
-  path: mongodb-on-demand-release/ci/tasks/smoke-tests/run.sh
+  path: ops-manager-cloudfoundry/ci/tasks/smoke-tests/run.sh
