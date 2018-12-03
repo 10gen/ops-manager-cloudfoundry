@@ -7,7 +7,7 @@ image_resource:
     repository: andreikrasnitski/ci
 
 inputs:
-- name: mongodb-on-demand-release
+- name: ops-manager-cloudfoundry
 - name: stemcell
 - name: version
 - name: artifacts
@@ -20,4 +20,4 @@ params:
   PRODUCT_NETWORK_AZS:
 
 run:
-  path: mongodb-on-demand-release/ci/tasks/deploy-tile/run.sh
+  path: ops-manager-cloudfoundry/ci/tasks/deploy-tile/run.sh

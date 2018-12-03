@@ -35,10 +35,10 @@ EOF
 
 export CONFIG_PATH="$base"/config.json
 
-PACKAGE_NAME=github.com/cf-platform-eng/mongodb-on-demand-release
+PACKAGE_NAME=github.com/10gen/ops-manager-cloudfoundry
 PACKAGE_DIR=$GOPATH/src/$PACKAGE_NAME
 mkdir -p $PACKAGE_DIR
-cp -a mongodb-on-demand-release/* $PACKAGE_DIR
+cp -a ops-manager-cloudfoundry/* $PACKAGE_DIR
 
 (
 cd $PACKAGE_DIR/src/smoke-tests

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cf-platform-eng/mongodb-on-demand-release/src/mongodb-service-adapter/adapter"
+	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/adapter"
 )
 
 var (

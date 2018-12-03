@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cf-platform-eng/mongodb-on-demand-release/src/smoke-tests/retry"
+	"github.com/10gen/ops-manager-cloudfoundry/src/smoke-tests/retry"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gexec"
 	helpersCF "github.com/pivotal-cf-experimental/cf-test-helpers/cf"

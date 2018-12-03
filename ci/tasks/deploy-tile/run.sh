@@ -24,7 +24,7 @@ if [ -z "${STEMCELL_FILE}" ]; then
 	exit 1
 fi
 
-PRODUCT="$(cat $base/mongodb-on-demand-release/tile/tile.yml | grep '^name' | cut -d' ' -f 2)"
+PRODUCT="$(cat $base/ops-manager-cloudfoundry/tile/tile.yml | grep '^name' | cut -d' ' -f 2)"
 
 om="om -t $PCF_URL -u $PCF_USERNAME -p $PCF_PASSWORD -k"
 
