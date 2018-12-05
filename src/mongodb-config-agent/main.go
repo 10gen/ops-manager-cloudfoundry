@@ -28,12 +28,13 @@ func main() {
 
 	nodes := strings.Split(config.NodeAddresses, ",")
 	ctx := &adapter.DocContext{
-		ID:            config.ID,
-		Key:           config.AuthKey,
-		AdminPassword: config.AdminPassword,
-		Nodes:         nodes,
-		Version:       config.EngineVersion,
-		RequireSSL:    config.RequireSSL,
+		ID:                      config.ID,
+		Key:                     config.AuthKey,
+		AdminPassword:           config.AdminPassword,
+		AutomationAgentPassword: config.AutomationAgentPassword,
+		Nodes:                   nodes,
+		Version:                 config.EngineVersion,
+		RequireSSL:              config.RequireSSL,
 	}
 
 	if config.PlanID == adapter.PlanShardedCluster {
