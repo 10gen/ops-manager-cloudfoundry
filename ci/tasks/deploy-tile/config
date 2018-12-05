@@ -1,0 +1,51 @@
+product-properties:
+  .properties.az_multi_select:
+    value:
+    - "null"
+  .properties.backup_enabled:
+    value: false
+  .properties.bosh_dns_disable:
+    value: false
+  .properties.org:
+    value: mongodb-on-demand-org
+  .properties.space:
+    value: mongodb-on-demand-space
+  .properties.ssl_enabled:
+    value: true
+  .properties.syslog_tls_enabled:
+    value: false
+  .properties.syslog_transport_protocol:
+    value: tcp
+  .properties.url:
+    value: http://opsmgr.mongodbpartners.net:8888
+  .properties.username:
+    value: andrey.belik@mongodb.com
+  .properties.api_key:
+    value:
+      secret:  "111f1ffb-bdd8-4945-a220-881055d7a9cc"
+network-properties:
+  network:
+    name: test-pas-subnet
+  other_availability_zones:
+  - name: "null"
+  service_network:
+    name: test-services-subnet
+  singleton_availability_zone:
+    name: "null"
+resource-config:
+  broker:
+    instances: automatic
+    persistent_disk:
+      size_mb: automatic
+    instance_type:
+      id: automatic
+    internet_connected: false
+errand-config:
+  delete-all-service-instances:
+    pre-delete-state: true
+  deregister-broker:
+    pre-delete-state: true
+  register-broker:
+    post-deploy-state: true
+  upgrade-all-service-instances:
+    post-deploy-state: false
