@@ -99,7 +99,8 @@ var plansRaw = map[string]string{
     "sharding": [],
 
     "auth": {
-        "autoUser": "mms-automation",        
+        "autoUser": "mms-automation",   
+		"autoPwd": "{{.AutomationAgentPassword}}",
         "deploymentAuthMechanisms": [
             "MONGODB-CR"
         ],
@@ -370,6 +371,7 @@ var plansRaw = map[string]string{
 
     "auth": {
         "autoUser": "mms-automation",
+		"autoPwd": "{{.AutomationAgentPassword}}",
         "deploymentAuthMechanisms": [
             "MONGODB-CR"
         ],
@@ -535,6 +537,7 @@ var plansRaw = map[string]string{
 
     "auth": {
         "autoUser": "mms-automation",
+		"autoPwd": "{{.AutomationAgentPassword}}",
         "deploymentAuthMechanisms": [
             "MONGODB-CR"
         ],

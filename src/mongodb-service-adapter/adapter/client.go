@@ -52,15 +52,16 @@ type GroupHosts struct {
 }
 
 type DocContext struct {
-	ID                   string
-	Key                  string
-	AdminPassword        string
-	Version              string
-	CompatibilityVersion string
-	Nodes                []string
-	Cluster              *Cluster
-	Password             string
-	RequireSSL           bool
+	ID                      string
+	Key                     string
+	AdminPassword           string
+	Version                 string
+	AutomationAgentPassword string
+	CompatibilityVersion    string
+	Nodes                   []string
+	Cluster                 *Cluster
+	Password                string
+	RequireSSL              bool
 }
 
 type Cluster struct {
@@ -180,6 +181,15 @@ func (oc *OMClient) UpdateGroup(id string, request GroupUpdateRequest) (Group, e
 		return group, err
 	}
 	return group, nil
+}
+
+func (oc *OMClient) GetGroupAuthAgentPassword(groupID string) (string, error) {
+	b, err := oc.doRequest("GET", fmt.Sprintf("/api/public/v1.0/groups/%s/automationConfig", groupID), nil)
+	if err != nil {
+		return "", err
+	}
+	authPwd := gjson.GetBytes(b, "auth.autoPwd")
+	return authPwd.String(), nil
 }
 
 func (oc *OMClient) GetGroup(groupID string) (Group, error) {
