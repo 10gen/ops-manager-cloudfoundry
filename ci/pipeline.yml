@@ -14,11 +14,11 @@ groups:
       - minor
 
 resources:
-- name: mongodb-on-demand-release
+- name: ops-manager-cloudfoundry
   type: git
   source:
     branch: master
-    uri: git@github.com:Altoros/mongodb-on-demand-release.git
+    uri: git@github.com:Altoros/ops-manager-cloudfoundry.git
     private_key: ((git-private-key))
 
 - name: stemcell
@@ -108,7 +108,7 @@ jobs:
   build_logs_to_retain: 50
   plan:
   - aggregate:
-    - get: mongodb-on-demand-release
+    - get: ops-manager-cloudfoundry
       trigger: true
     - get: on-demand-service-broker-release
       params:
@@ -126,7 +126,7 @@ jobs:
       params:
         pre: rc
   - task: build-tile
-    file: mongodb-on-demand-release/ci/tasks/build-tile/task.yml
+    file: ops-manager-cloudfoundry/ci/tasks/build-tile/task.yml
     on_failure: &alert
       put: alert
       params:
@@ -146,7 +146,7 @@ jobs:
   build_logs_to_retain: 50
   plan:
   - aggregate:
-    - get: mongodb-on-demand-release
+    - get: ops-manager-cloudfoundry
       trigger: true
       passed: [ build-tile ]
     - get: artifacts
@@ -157,7 +157,7 @@ jobs:
       params:
         globs: ["*aws*"]
   - task: deploy-tile
-    file: mongodb-on-demand-release/ci/tasks/deploy-tile/task.yml
+    file: ops-manager-cloudfoundry/ci/tasks/deploy-tile/task.yml
     params:
       PCF_URL: ((pcf-url))
       PCF_USERNAME: ((pcf-username))
@@ -171,11 +171,11 @@ jobs:
   build_logs_to_retain: 50
   plan:
   - aggregate:
-    - get: mongodb-on-demand-release
+    - get: ops-manager-cloudfoundry
       trigger: true
       passed: [ deploy-tile ]
   - task: smoke-tests
-    file: mongodb-on-demand-release/ci/tasks/smoke-tests/task.yml
+    file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
     params:
       PCF_URL: ((pcf-url))
       PCF_USERNAME: ((pcf-username))
@@ -187,7 +187,7 @@ jobs:
   build_logs_to_retain: 50
   plan:
   - aggregate:
-    - get: mongodb-on-demand-release
+    - get: ops-manager-cloudfoundry
       passed: [ smoke-tests ]
     - get: on-demand-service-broker-release
       params:
@@ -205,7 +205,7 @@ jobs:
       params:
         bump: final
   - task: shipit
-    file: mongodb-on-demand-release/ci/tasks/shipit/task.yml
+    file: ops-manager-cloudfoundry/ci/tasks/shipit/task.yml
     params:
       RELEASE_BUCKET_NAME: ((release-bucket))
     on_failure: *alert
@@ -226,9 +226,9 @@ jobs:
   build_logs_to_retain: 50
   plan:
   - aggregate:
-    - get: mongodb-on-demand-release
+    - get: ops-manager-cloudfoundry
   - task: delete-tile
-    file: mongodb-on-demand-release/ci/tasks/delete-tile/task.yml
+    file: ops-manager-cloudfoundry/ci/tasks/delete-tile/task.yml
     params:
       PCF_URL: ((pcf-url))
       PCF_USERNAME: ((pcf-username))

@@ -7,7 +7,7 @@ image_resource:
     repository: andreikrasnitski/ci
 
 inputs:
-- name: mongodb-on-demand-release
+- name: ops-manager-cloudfoundry
 
 params:
   PCF_URL:
@@ -15,4 +15,4 @@ params:
   PCF_PASSWORD:
 
 run:
-  path: mongodb-on-demand-release/ci/tasks/delete-tile/run.sh
+  path: ops-manager-cloudfoundry/ci/tasks/delete-tile/run.sh
