@@ -33,8 +33,7 @@ func (m *ManifestGenerator) logf(msg string, v ...interface{}) {
 	}
 }
 
-func (m ManifestGenerator) GenerateManifest(
-	serviceDeployment serviceadapter.ServiceDeployment,
+func (m ManifestGenerator) GenerateManifest(serviceDeployment serviceadapter.ServiceDeployment,
 	plan serviceadapter.Plan,
 	requestParams serviceadapter.RequestParameters,
 	previousManifest *bosh.BoshManifest,
@@ -229,6 +228,24 @@ func (m ManifestGenerator) GenerateManifest(
 			requireSSL = mongoOps["ssl_enabled"].(bool)
 		}
 	}
+
+	if previousManifest == nil {
+		var err error
+		group.AuthAgentPassword, err = GenerateString(32)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	// if manifest updates we should use password from previous manifest
+	if group.AuthAgentPassword == "" && previousManifest != nil {
+		var err error
+		group.AuthAgentPassword, err = oc.GetGroupAuthAgentPassword(group.ID)
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	caCert := ""
 	if mongoOps["ssl_ca_cert"] != "" {
 		caCert = mongoOps["ssl_ca_cert"].(string)
@@ -303,6 +320,7 @@ func (m ManifestGenerator) GenerateManifest(
 						"api_key":          apiKey,
 						"auth_key":         authKey,
 						"username":         username,
+						"auth_pwd":         group.AuthAgentPassword,
 						"group_id":         group.ID,
 						"plan_id":          planID,
 						"admin_password":   adminPassword,
