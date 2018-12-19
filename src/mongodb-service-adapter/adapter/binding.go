@@ -161,8 +161,12 @@ func (Binder) DeleteBinding(bindingID string, deploymentTopology bosh.BoshVMs, m
 	}
 
 	if ssl {
+		var err error
 		omClient := OMClient{Url: URL, Username: adminUsername, ApiKey: adminAPIKey}
-		servers, _ = omClient.GetGroupHostnames(groupID, plan)
+		servers, err = omClient.GetGroupHostnames(groupID, plan)
+		if err != nil {
+			return err
+		}
 	}
 
 	session, err := GetWithCredentials(servers, adminPassword, ssl)

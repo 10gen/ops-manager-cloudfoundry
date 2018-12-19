@@ -3,11 +3,8 @@ set -euo pipefail
 [ 'true' = "${DEBUG:-}" ] && set -x
 
 base=$PWD
-PCF_URL=pcf.test.pcf-test.com
-PCF_USERNAME=admin
-PCF_PASSWORD=mongodbPCF
 
-VERSION=$(cat "$base"/ops-manager-cloudfoundry/version/number)
+VERSION=$(cat "$base"/version/number)
 if [ -z "${VERSION:-}" ]; then
   echo "missing version number"
   exit 1
@@ -36,15 +33,15 @@ ${om} upload-stemcell --stemcell "stemcell/$STEMCELL_FILE"
 ${om} available-products
 ${om} stage-product --product-name "$PRODUCT" --product-version "$VERSION"
 
-# echo "$PRODUCT_PROPERTIES" > properties.yml
-# echo "$PRODUCT_NETWORK_AZS" > network-azs.yml
+echo "$PRODUCT_PROPERTIES" > properties.yml
+echo "$PRODUCT_NETWORK_AZS" > network-azs.yml
 
-# properties_config=$(ruby -ryaml -rjson -e 'puts JSON.pretty_generate(YAML.load(ARGF))' < properties.yml)
-# properties_config=$(echo "$properties_config" | jq 'delpaths([path(.[][] | select(. == null))]) | delpaths([path(.[][] | select(. == ""))]) | delpaths([path(.[] | select(. == {}))])')
+properties_config=$(ruby -ryaml -rjson -e 'puts JSON.pretty_generate(YAML.load(ARGF))' < properties.yml)
+properties_config=$(echo "$properties_config" | jq 'delpaths([path(.[][] | select(. == null))]) | delpaths([path(.[][] | select(. == ""))]) | delpaths([path(.[] | select(. == {}))])')
 
-# network_config=$(ruby -ryaml -rjson -e 'puts JSON.pretty_generate(YAML.load(ARGF))' < network-azs.yml)
+network_config=$(ruby -ryaml -rjson -e 'puts JSON.pretty_generate(YAML.load(ARGF))' < network-azs.yml)
 
-${om} configure-product --product-name "$PRODUCT" --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config"
+${om} configure-product --product-name "$PRODUCT" --product-network "$network_config" --product-properties "$properties_config"
 
 STAGED=$(${om} curl --path /api/v0/staged/products)
 RESULT=$(echo "$STAGED" | jq --arg product_name "$PRODUCT" 'map(select(.type == $product_name)) | .[].guid')
