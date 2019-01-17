@@ -4,13 +4,13 @@ stemcells/
 manifests/bosh-warden*
 *.pivotal
 *.md5
-*.tgz
-*.deb
 *.tar.gz
 config/dev.yml
 config/private.yml
 dev_releases
-blobs
+tile/*/*.tgz
+tile/*/*.deb
+
 .blobs
 .dev_builds
 .idea
