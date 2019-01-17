@@ -4,7 +4,11 @@ platform: linux
 image_resource:
   type: docker-image
   source:
+<<<<<<< HEAD
     repository: starkandwayne/concourse
+=======
+    repository: theburi/ci
+>>>>>>> 2965eb168a89b91017b48cc0d7f7c16008f33d6a
 
 inputs:
 - name: ops-manager-cloudfoundry
