@@ -4,4 +4,5 @@ blobstore:
   options:
     bucket_name: abelik-pcf
     region: eu-west-1
+    host: s3-eu-west-1.amazonaws.com
 final_name: mongodb
