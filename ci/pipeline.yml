@@ -42,7 +42,7 @@ resources:
   type: s3
   source:
     bucket: ((aws-bucket))
-    regexp: on-demand-service-broker-(.*)-ubuntu-trusty-(.*).tgz
+    regexp: on-demand-service-broker-(.*)-ubuntu-xenial-(.*).tgz
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
 
@@ -58,7 +58,7 @@ resources:
   type: s3
   source:
     bucket: ((aws-bucket))
-    regexp: syslog-migration-(.*)-ubuntu-trusty-(.*).tgz
+    regexp: syslog-migration-(.*)-ubuntu-xenial-(.*).tgz
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
 
@@ -66,7 +66,7 @@ resources:
   type: s3
   source:
     bucket: ((aws-bucket))
-    regexp: bpm-release-(.*)-ubuntu-trusty-(.*).tgz
+    regexp: bpm-release-(.*)-ubuntu-xenial-(.*).tgz
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
 
