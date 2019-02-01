@@ -58,7 +58,7 @@ resources:
   type: s3
   source:
     bucket: ((aws-bucket))
-    regexp: syslog-migration-(.*)-ubuntu-xenial-(.*).tgz
+    regexp: syslog-migration-(.*).tgz
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
 
