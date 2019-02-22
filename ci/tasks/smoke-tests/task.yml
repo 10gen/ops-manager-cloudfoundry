@@ -9,5 +9,10 @@ image_resource:
 inputs:
 - name: ops-manager-cloudfoundry
 
+params:
+  PCF_URL:
+  PCF_USERNAME:
+  PCF_PASSWORD:
+
 run:
   path: ops-manager-cloudfoundry/ci/tasks/smoke-tests/run.sh
