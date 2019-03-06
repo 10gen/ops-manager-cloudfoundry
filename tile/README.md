@@ -14,7 +14,8 @@ The following should be installed on your local machine
 1. Check out PCF MongoDB On Demand tile generator repo:
 
     ```bash
-    git clone https://github.com/Altoros/ops-manager-cloudfoundry.git
+    git clone https://github.com/Altoros/mongodb-on-demand-release.git
+
     ```
 
 2. Download the following releases into [tile/resources](https://github.com/Altoros/ops-manager-cloudfoundry/tree/master/tile/resources) folder.
