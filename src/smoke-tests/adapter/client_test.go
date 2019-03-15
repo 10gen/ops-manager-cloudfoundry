@@ -1,4 +1,4 @@
-package client_test
+package adapter_test
 
 import (
 	"encoding/json"
@@ -61,11 +61,7 @@ func TestLoadDoc(t *testing.T) {
 
 func TestGetGroupByName(t *testing.T) {
 
-	c := &client.OMClient{
-		Url:      os.Getenv("Url"),
-		Username: os.Getenv("Username"),
-		ApiKey:   os.Getenv("ApiKey"),
-	}
+	c := getOMClient()
 
 	_, err := c.GetGroupByName("test-group")
 	if err != nil {
@@ -76,11 +72,7 @@ func TestGetGroupByName(t *testing.T) {
 func TestCreateGroup(t *testing.T) {
 	t.Parallel()
 
-	c := &client.OMClient{
-		Url:      os.Getenv("Url"),
-		Username: os.Getenv("Username"),
-		ApiKey:   os.Getenv("ApiKey"),
-	}
+	c := getOMClient()
 
 	request := client.GroupCreateRequest{
 		Name: "test-group1",
@@ -96,11 +88,7 @@ func TestCreateGroup(t *testing.T) {
 
 func TestCreateGroupAPIKey(t *testing.T) {
 
-	c := &client.OMClient{
-		Url:      os.Getenv("Url"),
-		Username: os.Getenv("Username"),
-		ApiKey:   os.Getenv("ApiKey"),
-	}
+	c := getOMClient()
 
 	_, err := c.CreateGroupAPIKey(os.Getenv("GroupId"))
 
@@ -112,11 +100,7 @@ func TestCreateGroupAPIKey(t *testing.T) {
 
 func TestUpdateGroup(t *testing.T) {
 
-	c := &client.OMClient{
-		Url:      os.Getenv("Url"),
-		Username: os.Getenv("Username"),
-		ApiKey:   os.Getenv("ApiKey"),
-	}
+	c := getOMClient()
 
 	request := client.GroupUpdateRequest{
 		Tags: []string{
@@ -135,11 +119,7 @@ func TestUpdateGroup(t *testing.T) {
 
 func TestGetGroupAuthAgentPassword(t *testing.T) {
 
-	c := &client.OMClient{
-		Url:      os.Getenv("Url"),
-		Username: os.Getenv("Username"),
-		ApiKey:   os.Getenv("ApiKey"),
-	}
+	c := getOMClient()
 
 	_, err := c.GetGroupAuthAgentPassword(os.Getenv("GroupId"))
 
@@ -150,11 +130,7 @@ func TestGetGroupAuthAgentPassword(t *testing.T) {
 
 func TestGetGroup(t *testing.T) {
 
-	c := &client.OMClient{
-		Url:      os.Getenv("Url"),
-		Username: os.Getenv("Username"),
-		ApiKey:   os.Getenv("ApiKey"),
-	}
+	c := getOMClient()
 
 	_, err := c.GetGroup("test-group-id")
 
@@ -167,11 +143,7 @@ func TestGetGroup(t *testing.T) {
 func TestDeleteGroup(t *testing.T) {
 	t.Parallel()
 
-	c := &client.OMClient{
-		Url:      os.Getenv("Url"),
-		Username: os.Getenv("Username"),
-		ApiKey:   os.Getenv("ApiKey"),
-	}
+	c := getOMClient()
 
 	err := c.DeleteGroup("test-group-id")
 
@@ -182,11 +154,7 @@ func TestDeleteGroup(t *testing.T) {
 
 func TestGetGroupHosts(t *testing.T) {
 
-	c := &client.OMClient{
-		Url:      os.Getenv("Url"),
-		Username: os.Getenv("Username"),
-		ApiKey:   os.Getenv("ApiKey"),
-	}
+	c := getOMClient()
 
 	_, err := c.GetGroupHosts(os.Getenv("GroupId"))
 
@@ -197,11 +165,7 @@ func TestGetGroupHosts(t *testing.T) {
 
 func TestGetGroupHostnames(t *testing.T) {
 
-	c := &client.OMClient{
-		Url:      os.Getenv("Url"),
-		Username: os.Getenv("Username"),
-		ApiKey:   os.Getenv("ApiKey"),
-	}
+	c := getOMClient()
 
 	_, err := c.GetGroupHostnames(os.Getenv("GroupId"), "test-plan-id")
 
@@ -213,11 +177,7 @@ func TestGetGroupHostnames(t *testing.T) {
 func TestConfigureGroup(t *testing.T) {
 	t.Parallel()
 
-	c := &client.OMClient{
-		Url:      os.Getenv("Url"),
-		Username: os.Getenv("Username"),
-		ApiKey:   os.Getenv("ApiKey"),
-	}
+	c := getOMClient()
 
 	err := c.ConfigureGroup("configure-doc", os.Getenv("GroupId"))
 
@@ -229,11 +189,7 @@ func TestConfigureGroup(t *testing.T) {
 func TestConfigureMonitoringAgent(t *testing.T) {
 	t.Parallel()
 
-	c := &client.OMClient{
-		Url:      os.Getenv("Url"),
-		Username: os.Getenv("Username"),
-		ApiKey:   os.Getenv("ApiKey"),
-	}
+	c := getOMClient()
 
 	err := c.ConfigureMonitoringAgent("configure-doc", os.Getenv("GroupId"))
 
@@ -245,11 +201,7 @@ func TestConfigureMonitoringAgent(t *testing.T) {
 func TestConfigureBackupAgent(t *testing.T) {
 	t.Parallel()
 
-	c := &client.OMClient{
-		Url:      os.Getenv("Url"),
-		Username: os.Getenv("Username"),
-		ApiKey:   os.Getenv("ApiKey"),
-	}
+	c := getOMClient()
 
 	err := c.ConfigureBackupAgent("configure-doc", os.Getenv("GroupId"))
 
@@ -261,11 +213,7 @@ func TestConfigureBackupAgent(t *testing.T) {
 func TestGetAvailableVersions(t *testing.T) {
 	t.Parallel()
 
-	c := &client.OMClient{
-		Url:      os.Getenv("Url"),
-		Username: os.Getenv("Username"),
-		ApiKey:   os.Getenv("ApiKey"),
-	}
+	c := getOMClient()
 
 	_, err := c.GetAvailableVersions(os.Getenv("GroupId"))
 
@@ -277,11 +225,7 @@ func TestGetAvailableVersions(t *testing.T) {
 func TestGetLatestVersion(t *testing.T) {
 	t.Parallel()
 
-	c := &client.OMClient{
-		Url:      os.Getenv("Url"),
-		Username: os.Getenv("Username"),
-		ApiKey:   os.Getenv("ApiKey"),
-	}
+	c := getOMClient()
 
 	latestVersion, err := c.GetLatestVersion(os.Getenv("GroupId"))
 
@@ -295,11 +239,7 @@ func TestGetLatestVersion(t *testing.T) {
 func TestValidateVersion(t *testing.T) {
 	t.Parallel()
 
-	c := &client.OMClient{
-		Url:      os.Getenv("Url"),
-		Username: os.Getenv("Username"),
-		ApiKey:   os.Getenv("ApiKey"),
-	}
+	c := getOMClient()
 
 	_, err := c.ValidateVersion(os.Getenv("GroupId"), LatestVersion)
 
@@ -311,15 +251,22 @@ func TestValidateVersion(t *testing.T) {
 func TestValidateVersionManifest(t *testing.T) {
 	t.Parallel()
 
-	c := &client.OMClient{
-		Url:      os.Getenv("Url"),
-		Username: os.Getenv("Username"),
-		ApiKey:   os.Getenv("ApiKey"),
-	}
+	c := getOMClient()
 
 	_, err := c.ValidateVersionManifest(LatestVersion)
 
 	if err != nil {
 		t.Fatal()
 	}
+}
+
+func getOMClient() *client.OMClient {
+
+	c := &client.OMClient{
+		Url:      os.Getenv("Url"),
+		Username: os.Getenv("Username"),
+		ApiKey:   os.Getenv("ApiKey"),
+	}
+
+	return c
 }
