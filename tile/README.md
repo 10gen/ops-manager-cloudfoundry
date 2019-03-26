@@ -22,7 +22,7 @@ The following should be installed on your local machine
 
     - [Pivotal Cloud Foundry On Demand Service Broker Release](https://s3.amazonaws.com/mongodb-tile-ci/on-demand-service-broker-0.22.0-ubuntu-trusty-3586.36.tgz)
     - [Pivotal Cloud Foundry MongoDB Helpers Release](https://s3.amazonaws.com/mongodb-tile-ci/pcf-mongodb-helpers-0.0.1.tgz)
-    - [Pivotal Cloud Foundry Syslog Migration Release](https://s3.amazonaws.com/mongodb-tile-ci/syslog-migration-11.1.1-ubuntu-trusty-3586.36.tgz)
+    - [Pivotal Cloud Foundry Syslog Migration Release](https://s3.amazonaws.com/mongodb-tile-ci/syslog-migration-11.1.1.tgz)
     - [Pivotal Cloud Foundry BOSH Process Manager Release](https://s3.amazonaws.com/mongodb-tile-ci/bpm-release-0.12.2-ubuntu-trusty-3586.36.tgz)
 
 3. Update build version:

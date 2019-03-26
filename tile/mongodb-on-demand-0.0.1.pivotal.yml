@@ -7,8 +7,8 @@ contents:
   - mongodb-0+dev.1.tgz
   compiled_packages: []
   stemcell_criteria:
-    os: ubuntu-trusty
-    version: '3232.4'
+    os: ubuntu-xenial
+    version: '170'
 build_info:
   product_repository: tile
   product_revision: 1f16ced8beee9f944d977cac6659ca78d8784e54.dirty
