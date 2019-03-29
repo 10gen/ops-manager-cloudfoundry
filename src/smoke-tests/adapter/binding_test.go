@@ -2,22 +2,23 @@ package adapter_test
 
 import (
 	adapter "../../mongodb-service-adapter/adapter"
+	"fmt"
 	"github.com/pivotal-cf/on-demand-services-sdk/bosh"
 	"github.com/pivotal-cf/on-demand-services-sdk/serviceadapter"
-	"os"
 	"testing"
 )
 
 func TestGetWithCredentials(t *testing.T) {
-	addrs := []string{os.Getenv("Url")}
 
-	_, err := adapter.GetWithCredentials(addrs, "admin", false)
+	config, err := adapter.LoadConfig("../../mongodb-service-adapter/testdata/manifest.json")
 
 	if err != nil {
-		t.Fatal(err)
+		fmt.Print("Error opening manifest file ")
 	}
 
-	_, err = adapter.GetWithCredentials(addrs, "admin", true)
+	addrs := []string{config.NodeAddresses}
+
+	_, err = adapter.GetWithCredentials(addrs, "admin", false)
 
 	if err != nil {
 		t.Fatal(err)
@@ -27,25 +28,31 @@ func TestGetWithCredentials(t *testing.T) {
 
 func TestCreateBinding(t *testing.T) {
 
+	config, err := adapter.LoadConfig("../../mongodb-service-adapter/testdata/manifest.json")
+
+	if err != nil {
+		fmt.Print("Error opening manifest file ")
+	}
+
 	deploymentTopology := bosh.BoshVMs{
 		"mongod_node": []string{
-			os.Getenv("mongod_node"),
+			config.NodeAddresses,
 		},
 	}
 
 	manifest := bosh.BoshManifest{
 		Properties: map[string]interface{}{
 			"mongo_ops": map[interface{}]interface{}{
-				"url":            os.Getenv("Url"),
-				"group_id":       os.Getenv("GroupId"),
+				"url":            config.URL,
+				"group_id":       config.GroupID,
 				"admin_password": "admin",
-				"username":       os.Getenv("Username"),
-				"admin_api_key":  os.Getenv("ApiKey"),
-				"require_ssl":    true,
-				"plan_id":        "sharded_cluster",
+				"username":       config.Username,
+				"admin_api_key":  config.APIKey,
+				"require_ssl":    false,
+				"plan_id":        "standalone",
 				"routers":        0,
-				"config_servers": 1,
-				"replicas":       1,
+				"config_servers": 0,
+				"replicas":       0,
 			},
 		},
 	}
@@ -54,7 +61,8 @@ func TestCreateBinding(t *testing.T) {
 	secrets := serviceadapter.ManifestSecrets{}
 	dnsAddresses := serviceadapter.DNSAddresses{}
 	binder := &adapter.Binder{}
-	_, err := binder.CreateBinding("binding1", deploymentTopology, manifest, requestParams, secrets, dnsAddresses)
+
+	_, err = binder.CreateBinding("binding1", deploymentTopology, manifest, requestParams, secrets, dnsAddresses)
 
 	if err != nil {
 		t.Fatal(err)
@@ -64,25 +72,31 @@ func TestCreateBinding(t *testing.T) {
 
 func TestDeleteBinding(t *testing.T) {
 
+	config, err := adapter.LoadConfig("../../mongodb-service-adapter/testdata/manifest.json")
+
+	if err != nil {
+		fmt.Print("Error opening manifest file ")
+	}
+
 	deploymentTopology := bosh.BoshVMs{
 		"mongod_node": []string{
-			os.Getenv("mongod_node"),
+			config.NodeAddresses,
 		},
 	}
 
 	manifest := bosh.BoshManifest{
 		Properties: map[string]interface{}{
 			"mongo_ops": map[interface{}]interface{}{
-				"url":            os.Getenv("Url"),
-				"group_id":       os.Getenv("GroupId"),
+				"url":            config.URL,
+				"group_id":       config.GroupID,
 				"admin_password": "admin",
-				"username":       os.Getenv("Username"),
-				"admin_api_key":  os.Getenv("ApiKey"),
-				"require_ssl":    true,
-				"plan_id":        "sharded_cluster",
+				"username":       config.Username,
+				"admin_api_key":  config.APIKey,
+				"require_ssl":    false,
+				"plan_id":        "standalone",
 				"routers":        0,
-				"config_servers": 1,
-				"replicas":       1,
+				"config_servers": 0,
+				"replicas":       0,
 			},
 		},
 	}
@@ -92,7 +106,7 @@ func TestDeleteBinding(t *testing.T) {
 
 	binder := &adapter.Binder{}
 
-	err := binder.DeleteBinding("binding1", deploymentTopology, manifest, requestParams, secrets)
+	err = binder.DeleteBinding("binding1", deploymentTopology, manifest, requestParams, secrets)
 
 	if err != nil {
 		t.Fatal(err)
