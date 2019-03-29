@@ -5,27 +5,34 @@ import (
 	"fmt"
 	"github.com/pivotal-cf/on-demand-services-sdk/bosh"
 	"github.com/pivotal-cf/on-demand-services-sdk/serviceadapter"
-	"os"
 	"testing"
 )
 
 func TestDashboardUrl(t *testing.T) {
 	t.Parallel()
 
+	config, err := adapter.LoadConfig("../../mongodb-service-adapter/testdata/manifest.json")
+
+	if err != nil {
+		fmt.Print("Error opening manifest file ")
+	}
+
+	
 	manifest := bosh.BoshManifest{
 		Properties: map[string]interface{}{
 			"mongo_ops": map[interface{}]interface{}{
-				"url":      os.Getenv("Url"),
-				"group_id": os.Getenv("GroupId"),
+				"url":     config.URL,
+				"group_id": config.GroupID,
 			},
 		},
 	}
 
 	exp := &adapter.DashboardURLGenerator{}
 	plan := serviceadapter.Plan{}
-	res, err := exp.DashboardUrl("id1", plan, manifest)
+	
+	_, err = exp.DashboardUrl("id1", plan, manifest)
+
 	if err != nil {
 		t.Errorf("Error getting DashboardUrl ")
 	}
-	fmt.Println("DashboardUrl : ", res)
 }
