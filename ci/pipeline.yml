@@ -55,7 +55,7 @@ resources:
   source:
     bucket: ((aws-bucket))
     region_name: eu-west-1
-    regexp: syslog-migration-(.*)-ubuntu-trusty-(.*).tgz
+    regexp: syslog-migration-(.*).tgz
 
 - name: bpm-release
   type: s3
