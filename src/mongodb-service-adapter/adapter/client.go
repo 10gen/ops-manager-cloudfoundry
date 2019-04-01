@@ -105,7 +105,7 @@ func (oc *OMClient) LoadDoc(p string, ctx *DocContext) (string, error) {
 func (oc *OMClient) GetGroupByName(name string) (Group, error) {
 	var group Group
 	b, err := oc.doRequest("GET", fmt.Sprintf("/api/public/v1.0/groups/byName/%s", name), nil)
-	if err != nil {
+	if err != nil && !strings.Contains(strings.ToLower(err.Error()), "not in the group") {
 		return group, err
 	}
 	if err = json.Unmarshal(b, &group); err != nil {
