@@ -158,7 +158,7 @@ var _ = Describe("Binding", func() {
 							"admin_api_key":  config.APIKey,
 							"require_ssl":    false,
 							"plan_id":        adapter.PlanShardedCluster,
-							"routers":        0,
+							"routers":        1,
 							"config_servers": 0,
 							"replicas":       1,
 						},
@@ -166,9 +166,9 @@ var _ = Describe("Binding", func() {
 				}
 			})
 
-			It("returns error ", func() {
+			It("returns no error ", func() {
 				_, err = binder.CreateBinding(bindingId, deploymentTopology, manifest, requestParams, secrets, dnsAddresses)
-				Expect(err).To(HaveOccurred())
+				Expect(err).ToNot(HaveOccurred())
 			})
 		})
 	})
