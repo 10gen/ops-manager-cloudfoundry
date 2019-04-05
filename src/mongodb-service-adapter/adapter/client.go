@@ -105,10 +105,14 @@ func (oc *OMClient) LoadDoc(p string, ctx *DocContext) (string, error) {
 func (oc *OMClient) GetGroupByName(name string) (Group, error) {
 	var group Group
 	b, err := oc.doRequest("GET", fmt.Sprintf("/api/public/v1.0/groups/byName/%s", name), nil)
+	fmt.Printf("%s\n", fmt.Sprintf(" oc.doRequest GET/api/public/v1.0/groups/byName/%s", name))
+	fmt.Printf("\n\n%s\n\n", b)
 	if err != nil && !strings.Contains(strings.ToLower(err.Error()), "not in the group") {
+		log.Println("GetGroupByName "+fmt.Sprintf(" oc.doRequest GET/api/public/v1.0/groups/byName/%s , error:: ", name), err)
 		return group, err
 	}
 	if err = json.Unmarshal(b, &group); err != nil {
+		fmt.Println("GetGroupByName json.Unmarshal error: ", err)
 		return group, err
 	}
 	return group, nil
@@ -117,29 +121,35 @@ func (oc *OMClient) GetGroupByName(name string) (Group, error) {
 func (oc *OMClient) CreateGroup(id string, request GroupCreateRequest) (Group, error) {
 	var group Group
 
+	log.Println(fmt.Sprintf("CreateGroup in id : %s ,request : %+v", id, request))
 	if request.Name == "" {
 		request.Name = fmt.Sprintf("PCF_%s", strings.ToUpper(id))
 	}
 	req, err := json.Marshal(request)
 	if err != nil {
+		log.Println(fmt.Sprintf("CreateGroup json.Marshal with data: %+v error: %v", request, err))
 		return group, err
 	}
 
 	group, err = oc.GetGroupByName(request.Name)
 	if err != nil {
+		log.Println(fmt.Sprintf("CreateGroup GetGroupByName request.Name : %s ,error: %v", request.Name, err))
 		return group, err
 	}
 	if group.Name == request.Name {
 		log.Printf("Continue with existing group %q", group.ID)
 		apiKey, err := oc.CreateGroupAPIKey(group.ID)
 		if err != nil {
+			log.Println(fmt.Sprintf("CreateGroup CreateGroupAPIKey group.ID : %s ,error: %v", group.ID, err))
 			return group, err
 		}
 		group.AgentAPIKey = apiKey
+		log.Println()
 		return group, nil
 	}
 	b, err := oc.doRequest("POST", "/api/public/v1.0/groups", bytes.NewReader(req))
 	if err != nil {
+		log.Println(fmt.Sprintf("CreateGroup oc.doRequest /api/public/v1.0/groups, body: %s error: %v", req, err))
 		return group, err
 	}
 
