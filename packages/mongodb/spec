@@ -2,4 +2,4 @@
 name: mongodb
 
 files:
-  - mongodb/mongodb-linux-x86_64-ubuntu1404-3.6.4.tgz
+  - mongodb/mongodb-linux-x86_64-ubuntu1604-3.6.10.tgz

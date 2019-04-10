@@ -4,8 +4,8 @@ name: mongodb-on-demand
 product_version: 0.6.9
 metadata_version: '1.8'
 stemcell_criteria:
-  os: ubuntu-trusty
-  version: '3232.4'
+  os: ubuntu-xenial
+  version: '170.25'
 releases:
 - name: on-demand-service-broker
   file: on-demand-service-broker-0.5.0.tgz

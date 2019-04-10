@@ -69,7 +69,7 @@ job_types:
           version: latest
           jobs: [mongod_node, mongodb_config_agent]
         stemcell:
-          os: ubuntu-trusty
+          os: ubuntu-xenial
           version: latest
       service_catalog:
         id: D94A086D-203D-4966-A6F1-60A9E2300F72
