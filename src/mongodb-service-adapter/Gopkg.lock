@@ -25,8 +25,8 @@
     ".",
     "auth"
   ]
-  revision = "bc29a3e7d6f911097c2c4998fc7cc7a408cc4268"
-  version = "v2.0.1"
+  revision = "9ed104edeebff19a9ec70c859e312257ae6c5450"
+  version = "v4.0.0"
 
 [[projects]]
   name = "github.com/pivotal-cf/on-demand-services-sdk"
@@ -34,8 +34,8 @@
     "bosh",
     "serviceadapter"
   ]
-  revision = "3f9c20bb8a17fb3a6a67075de90213e1321f3134"
-  version = "v0.23.0"
+  revision = "980106fb549f2e8d7fa20b7c8f998e5d30706188"
+  version = "v0.25.0"
 
 [[projects]]
   name = "github.com/pkg/errors"
@@ -82,6 +82,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "18cd3a1513c591155a11281dbbc08e6ab4221b1fa63da8cff9a24e12ad4b3472"
+  inputs-digest = "e2b3232688bfd1f79ccdad13103dd13899692153d2bfea9160865439e37e5167"
   solver-name = "gps-cdcl"
   solver-version = 1

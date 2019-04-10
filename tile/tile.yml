@@ -463,7 +463,9 @@ packages:
       service_deployment:
         releases:
         - name: mongodb
+
           version: 1.0.32
+
           jobs:
           - mongod_node
           - mongodb_config_agent
