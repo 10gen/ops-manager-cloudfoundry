@@ -15,6 +15,7 @@ type Config struct {
 	AuthKey       string `json:"auth_key"`
 	GroupID       string `json:"group"`
 	NodeAddresses string `json:"nodes"`
+	OrgID         string `json:"org"`
 }
 
 func LoadConfig(configFile string) (config *Config, err error) {
@@ -64,6 +65,14 @@ func (c Config) Validate() error {
 
 	if c.NodeAddresses == "" {
 		return errors.New("Must provide a non-empty Node Addresses")
+	}
+
+	if c.OrgID == "" {
+		return errors.New("Must provide a non-empty Org ID")
+	}
+
+	if c.AuthKey == "" {
+		return errors.New("Must provide a non-empty Auth Key")
 	}
 
 	return nil
