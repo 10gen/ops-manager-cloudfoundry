@@ -1,8 +1,8 @@
 package adapter_test
 
 import (
-	adapter "../../mongodb-service-adapter/adapter"
 	"fmt"
+	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/adapter"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/on-demand-services-sdk/bosh"
@@ -111,7 +111,7 @@ var _ = Describe("Manifest", func() {
 
 		previousPlan = &serviceadapter.Plan{}
 		mGenerator = &adapter.ManifestGenerator{}
-		_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan)
+		_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan, nil)
 
 	})
 
@@ -129,20 +129,20 @@ var _ = Describe("Manifest", func() {
 				},
 			}
 
-			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan)
+			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan, nil)
 			Expect(err).To(HaveOccurred())
 		})
 
 		It("returns error when no jobs exists ", func() {
 			serviceDeployment.Releases[0].Jobs = []string{}
-			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan)
+			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan, nil)
 
 			Expect(err).To(HaveOccurred())
 		})
 
 		It("returns error when bpm job not exists ", func() {
 			serviceDeployment.Releases[0].Jobs = []string{adapter.MongodJobName}
-			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan)
+			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan, nil)
 
 			Expect(err.Error()).To(ContainSubstring("no release provided for job 'bpm'"))
 		})
@@ -150,7 +150,7 @@ var _ = Describe("Manifest", func() {
 		It("returns error when syslog_forwarder job not exists ", func() {
 			serviceDeployment.Releases[0].Jobs = []string{adapter.MongodJobName,
 				adapter.BPMJobName}
-			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan)
+			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan, nil)
 
 			Expect(err.Error()).To(ContainSubstring("no release provided for job 'syslog_forwarder'"))
 		})
@@ -158,7 +158,7 @@ var _ = Describe("Manifest", func() {
 		It("returns error when mongodb_config_agent job not exists ", func() {
 			serviceDeployment.Releases[0].Jobs = []string{adapter.MongodJobName,
 				adapter.BPMJobName, adapter.SyslogJobName}
-			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan)
+			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan, nil)
 
 			Expect(err.Error()).To(ContainSubstring("no release provided for job 'mongodb_config_agent'"))
 		})
@@ -166,7 +166,7 @@ var _ = Describe("Manifest", func() {
 		It("returns error when cleanup_service job not exists ", func() {
 			serviceDeployment.Releases[0].Jobs = []string{adapter.MongodJobName,
 				adapter.BPMJobName, adapter.SyslogJobName, adapter.ConfigAgentJobName, adapter.ConfigureBackupsErrandJobName}
-			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan)
+			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan, nil)
 
 			Expect(err.Error()).To(ContainSubstring("no release provided for job 'cleanup_service'"))
 		})
@@ -174,7 +174,7 @@ var _ = Describe("Manifest", func() {
 		It("returns error when bosh-dns-enable job not exists ", func() {
 			serviceDeployment.Releases[0].Jobs = []string{adapter.MongodJobName,
 				adapter.BPMJobName, adapter.CleanupErrandJobName, adapter.SyslogJobName, adapter.ConfigAgentJobName, adapter.ConfigureBackupsErrandJobName}
-			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan)
+			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan, nil)
 
 			Expect(err.Error()).To(ContainSubstring("no release provided for job 'bosh-dns-enable'"))
 		})
@@ -185,7 +185,7 @@ var _ = Describe("Manifest", func() {
 				adapter.ConfigureBackupsErrandJobName}
 			plan.InstanceGroups[0].Networks = []string{}
 
-			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan)
+			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan, nil)
 			Expect(err.Error()).To(ContainSubstring("no networks definition found"))
 		})
 
@@ -199,7 +199,7 @@ var _ = Describe("Manifest", func() {
 				"auth_key":       config.AuthKey,
 			}
 
-			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan)
+			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan, nil)
 			Expect(err).To(HaveOccurred())
 		})
 
@@ -207,7 +207,7 @@ var _ = Describe("Manifest", func() {
 
 			plan.Properties["id"] = "wrong_plan"
 
-			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan)
+			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan, nil)
 			Expect(err.Error()).To(ContainSubstring("unknown plan"))
 		})
 

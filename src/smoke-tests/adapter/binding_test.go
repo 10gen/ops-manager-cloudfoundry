@@ -1,12 +1,12 @@
 package adapter_test
 
 import (
-	adapter "../../mongodb-service-adapter/adapter"
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/on-demand-services-sdk/bosh"
 	"github.com/pivotal-cf/on-demand-services-sdk/serviceadapter"
+	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/adapter"
 )
 
 var _ = Describe("Binding", func() {

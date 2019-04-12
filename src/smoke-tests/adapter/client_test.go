@@ -1,8 +1,8 @@
 package adapter_test
 
 import (
-	adapter "../../mongodb-service-adapter/adapter"
 	"encoding/json"
+	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/adapter"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"reflect"
@@ -144,8 +144,9 @@ var _ = Describe("Client", func() {
 	Describe("GetGroupByName", func() {
 
 		It("returns error when group name is not defined ", func() {
-			_, err := c.GetGroupByName("Wrong Project")
-			Expect(err).To(HaveOccurred())
+			name, _ := adapter.GenerateString(5)
+			group, _ := c.GetGroupByName("Why" + name)
+			Expect(group.Name == "").To(BeTrue())
 		})
 
 		It("returns no error", func() {
@@ -155,20 +156,20 @@ var _ = Describe("Client", func() {
 	})
 
 	Describe("CreateGroup", func() {
-		It("returns error when GroupCreateRequest is nil ", func() {
-			id := "some-id"
+		It("returns no error when GroupCreateRequest is nil ", func() {
+			id, _ := adapter.GenerateString(10)
 			request := adapter.GroupCreateRequest{}
 			_, err := c.CreateGroup(id, request)
-			Expect(err).To(HaveOccurred())
+			Expect(err).ToNot(HaveOccurred())
 		})
 
 		It("returns error when group name not exists", func() {
-			id := "some-id"
+			id, _ := adapter.GenerateString(10)
 			request := adapter.GroupCreateRequest{
-				Name: "Wrong Project",
+				Name: "PCF" + id[0:(len(id)/2)],
 			}
 			_, err := c.CreateGroup(id, request)
-			Expect(err).To(HaveOccurred())
+			Expect(err).ToNot(HaveOccurred())
 		})
 
 		It("returns no error ", func() {
