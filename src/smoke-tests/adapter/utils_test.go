@@ -2,67 +2,87 @@ package adapter_test
 
 import (
 	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/adapter"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 	"reflect"
-	"testing"
 )
 
-func TestGenerateString(t *testing.T) {
-	t.Parallel()
+var _ = Describe("Utils", func() {
 
-	res, err := adapter.GenerateString(10)
+	var (
+		nodes         []string
+		routers       int
+		configServers int
+		shards        int
+		cluster       *adapter.Cluster
+		err           error
+	)
 
-	if err != nil {
-		t.Fatal(err)
-	}
+	BeforeEach(func() {
 
-	if len(res) != 10 {
-		t.Fatal("String length is not correct ")
-	}
+	})
 
-}
+	Describe("GenerateString", func() {
 
-func TestNodesToCluster(t *testing.T) {
-	t.Parallel()
+		It("returns without error", func() {
+			_, err := adapter.GenerateString(10)
+			Expect(err).ToNot(HaveOccurred())
+		})
 
-	nodes := []string{
-		"192.168.1.10", "192.168.1.11", "192.168.1.12",
-		"192.168.1.13", "192.168.1.14", "192.168.1.15",
-		"192.168.1.16", "192.168.1.17", "192.168.1.18",
-		"192.168.1.19", "192.168.1.20", "192.168.1.21",
-	}
+		It("should return length equal to 10", func() {
+			res, _ := adapter.GenerateString(10)
+			Expect(len(res) == 10).To(BeTrue())
+		})
+	})
 
-	routers := 2
-	configServers := 2
-	shards := 4
+	Describe("NodesToCluster", func() {
 
-	res, err := adapter.NodesToCluster(nodes, routers, configServers, shards)
+		BeforeEach(func() {
 
-	if err != nil {
-		t.Fatal(err)
-	}
+			nodes = []string{
+				"192.168.1.10", "192.168.1.11", "192.168.1.12",
+				"192.168.1.13", "192.168.1.14", "192.168.1.15",
+				"192.168.1.16", "192.168.1.17", "192.168.1.18",
+				"192.168.1.19", "192.168.1.20", "192.168.1.21",
+			}
 
-	if routers != len(res.Routers) {
-		t.Fatal("Routers not equal to ", routers)
-	}
+			routers = 2
+			configServers = 2
+			shards = 4
 
-	if configServers != len(res.ConfigServers) {
-		t.Fatal("Config Servers not equal to ", configServers)
-	}
+			cluster, err = adapter.NodesToCluster(nodes, routers, configServers, shards)
+		})
 
-	if count := ((len(nodes) - routers - configServers) / shards); count != len(res.Shards) {
-		t.Fatal("Shards not equal to ", count)
-	}
+		It("returns without error", func() {
+			Expect(err).ToNot(HaveOccurred())
+		})
 
-	want := &adapter.Cluster{
-		Routers:       []string{"192.168.1.10", "192.168.1.11"},
-		ConfigServers: []string{"192.168.1.12", "192.168.1.13"},
-		Shards: [][]string{
-			{"192.168.1.14", "192.168.1.15", "192.168.1.16", "192.168.1.17"},
-			{"192.168.1.18", "192.168.1.19", "192.168.1.20", "192.168.1.21"},
-		},
-	}
+		It("Routers should equal to "+string(routers), func() {
+			Expect(len(cluster.Routers) == routers).To(BeTrue())
+		})
 
-	if !reflect.DeepEqual(res, want) {
-		t.Errorf("Cluster = %#v, want %#v", res, want)
-	}
-}
+		It("Config servers should equal to "+string(configServers), func() {
+			Expect(len(cluster.ConfigServers) == configServers).To(BeTrue())
+		})
+
+		It("Shards should equal to "+string(shards), func() {
+			count := ((len(nodes) - routers - configServers) / shards)
+			Expect(len(cluster.Shards) == count).To(BeTrue())
+		})
+
+		It("Cluster should match ", func() {
+
+			want := &adapter.Cluster{
+				Routers:       []string{"192.168.1.10", "192.168.1.11"},
+				ConfigServers: []string{"192.168.1.12", "192.168.1.13"},
+				Shards: [][]string{
+					{"192.168.1.14", "192.168.1.15", "192.168.1.16", "192.168.1.17"},
+					{"192.168.1.18", "192.168.1.19", "192.168.1.20", "192.168.1.21"},
+				},
+			}
+
+			Expect(reflect.DeepEqual(cluster, want)).To(BeTrue())
+
+		})
+	})
+})
