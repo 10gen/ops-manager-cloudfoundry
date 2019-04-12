@@ -1,38 +1,53 @@
 package adapter_test
 
 import (
-	"../../mongodb-service-adapter/adapter"
 	"fmt"
+	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/adapter"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/on-demand-services-sdk/bosh"
 	"github.com/pivotal-cf/on-demand-services-sdk/serviceadapter"
-	"testing"
 )
 
-func TestDashboardUrl(t *testing.T) {
-	t.Parallel()
+var _ = Describe("Url", func() {
 
-	config, err := adapter.LoadConfig("../../mongodb-service-adapter/testdata/manifest.json")
+	var (
+		err      error
+		exp      adapter.DashboardURLGenerator
+		plan     serviceadapter.Plan
+		manifest bosh.BoshManifest
+	)
 
-	if err != nil {
-		fmt.Print("Error opening manifest file ")
-	}
+	BeforeEach(func() {
 
-	
-	manifest := bosh.BoshManifest{
-		Properties: map[string]interface{}{
-			"mongo_ops": map[interface{}]interface{}{
-				"url":     config.URL,
-				"group_id": config.GroupID,
+		config, err := adapter.LoadConfig("../../mongodb-service-adapter/testdata/manifest.json")
+
+		if err != nil {
+			fmt.Print("Error opening manifest file ")
+		}
+
+		manifest = bosh.BoshManifest{
+			Properties: map[string]interface{}{
+				"mongo_ops": map[interface{}]interface{}{
+					"url":      config.URL,
+					"group_id": config.GroupID,
+				},
 			},
-		},
-	}
+		}
 
-	exp := &adapter.DashboardURLGenerator{}
-	plan := serviceadapter.Plan{}
-	
-	_, err = exp.DashboardUrl("id1", plan, manifest)
+		exp = adapter.DashboardURLGenerator{}
+		plan = serviceadapter.Plan{}
 
-	if err != nil {
-		t.Errorf("Error getting DashboardUrl ")
-	}
-}
+	})
+
+	Describe("DashboardUrl", func() {
+
+		When("When nothing is missing", func() {
+
+			It("calls DashboardUrl without error", func() {
+				_, err = exp.DashboardUrl("id1", plan, manifest)
+				Expect(err).ToNot(HaveOccurred())
+			})
+		})
+	})
+})
