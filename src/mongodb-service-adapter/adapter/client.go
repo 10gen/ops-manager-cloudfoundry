@@ -110,7 +110,7 @@ func (oc *OMClient) GetGroupByName(name string) (Group, error) {
 	fmt.Printf("\n\n%s\n\n", b)
 
 	if err != nil && !strings.Contains(strings.ToLower(err.Error()), "not_in_group") && !strings.Contains(string(b), "NOT_IN_GROUP") {
-log.Println("GetGroupByName "+fmt.Sprintf(" oc.doRequest GET/api/public/v1.0/groups/byName/%s , error:: ", name), err)
+		log.Println("GetGroupByName "+fmt.Sprintf(" oc.doRequest GET/api/public/v1.0/groups/byName/%s , error:: ", name), err)
 		return group, err
 	}
 	if err = json.Unmarshal(b, &group); err != nil {
@@ -135,7 +135,7 @@ func (oc *OMClient) CreateGroup(id string, request GroupCreateRequest) (Group, e
 
 	group, err = oc.GetGroupByName(request.Name)
 	if err != nil {
-		log.Println(fmt.Sprintf("CreateGroup GetGroupByName request.Name : %s ,error: %v", request.Name, err))
+		log.Println(fmt.Sprintf("CreateGroup GetGroupByName with request.Name : %s ,error: %v", request.Name, err))
 		return group, err
 	}
 	if group.Name == request.Name {
