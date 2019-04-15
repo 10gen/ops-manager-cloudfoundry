@@ -5,8 +5,8 @@ releases:
   version: 0+dev.52
 stemcells:
 - alias: mongodb-stemcell
-  os: ubuntu-trusty
-  version: '3147'
+  os: ubuntu-xenial
+  version: '170'
 instance_groups:
 - name: mongod_node
   instances: 3

@@ -14,14 +14,15 @@ The following should be installed on your local machine
 1. Check out PCF MongoDB On Demand tile generator repo:
 
     ```bash
-    git clone https://github.com/Altoros/ops-manager-cloudfoundry.git
+    git clone https://github.com/Altoros/mongodb-on-demand-release.git
+
     ```
 
 2. Download the following releases into [tile/resources](https://github.com/Altoros/ops-manager-cloudfoundry/tree/master/tile/resources) folder.
 
     - [Pivotal Cloud Foundry On Demand Service Broker Release](https://s3.amazonaws.com/mongodb-tile-ci/on-demand-service-broker-0.22.0-ubuntu-trusty-3586.36.tgz)
     - [Pivotal Cloud Foundry MongoDB Helpers Release](https://s3.amazonaws.com/mongodb-tile-ci/pcf-mongodb-helpers-0.0.1.tgz)
-    - [Pivotal Cloud Foundry Syslog Migration Release](https://s3.amazonaws.com/mongodb-tile-ci/syslog-migration-11.1.1-ubuntu-trusty-3586.36.tgz)
+    - [Pivotal Cloud Foundry Syslog Migration Release](https://s3.amazonaws.com/mongodb-tile-ci/syslog-migration-11.1.1.tgz)
     - [Pivotal Cloud Foundry BOSH Process Manager Release](https://s3.amazonaws.com/mongodb-tile-ci/bpm-release-0.12.2-ubuntu-trusty-3586.36.tgz)
 
 3. Update build version:

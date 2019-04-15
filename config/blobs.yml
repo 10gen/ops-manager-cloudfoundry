@@ -1,24 +1,24 @@
 jq/jq-linux64-1.5:
   size: 3027945
-  object_id: 805e7d70-b520-41ef-440f-a4a846f80880
+  object_id: c02f9fd2-0809-4c04-49f3-031df3b986a5
   sha: d8e36831c3c94bb58be34dd544f44a6c6cb88568
 libsnmp/libperl5.18_5.18.2-2ubuntu1.3_amd64.deb:
   size: 1326
-  object_id: 1c6b35d8-5230-4f1b-7dc6-4ae008dee6b7
+  object_id: 29368634-9f0a-4f64-5453-275787c79b7c
   sha: de1854a46271e04e79ca632928dbbf090f956774
 libsnmp/libsnmp-base_5.7.2~dfsg-8.1ubuntu3.1_all.deb:
   size: 203322
-  object_id: 7a3e0187-c447-4e5d-46a3-12d5020bc6e8
+  object_id: ce4a0bd8-bb03-422e-7401-1e41a815b8c4
   sha: 142b0f5a913ae2c46da0c10030e7b1786b3294d2
 libsnmp/libsnmp30_5.7.2~dfsg-8.1ubuntu3.1_amd64.deb:
   size: 787350
-  object_id: ce9144b5-ceeb-462e-4cc8-c8b87e35cd75
+  object_id: 0b491245-b4b9-405b-6df3-e10b1507558d
   sha: 6532a6ec10a3b50bb676df27011ab7421bd95333
 libsnmp/perl-base_5.18.2-2ubuntu1.3_amd64.deb:
   size: 1149076
-  object_id: bc8667ca-c74e-4cdf-7846-87b01e030d36
+  object_id: 6430358a-0dc4-491b-4733-c1d876d147d8
   sha: 7356c1dd7da3c31c683c4d1ac7e9558e6f1b6e67
-mongodb/mongodb-linux-x86_64-ubuntu1404-3.6.4.tgz:
-  size: 99386872
-  object_id: 8e4dc3c9-a56f-4651-47e3-6370b6b75219
-  sha: 1cd5f23096680b3922eb49ad89bb22210ae02afc
+mongodb/mongodb-linux-x86_64-ubuntu1604-3.6.10.tgz:
+  size: 104139275
+  object_id: c84d9e31-d2a1-4d53-5c3a-b79af615ba5c
+  sha: c31f38e33462c88a1168dec6caf35fd4fa67a122
