@@ -105,14 +105,19 @@ func (oc *OMClient) LoadDoc(p string, ctx *DocContext) (string, error) {
 func (oc *OMClient) GetGroupByName(name string) (Group, error) {
 	var group Group
 	b, err := oc.doRequest("GET", fmt.Sprintf("/api/public/v1.0/groups/byName/%s", name), nil)
-	fmt.Printf("%s\n", fmt.Sprintf(" oc.doRequest GET/api/public/v1.0/groups/byName/%s", name))
+	fmt.Printf("%s\n", fmt.Sprintf(" DEBUG1 RESULT::: oc.doRequest GET/api/public/v1.0/groups/byName/%s", name))
 	fmt.Printf("\n\n%s\n\n", b)
 	if err != nil && !strings.Contains(strings.ToLower(err.Error()), "not in the group") {
 		log.Println("GetGroupByName "+fmt.Sprintf(" oc.doRequest GET/api/public/v1.0/groups/byName/%s , error:: ", name), err)
 		return group, err
 	}
 	if err = json.Unmarshal(b, &group); err != nil {
-		fmt.Println("GetGroupByName json.Unmarshal error: ", err)
+
+		//fmt.Println("GetGroupByName json.Unmarshal error: ", err)
+		log.Printf("GetGroupByName json.Unmarshal verbose error info: %#v", err)
+		if e, ok := err.(*json.SyntaxError); ok {
+			log.Printf("GetGroupByName json.Unmarshal syntax error at byte offset %d", e.Offset)
+		}
 		return group, err
 	}
 	return group, nil
@@ -133,7 +138,7 @@ func (oc *OMClient) CreateGroup(id string, request GroupCreateRequest) (Group, e
 
 	group, err = oc.GetGroupByName(request.Name)
 	if err != nil {
-		log.Println(fmt.Sprintf("CreateGroup GetGroupByName request.Name : %s ,error: %v", request.Name, err))
+		log.Println(fmt.Sprintf("CreateGroup GetGroupByName with request.Name : %s ,error: %v", request.Name, err))
 		return group, err
 	}
 	if group.Name == request.Name {
@@ -395,6 +400,7 @@ func (oc *OMClient) doRequest(method string, path string, body io.Reader) ([]byt
 		log.Printf("Received %d status code for %s path", res.StatusCode, path)
 		return b, nil
 	} else if res.StatusCode < 200 || res.StatusCode >= 300 {
+		log.Printf("Request to %s %s  Response: %+v\n", method, path, res)
 		return nil, fmt.Errorf("%s %s request error: code=%d body=%q", method, path, res.StatusCode, b)
 	}
 	return b, nil
