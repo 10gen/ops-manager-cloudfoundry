@@ -5,7 +5,7 @@ set -euo pipefail
 base=$PWD
 PCF_URL=pcf.test.pcf-test.com
 PCF_USERNAME=admin
-PCF_PASSWORD=mongodbPCF
+PCF_PASSWORD=$2
 
 VERSION=$1
 if [ -z "${VERSION:-}" ]; then
@@ -31,7 +31,10 @@ if [ -z "${STEMCELL_FILE}" ]; then
 fi
 
 PRODUCT="$(cat $base/ops-manager-cloudfoundry/tile/tile.yml | grep '^name' | cut -d' ' -f 2)"
-
+echo "Product " $PRODUCT
+# if [ -z "${PRODUCT}" ]; then
+# 	PRODUCT=mongodb-on-demand
+# fi
 om="om -t $PCF_URL -u $PCF_USERNAME -p $PCF_PASSWORD -k"
 
 ${om} upload-product --product "artifacts/$TILE_FILE"
@@ -39,10 +42,10 @@ ${om} upload-stemcell --stemcell "stemcell/$STEMCELL_FILE"
 ${om} available-products
 ${om} stage-product --product-name "$PRODUCT" --product-version "$VERSION"
 
-if ${VERSION} = '1.0.5'; then
-	${om} delete-product --product-name "$PRODUCT"
-	${om} unstage-product --product-name "$PRODUCT"
-fi
+# if ${VERSION} = '1.0.5'; then
+# 	${om} delete-product --product-name "$PRODUCT"
+# 	${om} unstage-product --product-name "$PRODUCT"
+# fi
 # echo "$PRODUCT_PROPERTIES" > properties.yml
 # echo "$PRODUCT_NETWORK_AZS" > network-azs.yml
 
@@ -50,11 +53,12 @@ fi
 # properties_config=$(echo "$properties_config" | jq 'delpaths([path(.[][] | select(. == null))]) | delpaths([path(.[][] | select(. == ""))]) | delpaths([path(.[] | select(. == {}))])')
 
 # network_config=$(ruby -ryaml -rjson -e 'puts JSON.pretty_generate(YAML.load(ARGF))' < network-azs.yml)
-if ${VERSION} = '1.0.5'; then
-	${om} configure-product --product-name "$PRODUCT" --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config-1.0.5"
-else
-	${om} configure-product --product-name "$PRODUCT" --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config"
-fi
+# if ${VERSION} = '1.0.5'; then
+# 	${om} configure-product --product-name "$PRODUCT" --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config-1.0.5"
+# else
+	echo ${om} configure-product --product-name "$PRODUCT" --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config"
+	${om} configure-product  --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config"
+# fi
 
 
 STAGED=$(${om} curl --path /api/v0/staged/products)
