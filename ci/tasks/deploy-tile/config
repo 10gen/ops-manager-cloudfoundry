@@ -1,3 +1,4 @@
+product-name: mongodb-on-demand
 product-properties:
   .properties.az_multi_select:
     value:
@@ -11,18 +12,18 @@ product-properties:
   .properties.space:
     value: mongodb-on-demand-space
   .properties.ssl_enabled:
-    value: true
+    value: false
   .properties.syslog_tls_enabled:
     value: false
   .properties.syslog_transport_protocol:
     value: tcp
   .properties.url:
-    value: http://opsmgr.mongodbpartners.net:8888
+    value: http://ec2-54-88-70-89.compute-1.amazonaws.com:9080
   .properties.username:
     value: andrey.belik@mongodb.com
   .properties.api_key:
     value:
-      secret:  "111f1ffb-bdd8-4945-a220-881055d7a9cc"
+      secret:  ((OM_API_KEY))
 network-properties:
   network:
     name: test-pas-subnet
