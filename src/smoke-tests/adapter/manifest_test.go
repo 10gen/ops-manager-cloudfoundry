@@ -26,7 +26,8 @@ var _ = Describe("Manifest", func() {
 		config, err = adapter.LoadConfig("../../mongodb-service-adapter/testdata/manifest.json")
 
 		if err != nil {
-			fmt.Print("Error opening manifest file ")
+			fmt.Println("Error opening manifest file ", err)
+			return
 		}
 
 		serviceDeployment = serviceadapter.ServiceDeployment{
@@ -41,9 +42,11 @@ var _ = Describe("Manifest", func() {
 				},
 			},
 			DeploymentName: "deploy_name",
-			Stemcell: serviceadapter.Stemcell{
-				OS:      "Ubuntu",
-				Version: "16.X",
+			Stemcells: []serviceadapter.Stemcell{
+				{
+					OS:      "Ubuntu",
+					Version: "16.X",
+				},
 			},
 		}
 
