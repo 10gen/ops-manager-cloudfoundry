@@ -117,7 +117,7 @@ func (oc *OMClient) GetGroupByName(name string) (Group, error) {
 		fmt.Println("GetGroupByName json.Unmarshal error: ", err)
 		return group, err
 	}
-	return group, nil !strings.Contains(strings.ToLower(err.Error()), "not_in_group") && !strings.Contains(string(b), "NOT_IN_GROUP")
+	return group, nil 
 }
 
 func (oc *OMClient) CreateGroup(id string, request GroupCreateRequest) (Group, error) {
