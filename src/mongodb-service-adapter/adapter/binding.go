@@ -90,7 +90,6 @@ func (b Binder) CreateBinding(bindingID string, deploymentTopology bosh.BoshVMs,
 	}
 	connectionOptions := []string{sslOption, replicaSetName}
 
-	fmt.Println(servers)
 	session, err := GetWithCredentials(servers, adminPassword, ssl)
 	if err != nil {
 		return serviceadapter.Binding{}, err
