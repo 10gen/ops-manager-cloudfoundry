@@ -3,7 +3,8 @@ name: mongod-node
 
 files:
   - common/utils.sh
-  - libsnmp/perl-base_5.18.2-2ubuntu1.3_amd64.deb
-  - libsnmp/libperl5.18_5.18.2-2ubuntu1.3_amd64.deb
-  - libsnmp/libsnmp-base_5.7.2~dfsg-8.1ubuntu3.1_all.deb
-  - libsnmp/libsnmp30_5.7.2~dfsg-8.1ubuntu3.1_amd64.deb
+  - common/libpci3_3.3.1-1.1ubuntu1_amd64.deb
+  - libsnmp/perl-base_5.22.1-9ubuntu0.6_amd64.deb
+  - libsnmp/libperl5.22_5.22.1-9ubuntu0.6_amd64.deb
+  - libsnmp/libsnmp-base_5.7.3+dfsg-1ubuntu4.2_all.deb
+  - libsnmp/libsnmp30_5.7.3+dfsg-1ubuntu4.2_amd64.deb

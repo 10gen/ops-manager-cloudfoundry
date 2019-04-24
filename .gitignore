@@ -25,3 +25,6 @@ src/smoke-tests/integration_config.json
 
 /bin
 /pkg
+
+!src/libsnmp/*.deb
+!src/common/*.deb

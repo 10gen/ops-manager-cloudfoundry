@@ -40,7 +40,7 @@ var plansRaw = map[string]string{
     "ssl" : {
 				"autoPEMKeyFilePath": "/var/vcap/jobs/mongod_node/config/server.pem",
         "CAFilePath": "/var/vcap/jobs/mongod_node/config/cacert.pem",
-        "clientCertificateMode": "REQUIRE"
+        "clientCertificateMode": "OPTIONAL"
     },
     {{end}}
     "mongoDbVersions": [
@@ -187,7 +187,7 @@ var plansRaw = map[string]string{
     "ssl" : {
 				"autoPEMKeyFilePath": "/var/vcap/jobs/mongod_node/config/server.pem",
         "CAFilePath": "/var/vcap/jobs/mongod_node/config/cacert.pem",
-        "clientCertificateMode": "REQUIRE"
+        "clientCertificateMode": "OPTIONAL"
     },
     {{end}}
     "mongoDbVersions": [
@@ -458,7 +458,7 @@ var plansRaw = map[string]string{
     "ssl" : {
 				"autoPEMKeyFilePath": "/var/vcap/jobs/mongod_node/config/server.pem",
         "CAFilePath": "/var/vcap/jobs/mongod_node/config/cacert.pem",
-        "clientCertificateMode": "REQUIRE"
+        "clientCertificateMode": "OPTIONAL"
     },
     {{end}}
     "mongoDbVersions": [
