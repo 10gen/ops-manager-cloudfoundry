@@ -4,11 +4,18 @@ set -euo pipefail
 
 base=$PWD
 
-VERSION=$(cat "$base"/ops-manager-cloudfoundry/version/number)
+
+VERSION=$(cat "$base"/version/number)
+
 if [ -z "${VERSION:-}" ]; then
   echo "missing version number"
   exit 1
 fi
+rm -r -f "$base/ops-manager-cloudfoundry/.dev_builds"
+rm -r -f "$base/ops-manager-cloudfoundry/dev_releases"
+rm -r -f "$base/ops-manager-cloudfoundry/tile/releases/*"
+rm -r -f "$base/ops-manager-cloudfoundry/tile/resources/mongodb-*"
+rm -r -f "$base/artefacts/mongodb-on-demand-${VERSION}.pivotal"
 
 (
 cd ops-manager-cloudfoundry
