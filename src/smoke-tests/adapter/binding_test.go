@@ -2,11 +2,11 @@ package adapter_test
 
 import (
 	"fmt"
+	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/adapter"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/on-demand-services-sdk/bosh"
 	"github.com/pivotal-cf/on-demand-services-sdk/serviceadapter"
-	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/adapter"
 )
 
 var _ = Describe("Binding", func() {
@@ -80,7 +80,6 @@ var _ = Describe("Binding", func() {
 			})
 
 			It("has credentials", func() {
-				fmt.Println(createBindingAction.Credentials)
 				Expect(createBindingAction.Credentials != nil).To(BeTrue())
 			})
 		})
