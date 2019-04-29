@@ -7,10 +7,13 @@ PCF_URL=pcf.test.pcf-test.com
 PCF_USERNAME=admin
 PCF_PASSWORD=$2
 
-VERSION=$(cat "$base"/version/number)
+VERSION=$1
 if [ -z "${VERSION:-}" ]; then
-  echo "missing version number"
-  exit 1
+	VERSION=$(cat "$base"/ops-manager-cloudfoundry/version/number)
+	if [ -z "${VERSION:-}" ]; then
+  		echo "missing version number"
+  		exit 1
+	fi
 fi
 
 TILE_FILE=`cd artifacts; ls *-${VERSION}.pivotal`
@@ -28,7 +31,10 @@ if [ -z "${STEMCELL_FILE}" ]; then
 fi
 
 PRODUCT="$(cat $base/ops-manager-cloudfoundry/tile/tile.yml | grep '^name' | cut -d' ' -f 2)"
-
+echo "Product " $PRODUCT
+# if [ -z "${PRODUCT}" ]; then
+# 	PRODUCT=mongodb-on-demand
+# fi
 om="om -t $PCF_URL -u $PCF_USERNAME -p $PCF_PASSWORD -k"
 
 ${om} upload-product --product "artifacts/$TILE_FILE"
@@ -36,13 +42,16 @@ ${om} upload-stemcell --stemcell "stemcell/$STEMCELL_FILE"
 ${om} available-products
 ${om} stage-product --product-name "$PRODUCT" --product-version "$VERSION"
 
-# echo "$PRODUCT_PROPERTIES" > properties.yml
-# echo "$PRODUCT_NETWORK_AZS" > network-azs.yml
 
-# properties_config=$(ruby -ryaml -rjson -e 'puts JSON.pretty_generate(YAML.load(ARGF))' < properties.yml)
-# properties_config=$(echo "$properties_config" | jq 'delpaths([path(.[][] | select(. == null))]) | delpaths([path(.[][] | select(. == ""))]) | delpaths([path(.[] | select(. == {}))])')
+# if ${VERSION} = '1.0.5'; then
+# 	${om} delete-product --product-name "$PRODUCT"
+# 	${om} unstage-product --product-name "$PRODUCT"
+# fi
 
-# network_config=$(ruby -ryaml -rjson -e 'puts JSON.pretty_generate(YAML.load(ARGF))' < network-azs.yml)
+
+	echo ${om} configure-product --product-name "$PRODUCT" --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config"
+	${om} configure-product  --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config"
+
 
 # ${om} configure-product --product-name "$PRODUCT" --product-network "$network_config" --product-properties "$properties_config"
 ${om} configure-product  --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config"

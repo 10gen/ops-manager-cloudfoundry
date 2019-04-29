@@ -12,6 +12,7 @@ import (
 	"github.com/pivotal-cf/on-demand-services-sdk/bosh"
 	"github.com/pivotal-cf/on-demand-services-sdk/serviceadapter"
 	mgo "gopkg.in/mgo.v2"
+	"os/exec"
 )
 
 type Binder struct {
@@ -24,7 +25,7 @@ func (b *Binder) logf(msg string, v ...interface{}) {
 	}
 }
 
-const (
+var (
 	adminDB        = "admin"
 	defaultDB      = "default"
 	caCertPath     = "/var/vcap/jobs/mongodb_service_adapter/config/cacert.pem"
@@ -89,6 +90,7 @@ func (b Binder) CreateBinding(bindingID string, deploymentTopology bosh.BoshVMs,
 	}
 	connectionOptions := []string{sslOption, replicaSetName}
 
+	fmt.Println(servers)
 	session, err := GetWithCredentials(servers, adminPassword, ssl)
 	if err != nil {
 		return serviceadapter.Binding{}, err
@@ -161,8 +163,12 @@ func (Binder) DeleteBinding(bindingID string, deploymentTopology bosh.BoshVMs, m
 	}
 
 	if ssl {
+		var err error
 		omClient := OMClient{Url: URL, Username: adminUsername, ApiKey: adminAPIKey}
-		servers, _ = omClient.GetGroupHostnames(groupID, plan)
+		servers, err = omClient.GetGroupHostnames(groupID, plan)
+		if err != nil {
+			return err
+		}
 	}
 
 	session, err := GetWithCredentials(servers, adminPassword, ssl)
@@ -186,6 +192,10 @@ func GetWithCredentials(addrs []string, adminPassword string, ssl bool) (*mgo.Se
 	if ssl {
 		tlsConfig := &tls.Config{}
 		tlsConfig.InsecureSkipVerify = true
+		if isWindowsErr := exec.Command("cmd", "ver").Run(); isWindowsErr == nil {
+			serverCertPath = "../../../" + strings.Split(serverCertPath, "/var/vcap/")[1]
+			serverKeyPath = "../../../" + strings.Split(serverKeyPath, "/var/vcap/")[1]
+		}
 		cert, err := tls.LoadX509KeyPair(serverCertPath, serverKeyPath)
 		if err != nil {
 			return nil, err

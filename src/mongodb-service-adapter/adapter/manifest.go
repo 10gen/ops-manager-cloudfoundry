@@ -37,7 +37,8 @@ func (m ManifestGenerator) GenerateManifest(serviceDeployment serviceadapter.Ser
 	plan serviceadapter.Plan,
 	requestParams serviceadapter.RequestParameters,
 	previousManifest *bosh.BoshManifest,
-	previousPlan *serviceadapter.Plan) (serviceadapter.GenerateManifestOutput, error) {
+	previousPlan *serviceadapter.Plan,
+	previousSecrets serviceadapter.ManifestSecrets) (serviceadapter.GenerateManifestOutput, error) {
 
 	m.logf("request params: %#v", requestParams)
 

@@ -8,6 +8,15 @@
   revision = "dad1709ff3726dd867211a53b8e17efc37a6cfb9"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/10gen/ops-manager-cloudfoundry"
+  packages = [
+    "src/mongodb-service-adapter/adapter",
+    "src/mongodb-service-adapter/digest"
+  ]
+  revision = "54fc71287da9732422848120cf0e3c8c6eee0c56"
+
+[[projects]]
   name = "github.com/gorilla/context"
   packages = ["."]
   revision = "1ea25387ff6f684839d82767c1733ff4d4d15d0a"
@@ -25,8 +34,8 @@
     ".",
     "auth"
   ]
-  revision = "bc29a3e7d6f911097c2c4998fc7cc7a408cc4268"
-  version = "v2.0.1"
+  revision = "9ed104edeebff19a9ec70c859e312257ae6c5450"
+  version = "v4.0.0"
 
 [[projects]]
   name = "github.com/pivotal-cf/on-demand-services-sdk"
@@ -34,8 +43,8 @@
     "bosh",
     "serviceadapter"
   ]
-  revision = "3f9c20bb8a17fb3a6a67075de90213e1321f3134"
-  version = "v0.23.0"
+  revision = "980106fb549f2e8d7fa20b7c8f998e5d30706188"
+  version = "v0.25.0"
 
 [[projects]]
   name = "github.com/pkg/errors"
@@ -82,6 +91,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "18cd3a1513c591155a11281dbbc08e6ab4221b1fa63da8cff9a24e12ad4b3472"
+  inputs-digest = "d83e0cc28dbf60fee9e2b482283826eb5fe5494d296db28d0ee138c61b503247"
   solver-name = "gps-cdcl"
   solver-version = 1
