@@ -3,6 +3,9 @@ set -euo pipefail
 [ 'true' = "${DEBUG:-}" ] && set -x
 
 base=$PWD
+PCF_URL=pcf.test.pcf-test.com
+PCF_USERNAME=admin
+PCF_PASSWORD=$2
 
 VERSION=$(cat "$base"/version/number)
 if [ -z "${VERSION:-}" ]; then
@@ -33,16 +36,16 @@ ${om} upload-stemcell --stemcell "stemcell/$STEMCELL_FILE"
 ${om} available-products
 ${om} stage-product --product-name "$PRODUCT" --product-version "$VERSION"
 
-echo "$PRODUCT_PROPERTIES" > properties.yml
-echo "$PRODUCT_NETWORK_AZS" > network-azs.yml
+# echo "$PRODUCT_PROPERTIES" > properties.yml
+# echo "$PRODUCT_NETWORK_AZS" > network-azs.yml
 
-properties_config=$(ruby -ryaml -rjson -e 'puts JSON.pretty_generate(YAML.load(ARGF))' < properties.yml)
-properties_config=$(echo "$properties_config" | jq 'delpaths([path(.[][] | select(. == null))]) | delpaths([path(.[][] | select(. == ""))]) | delpaths([path(.[] | select(. == {}))])')
+# properties_config=$(ruby -ryaml -rjson -e 'puts JSON.pretty_generate(YAML.load(ARGF))' < properties.yml)
+# properties_config=$(echo "$properties_config" | jq 'delpaths([path(.[][] | select(. == null))]) | delpaths([path(.[][] | select(. == ""))]) | delpaths([path(.[] | select(. == {}))])')
 
-network_config=$(ruby -ryaml -rjson -e 'puts JSON.pretty_generate(YAML.load(ARGF))' < network-azs.yml)
+# network_config=$(ruby -ryaml -rjson -e 'puts JSON.pretty_generate(YAML.load(ARGF))' < network-azs.yml)
 
-${om} configure-product --product-name "$PRODUCT" --product-network "$network_config" --product-properties "$properties_config"
-
+# ${om} configure-product --product-name "$PRODUCT" --product-network "$network_config" --product-properties "$properties_config"
+${om} configure-product  --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config"
 STAGED=$(${om} curl --path /api/v0/staged/products)
 RESULT=$(echo "$STAGED" | jq --arg product_name "$PRODUCT" 'map(select(.type == $product_name)) | .[].guid')
 DATA=$(echo '{"deploy_products": []}' | jq ".deploy_products += [$RESULT]")
