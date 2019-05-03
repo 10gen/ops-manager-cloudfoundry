@@ -314,7 +314,7 @@ func (cf *CF) CreateService(serviceName, planName, instanceName string, skip *bo
 	return func() {
 		retry.Session(createServiceFn).WithSessionTimeout(cf.ShortTimeout).AndMaxRetries(cf.MaxRetries).AndBackoff(cf.RetryBackoff).UntilAny(
 			successfulCreateServiceConditions,
-			`{"FailReason": "Failed to create Redis service instance"}`,
+			fmt.Sprintf(`{"FailReason": "Failed to create service instance %s"}`, instanceName),
 		)
 		if !(*skip) {
 			cf.awaitServiceCreation(instanceName)
@@ -333,7 +333,7 @@ func (cf *CF) awaitServiceCreation(instanceName string) {
 
 	retry.Session(serviceFn).WithSessionTimeout(cf.ShortTimeout).AndMaxRetries(maxRetries).AndBackoff(backoff).Until(
 		retry.MatchesOutput(regexp.MustCompile("create succeeded")),
-		fmt.Sprintf(`{"FailReason": "Failed to create Redis service instance %s"}`, instanceName),
+		fmt.Sprintf(`{"FailReason": "Failed to create service instance %s"}`, instanceName),
 	)
 }
 
@@ -394,7 +394,7 @@ func (cf *CF) BindService(appName, instanceName string) func() {
 	return func() {
 		retry.Session(bindFn).WithSessionTimeout(cf.ShortTimeout).AndMaxRetries(cf.MaxRetries).AndBackoff(cf.RetryBackoff).Until(
 			retry.Succeeds,
-			`{"FailReason": "Failed to bind Redis service instance to test app"}`,
+			fmt.Sprintf(`{"FailReason": Failed to bind service instance %s to test app"}`, instanceName),
 		)
 	}
 }
@@ -468,7 +468,7 @@ func (cf CF) CreateServiceKey(serviceInstanceName, serviceKeyName string) func()
 	return func() {
 		retry.Session(serviceKeyFn).WithSessionTimeout(cf.ShortTimeout).AndMaxRetries(cf.MaxRetries).AndBackoff(cf.RetryBackoff).Until(
 			retry.Succeeds,
-			`{"FailReason": "Failed to create service key for Redis service instance"}`,
+			fmt.Sprintf(`{"FailReason": "Failed to create service key for service instance %s "}`, serviceInstanceName),
 		)
 	}
 }
@@ -481,7 +481,7 @@ func (cf CF) DeleteServiceKey(serviceInstanceName, serviceKeyName string) func()
 	return func() {
 		retry.Session(serviceKeyFn).WithSessionTimeout(cf.ShortTimeout).AndMaxRetries(cf.MaxRetries).AndBackoff(cf.RetryBackoff).Until(
 			retry.Succeeds,
-			`{"FailReason": "Failed to delete service key for Redis service instance"}`,
+			fmt.Sprintf(`{"Failed to delete service key for service instance %s "}`, serviceInstanceName),
 		)
 	}
 }
@@ -501,7 +501,7 @@ func (cf *CF) getServiceKeyCredentials(serviceGuid string) []string {
 		Resources []struct {
 			Entity struct {
 				Credentials struct {
-					Databae  string
+					Database string
 					Password string
 					Servers  []string
 					URI      string

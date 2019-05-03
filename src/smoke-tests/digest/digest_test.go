@@ -1,8 +1,8 @@
 package digest_test
 
 import (
-	adapter "../../mongodb-service-adapter/adapter"
 	"fmt"
+	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/adapter"
 	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/digest"
 	"net/http"
 	"testing"
