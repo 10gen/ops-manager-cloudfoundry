@@ -6,7 +6,8 @@ image_resource:
   source:
     repository: theburi/ci
 
-
+inputs:
+- name: ops-manager-cloudfoundry
 
 run:
   path: ops-manager-cloudfoundry/ci/tasks/smoke-tests/run.sh
