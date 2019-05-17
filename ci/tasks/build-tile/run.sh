@@ -19,7 +19,13 @@ rm -r -f "$base/artefacts/mongodb-on-demand-${VERSION}.pivotal"
 
 (
 cd ops-manager-cloudfoundry
-
+cat > config/private.yml << EOF
+---
+blobstore:
+  options:
+    access_key_id: ${AWS_KEY}
+    secret_access_key: ${AWS_SECRET_KEY}
+EOF
 rm -r -f dev_releases
 rm -r -f tile/product/*
 rm -r -f tile/resources/mongodb-*
