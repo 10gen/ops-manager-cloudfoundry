@@ -50,7 +50,7 @@ ${om} stage-product --product-name "$PRODUCT" --product-version "$VERSION"
 	# echo ${om} configure-product --product-name "$PRODUCT" --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config"
 	# ${om} configure-product  --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config"
 cd ops-manager-cloudfoundry
-cat > /private.yml << EOF
+cat > "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/vars.yml" << EOF
 
 OM_API_KEY: "$OM_API_KEY"
 
