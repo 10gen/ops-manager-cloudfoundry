@@ -3,9 +3,9 @@ set -euo pipefail
 [ 'true' = "${DEBUG:-}" ] && set -x
 
 base=$PWD
-PCF_URL=pcf.test.pcf-test.com
+PCF_URL="$PCF_URL"
 PCF_USERNAME=admin
-PCF_PASSWORD=$2
+PCF_PASSWORD="$PCF_PASSWORD"
 
 VERSION=$1
 if [ -z "${VERSION:-}" ]; then
