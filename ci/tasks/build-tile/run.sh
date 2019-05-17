@@ -23,8 +23,8 @@ cat > config/private.yml << EOF
 ---
 blobstore:
   options:
-    access_key_id: $AWS_KEY
-    secret_access_key: $AWS_SECRET_KEY
+    access_key_id: "$AWS_KEY"
+    secret_access_key: "$AWS_SECRET_KEY"
 EOF
 rm -r -f dev_releases
 rm -r -f tile/product/*
