@@ -7,13 +7,11 @@ PCF_URL="$PCF_URL"
 PCF_USERNAME=admin
 PCF_PASSWORD="$PCF_PASSWORD"
 
-VERSION=$1
+
+VERSION=$(cat "$base"/version/number)
 if [ -z "${VERSION:-}" ]; then
-	VERSION=$(cat "$base"/ops-manager-cloudfoundry/version/number)
-	if [ -z "${VERSION:-}" ]; then
-  		echo "missing version number"
-  		exit 1
-	fi
+  echo "missing version number"
+  exit 1
 fi
 
 TILE_FILE=`cd artifacts; ls *-${VERSION}.pivotal`
