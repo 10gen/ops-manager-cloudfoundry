@@ -4,7 +4,7 @@ set -euo pipefail
 
 base=$PWD
 PCF_URL="$PCF_URL"
-PCF_USERNAME=admin
+PCF_USERNAME="$PCF_USERNAME"
 PCF_PASSWORD="$PCF_PASSWORD"
 
 
