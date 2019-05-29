@@ -372,7 +372,8 @@ func (oc *OMClient) doRequest(method string, path string, body io.Reader) ([]byt
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("API Request: %q", dump)
+	log.Printf("API Call: %s%s", oc.Url, path)
+	// log.Printf("API Request: %q", dump)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -385,7 +386,7 @@ func (oc *OMClient) doRequest(method string, path string, body io.Reader) ([]byt
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("API Response: %q", dump)
+	// log.Printf("API Response: %q", dump)
 
 	b, err := ioutil.ReadAll(res.Body)
 	if err != nil {
