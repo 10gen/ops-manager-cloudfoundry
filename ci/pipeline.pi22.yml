@@ -1,0 +1,111 @@
+---
+groups:
+  - name: mongodb-on-demand
+    jobs:
+      - deploy-tile
+      - delete-tile
+      - smoke-tests
+
+resources:
+- name: ops-manager-cloudfoundry
+  type: git
+  source:
+    branch: dev
+    uri: git@github.com:10gen/ops-manager-cloudfoundry.git
+    private_key: ((git-private-key))
+
+- name: stemcell
+  type: pivnet
+  source:
+    api_token: ((pivnet-token))
+    product_slug: stemcells-ubuntu-xenial
+    product_version: '170.*'
+
+- name: version
+  type: semver
+  source:
+    driver: s3
+    bucket: ((aws-bucket))
+    key: version
+    region_name: eu-west-1
+    access_key_id: ((aws-access-key))
+    secret_access_key: ((aws-secret-access-key))
+    initial_version: 1.0.34
+
+- name: artifacts
+  type: s3
+  source:
+    bucket: ((aws-bucket))
+    region_name: eu-west-1
+    regexp: mongodb-on-demand-(.*).pivotal
+    access_key_id: ((aws-access-key))
+    secret_access_key: ((aws-secret-access-key))
+
+
+resource_types:
+- name: pivnet
+  type: docker-image
+  source:
+    repository: pivotalcf/pivnet-resource
+    tag: latest-final
+- name: slack
+  type: docker-image
+  source:
+    repository: cfcommunity/slack-notification-resource
+
+jobs:
+
+- name: deploy-tile
+  serial: true
+  build_logs_to_retain: 50
+  plan:
+  - aggregate:
+    - get: ops-manager-cloudfoundry
+      trigger: true
+    - get: artifacts
+      params:
+        file: artifacts/mongodb-on-demand-*.pivotal
+    - get: version
+    - get: stemcell
+      params:
+        globs: ["*google*"]
+  - task: deploy-tile
+    file: ops-manager-cloudfoundry/ci/tasks/deploy-tile/task.yml
+    params:
+      PCF_URL: ((pcf-url))
+      PCF_USERNAME: ((pcf-username))
+      PCF_PASSWORD: ((pcf-password))
+      OM_API_KEY: ((om-api-key))
+      PRODUCT_PROPERTIES: ((product_properties))
+      PRODUCT_NETWORK_AZS: ((product_network_azs))
+      CONFIG: config.pie22
+
+
+- name: smoke-tests
+  serial: true
+  build_logs_to_retain: 50
+  plan:
+  - aggregate:
+    - get: ops-manager-cloudfoundry
+      trigger: true
+      passed: [ deploy-tile ]
+  - task: smoke-tests
+    file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
+    params:
+      PCF_URL: ((pcf-url))
+      PCF_USERNAME: ((pcf-username))
+      PCF_PASSWORD: ((pcf-password))
+
+- name: delete-tile
+  serial: true
+  build_logs_to_retain: 50
+  plan:
+  - aggregate:
+    - get: ops-manager-cloudfoundry
+  - task: delete-tile
+    file: ops-manager-cloudfoundry/ci/tasks/delete-tile/task.yml
+    params:
+      PCF_URL: ((pcf-url))
+      PCF_USERNAME: ((pcf-username))
+      PCF_PASSWORD: ((pcf-password))
+

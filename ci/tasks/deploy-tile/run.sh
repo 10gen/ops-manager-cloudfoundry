@@ -3,17 +3,15 @@ set -euo pipefail
 [ 'true' = "${DEBUG:-}" ] && set -x
 
 base=$PWD
-PCF_URL=pcf.test.pcf-test.com
-PCF_USERNAME=admin
-PCF_PASSWORD=$2
+PCF_URL="$PCF_URL"
+PCF_USERNAME="$PCF_USERNAME"
+PCF_PASSWORD="$PCF_PASSWORD"
 
-VERSION=$1
+
+VERSION=$(cat "$base"/version/number)
 if [ -z "${VERSION:-}" ]; then
-	VERSION=$(cat "$base"/ops-manager-cloudfoundry/version/number)
-	if [ -z "${VERSION:-}" ]; then
-  		echo "missing version number"
-  		exit 1
-	fi
+  echo "missing version number"
+  exit 1
 fi
 
 TILE_FILE=`cd artifacts; ls *-${VERSION}.pivotal`
@@ -49,12 +47,17 @@ ${om} stage-product --product-name "$PRODUCT" --product-version "$VERSION"
 # fi
 
 
-	echo ${om} configure-product --product-name "$PRODUCT" --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config"
-	${om} configure-product  --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config"
+	# echo ${om} configure-product --product-name "$PRODUCT" --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config"
+	# ${om} configure-product  --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config"
+cd ops-manager-cloudfoundry
+cat > "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/vars.yml" << EOF
 
+OM_API_KEY: "$OM_API_KEY"
 
+EOF
 # ${om} configure-product --product-name "$PRODUCT" --product-network "$network_config" --product-properties "$properties_config"
-${om} configure-product  --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config"
+${om} configure-product  --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/$CONFIG" -l "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/vars.yml"
+
 STAGED=$(${om} curl --path /api/v0/staged/products)
 RESULT=$(echo "$STAGED" | jq --arg product_name "$PRODUCT" 'map(select(.type == $product_name)) | .[].guid')
 DATA=$(echo '{"deploy_products": []}' | jq ".deploy_products += [$RESULT]")

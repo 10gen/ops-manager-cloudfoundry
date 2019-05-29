@@ -17,9 +17,20 @@ rm -r -f "$base/ops-manager-cloudfoundry/tile/releases/*"
 rm -r -f "$base/ops-manager-cloudfoundry/tile/resources/mongodb-*"
 rm -r -f "$base/artefacts/mongodb-on-demand-${VERSION}.pivotal"
 
+cp "$base"/on-demand-service-broker-release/on-demand-service-broker-*.tgz "$base"/ops-manager-cloudfoundry/tile/resources
+cp "$base"/syslog-migration-release/syslog-migration-*.tgz "$base"/ops-manager-cloudfoundry/tile/resources
+cp "$base"/pcf-mongodb-helpers/pcf-mongodb-helpers-*.tgz "$base"/ops-manager-cloudfoundry/tile/resources
+cp "$base"/bpm-release/bpm-release-*.tgz "$base"/ops-manager-cloudfoundry/tile/resources
+
 (
 cd ops-manager-cloudfoundry
-
+cat > config/private.yml << EOF
+---
+blobstore:
+  options:
+    access_key_id: "$AWS_KEY"
+    secret_access_key: "$AWS_SECRET_KEY"
+EOF
 rm -r -f dev_releases
 rm -r -f tile/product/*
 rm -r -f tile/resources/mongodb-*
