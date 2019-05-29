@@ -116,6 +116,7 @@ func (oc *OMClient) GetGroupByName(name string) (Group, error) {
 		fmt.Println("Client GetGroupByName json.Unmarshal error: ", err)
 		return group, err
 	}
+	fmt.Println("Client GetGroupByName parsed group ", group)
 	return group, nil
 }
 
