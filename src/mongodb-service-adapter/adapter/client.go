@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"net/http/httputil"
 	"strings"
 
 	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/digest"
@@ -367,13 +366,14 @@ func (oc *OMClient) doRequest(method string, path string, body io.Reader) ([]byt
 	if err = digest.ApplyDigestAuth(oc.Username, oc.ApiKey, uri, req); err != nil {
 		return nil, err
 	}
-
-	_, err := httputil.DumpRequestOut(req, true)
-	if err != nil {
-		return nil, err
-	}
 	log.Printf("API Call: %s%s", oc.Url, path)
-	// log.Printf("API Request: %q", dump)
+
+	// dump, err := httputil.DumpRequestOut(req, true)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// // log.Printf("API Request: %q", dump)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -382,11 +382,11 @@ func (oc *OMClient) doRequest(method string, path string, body io.Reader) ([]byt
 	}
 	defer res.Body.Close()
 
-	_, err = httputil.DumpResponse(res, true)
-	if err != nil {
-		return nil, err
-	}
-	// log.Printf("API Response: %q", dump)
+	// dump, err = httputil.DumpResponse(res, true)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// // log.Printf("API Response: %q", dump)
 
 	b, err := ioutil.ReadAll(res.Body)
 	if err != nil {
