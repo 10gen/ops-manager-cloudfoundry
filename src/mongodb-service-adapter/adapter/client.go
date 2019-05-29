@@ -105,15 +105,15 @@ func (oc *OMClient) GetGroupByName(name string) (Group, error) {
 	var group Group
 	b, err := oc.doRequest("GET", fmt.Sprintf("/api/public/v1.0/groups/byName/%s", name), nil)
 
-	fmt.Printf("%s\n", fmt.Sprintf(" oc.doRequest GET/api/public/v1.0/groups/byName/%s", name))
-	fmt.Printf("\n\n%s\n\n", b)
+	fmt.Printf("%s\n", fmt.Sprintf("Client oc.doRequest GET/api/public/v1.0/groups/byName/%s", name))
+	fmt.Printf("\n\nBody %s\n\n", b)
 
 	if err != nil {
-		log.Println("GetGroupByName "+fmt.Sprintf(" oc.doRequest GET/api/public/v1.0/groups/byName/%s , error:: ", name), err)
+		log.Println("Client GetGroupByName "+fmt.Sprintf(" oc.doRequest GET/api/public/v1.0/groups/byName/%s , error:: ", name), err)
 		return group, err
 	}
 	if err = json.Unmarshal(b, &group); err != nil {
-		fmt.Println("GetGroupByName json.Unmarshal error: ", err)
+		fmt.Println("Client GetGroupByName json.Unmarshal error: ", err)
 		return group, err
 	}
 	return group, nil
@@ -155,6 +155,7 @@ func (oc *OMClient) CreateGroup(id string, request GroupCreateRequest) (Group, e
 	}
 
 	if err = json.Unmarshal(b, &group); err != nil {
+		fmt.Println("Client CreateGroup json.Unmarshal error: ", err)
 		return group, err
 	}
 	return group, nil
@@ -189,6 +190,7 @@ func (oc *OMClient) UpdateGroup(id string, request GroupUpdateRequest) (Group, e
 	}
 
 	if err = json.Unmarshal(b, &group); err != nil {
+		fmt.Println("Client UpdateGroup json.Unmarshal error: ", err)
 		return group, err
 	}
 	return group, nil
@@ -212,6 +214,7 @@ func (oc *OMClient) GetGroup(groupID string) (Group, error) {
 	}
 
 	if err = json.Unmarshal(b, &group); err != nil {
+		fmt.Println("Client GetGroup json.Unmarshal error: ", err)
 		return group, err
 	}
 	return group, nil
@@ -231,6 +234,7 @@ func (oc *OMClient) GetGroupHosts(groupID string) (GroupHosts, error) {
 	}
 
 	if err = json.Unmarshal(b, &groupHosts); err != nil {
+		fmt.Println("Client GetGroupHosts json.Unmarshal error: ", err)
 		return groupHosts, err
 	}
 	return groupHosts, nil
@@ -296,6 +300,7 @@ func (oc *OMClient) GetAvailableVersions(groupID string) (Automation, error) {
 	}
 
 	if err = json.Unmarshal(b, &versions); err != nil {
+		fmt.Println("Client GetAvailableVersions json.Unmarshal error: ", err)
 		return versions, err
 	}
 	return versions, nil
