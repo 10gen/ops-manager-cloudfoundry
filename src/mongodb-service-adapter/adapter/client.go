@@ -116,7 +116,7 @@ func (oc *OMClient) GetGroupByName(name string) (Group, error) {
 		fmt.Println("Client GetGroupByName json.Unmarshal error: ", err)
 		return group, err
 	}
-	fmt.Println("Client GetGroupByName parsed group ", group)
+	fmt.Println("Client GetGroupByName parsed group ", group.name)
 	return group, nil
 }
 
@@ -138,7 +138,7 @@ func (oc *OMClient) CreateGroup(id string, request GroupCreateRequest) (Group, e
 		log.Println(fmt.Sprintf("CreateGroup GetGroupByName with request.Name : %s ,error: %v", request.Name, err))
 		return group, err
 	}
-	if group.Name == request.Name {
+	if group.name == request.Name {
 		log.Printf("Continue with existing group %q", group.ID)
 		apiKey, err := oc.CreateGroupAPIKey(group.ID)
 		if err != nil {
