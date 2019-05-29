@@ -368,7 +368,7 @@ func (oc *OMClient) doRequest(method string, path string, body io.Reader) ([]byt
 		return nil, err
 	}
 
-	dump, err := httputil.DumpRequestOut(req, true)
+	_, err := httputil.DumpRequestOut(req, true)
 	if err != nil {
 		return nil, err
 	}
@@ -382,7 +382,7 @@ func (oc *OMClient) doRequest(method string, path string, body io.Reader) ([]byt
 	}
 	defer res.Body.Close()
 
-	dump, err = httputil.DumpResponse(res, true)
+	_, err = httputil.DumpResponse(res, true)
 	if err != nil {
 		return nil, err
 	}
