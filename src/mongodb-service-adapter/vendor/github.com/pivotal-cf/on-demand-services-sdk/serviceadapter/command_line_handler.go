@@ -90,7 +90,7 @@ func (h CommandLineHandler) Handle(args []string, outputWriter, errorWriter io.W
 	}
 
 	action, arguments := args[1], args[2:]
-	fmt.Fprintf(errorWriter, "[odb-sdk] handling %s\n", action)
+	fmt.Fprintf(errorWriter, "[odb-sdk] Handling %s\n", action)
 
 	var inputParams InputParams
 
