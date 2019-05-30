@@ -62,6 +62,7 @@ func HandleCommandLineInvocation(args []string, manifestGenerator ManifestGenera
 // generate-manifest, create-binding, delete-binding, dashboard-url.
 func HandleCLI(args []string, handler CommandLineHandler) {
 	err := handler.Handle(args, os.Stdout, os.Stderr, os.Stdin)
+	fmt.Fprintf(errorWriter, "[odb-sdk] HandleCLI error %s\n", err)
 	switch e := err.(type) {
 	case nil:
 	case CLIHandlerError:
