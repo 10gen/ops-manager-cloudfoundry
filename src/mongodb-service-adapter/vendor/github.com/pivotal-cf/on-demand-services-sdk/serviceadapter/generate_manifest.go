@@ -110,6 +110,7 @@ func (g *GenerateManifestAction) Execute(inputParams InputParams, outputWriter i
 
 	generateManifestOutput, err := g.manifestGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan, previousSecrets)
 	if err != nil {
+		errors.Wrap(err, "GenerateManifestOutput returned error")
 		fmt.Fprintf(outputWriter, err.Error())
 		return CLIHandlerError{ErrorExitCode, err.Error()}
 	}

@@ -105,9 +105,6 @@ func (oc *OMClient) GetGroupByName(name string) (Group, error) {
 	var group Group
 	b, err := oc.doRequest("GET", fmt.Sprintf("/api/public/v1.0/groups/byName/%s", name), nil)
 
-	fmt.Printf("%s\n", fmt.Sprintf("Client oc.doRequest GET/api/public/v1.0/groups/byName/%s", name))
-	fmt.Printf("\n\nBody %s\n\n", b)
-
 	if err != nil {
 		log.Println("Client GetGroupByName "+fmt.Sprintf(" oc.doRequest GET/api/public/v1.0/groups/byName/%s , error:: ", name), err)
 		return group, err
@@ -116,14 +113,12 @@ func (oc *OMClient) GetGroupByName(name string) (Group, error) {
 		fmt.Println("Client GetGroupByName json.Unmarshal error: ", err)
 		return group, err
 	}
-	fmt.Println("Client GetGroupByName parsed group ", group.Name)
 	return group, nil
 }
 
 func (oc *OMClient) CreateGroup(id string, request GroupCreateRequest) (Group, error) {
 	var group Group
 
-	log.Println(fmt.Sprintf("CreateGroup in id : %s ,request : %+v", id, request))
 	if request.Name == "" {
 		request.Name = fmt.Sprintf("PCF_%s", strings.ToUpper(id))
 	}
