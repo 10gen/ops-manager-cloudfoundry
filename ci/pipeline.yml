@@ -48,6 +48,15 @@ resources:
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
 
+- name: mongodb
+  type: s3
+  source:
+    bucket: ((aws-bucket))
+    region_name: eu-west-1
+    regexp: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
+    access_key_id: ((aws-access-key))
+    secret_access_key: ((aws-secret-access-key))
+
 - name: pcf-mongodb-helpers
   type: s3
   source:
@@ -124,6 +133,9 @@ jobs:
     - get: bpm-release
       params:
         filename: bpm-release-(.*).tgz
+    - get: mongodb
+      params:
+        filename: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
     - get: version
       params:
         pre: rc
