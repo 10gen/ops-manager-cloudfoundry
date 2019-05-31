@@ -21,7 +21,7 @@ cp "$base"/on-demand-service-broker-release/on-demand-service-broker-*.tgz "$bas
 cp "$base"/syslog-migration-release/syslog-migration-*.tgz "$base"/ops-manager-cloudfoundry/tile/resources
 cp "$base"/pcf-mongodb-helpers/pcf-mongodb-helpers-*.tgz "$base"/ops-manager-cloudfoundry/tile/resources
 cp "$base"/bpm-release/bpm-release-*.tgz "$base"/ops-manager-cloudfoundry/tile/resources
-cp "$base"/mongodb/mongodb-linux-x86_64-ubuntu1604-*.tgz "$base"/ops-manager-cloudfoundry/tile/packages/mongodb/
+cp "$base"/mongodb/mongodb-linux-x86_64-ubuntu1604-*.tgz "$base"/ops-manager-cloudfoundry/src/mongodb
 
 (
 cd ops-manager-cloudfoundry
