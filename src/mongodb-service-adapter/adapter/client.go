@@ -106,9 +106,6 @@ func (oc *OMClient) GetGroupByName(name string) (Group, error) {
 	var group Group
 	b, err := oc.doRequest("GET", fmt.Sprintf("/api/public/v1.0/groups/byName/%s", name), nil)
 
-	fmt.Printf("%s\n", fmt.Sprintf(" oc.doRequest GET/api/public/v1.0/groups/byName/%s", name))
-	fmt.Printf("\n\n%s\n\n", b)
-
 	if err != nil {
 		log.Println("GetGroupByName "+fmt.Sprintf(" oc.doRequest GET/api/public/v1.0/groups/byName/%s , error:: ", name), err)
 		return group, err

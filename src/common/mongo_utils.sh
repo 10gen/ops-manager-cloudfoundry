@@ -9,7 +9,7 @@ om_api_call() {
 
 wait_for_service() {
   elapsed=0
-  until [ $elapsed -ge 600 ]
+  until [ $elapsed -ge 900 ]
   do
     mongo \
       $1 admin --eval 'quit(db.runCommand({ping: 1}).ok ? 0 : 1)' \
@@ -18,7 +18,7 @@ wait_for_service() {
     sleep 5
   done
 
-  if [ "$elapsed" -ge "600" ]; then
+  if [ "$elapsed" -ge "900" ]; then
      echo "ERROR:  Cannot connect to MongoDB. Exiting..."
      exit 1
   fi
