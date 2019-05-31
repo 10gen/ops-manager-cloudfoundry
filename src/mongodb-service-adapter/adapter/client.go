@@ -240,6 +240,7 @@ func (oc *OMClient) GetGroupHostnames(groupID string, planID string) ([]string, 
 	b, err := oc.doRequest("GET", fmt.Sprintf("/api/public/v1.0/groups/%s/hosts", groupID), nil)
 	if err != nil {
 		return nil, err
+
 	}
 
 	groupHostnames := gjson.GetBytes(b, fmt.Sprintf(`results.#.hostname`))
