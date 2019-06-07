@@ -1,3 +1,0 @@
-set -e
-
-tar xzf mongodb/mongodb-linux-x86_64-ubuntu1604-3.6.10.tgz --strip 1 -C ${BOSH_INSTALL_TARGET}
