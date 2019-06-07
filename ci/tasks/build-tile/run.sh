@@ -16,12 +16,14 @@ rm -r -f "$base/ops-manager-cloudfoundry/dev_releases"
 rm -r -f "$base/ops-manager-cloudfoundry/tile/releases/*"
 rm -r -f "$base/ops-manager-cloudfoundry/tile/resources/mongodb-*"
 rm -r -f "$base/artefacts/mongodb-on-demand-${VERSION}.pivotal"
+mkdir -p "$base"/ops-manager-cloudfoundry/src/mongodb
 
 cp "$base"/on-demand-service-broker-release/on-demand-service-broker-*.tgz "$base"/ops-manager-cloudfoundry/tile/resources
 cp "$base"/syslog-migration-release/syslog-migration-*.tgz "$base"/ops-manager-cloudfoundry/tile/resources
 cp "$base"/pcf-mongodb-helpers/pcf-mongodb-helpers-*.tgz "$base"/ops-manager-cloudfoundry/tile/resources
 cp "$base"/bpm-release/bpm-release-*.tgz "$base"/ops-manager-cloudfoundry/tile/resources
-
+cp "$base"/mongodb/mongodb-linux-x86_64-ubuntu1604-*.tgz "$base"/ops-manager-cloudfoundry/src/mongodb
+ls "$base"/ops-manager-cloudfoundry/tile/resources
 (
 cd ops-manager-cloudfoundry
 cat > config/private.yml << EOF
