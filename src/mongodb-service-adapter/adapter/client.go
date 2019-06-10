@@ -113,11 +113,7 @@ func (oc *OMClient) GetGroupByName(name string) (Group, error) {
 		fmt.Println("Client GetGroupByName json.Unmarshal error: ", err)
 		return group, err
 	}
-<<<<<<< HEAD
-	return group, nil 
-=======
 	return group, nil
->>>>>>> c6aa3d283d43a7a66bd8bfd214f8ab0e66fc5786
 }
 
 func (oc *OMClient) CreateGroup(id string, request GroupCreateRequest) (Group, error) {
