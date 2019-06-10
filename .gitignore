@@ -20,8 +20,12 @@ blobs
 *#
 #*
 ci/secret.yml
-ci/creds.yml
+ci/creds*.yml
 src/smoke-tests/integration_config.json
 
 /bin
 /pkg
+
+!src/libsnmp/*.deb
+!src/common/*.deb
+pcf_info.json

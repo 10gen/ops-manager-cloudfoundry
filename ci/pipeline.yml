@@ -18,15 +18,15 @@ resources:
   type: git
   source:
     branch: master
-    uri: git@github.com:Altoros/ops-manager-cloudfoundry.git
+    uri: git@github.com:10gen/ops-manager-cloudfoundry.git
     private_key: ((git-private-key))
 
 - name: stemcell
   type: pivnet
   source:
     api_token: ((pivnet-token))
-    product_slug: stemcells
-    product_version: '3586.*'
+    product_slug: stemcells-ubuntu-xenial
+    product_version: '170.69'
 
 - name: version
   type: semver
@@ -34,15 +34,27 @@ resources:
     driver: s3
     bucket: ((aws-bucket))
     key: version
+    region_name: eu-west-1
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
-    initial_version: ((initial-version))
+    initial_version: 1.0.34
 
 - name: on-demand-service-broker-release
   type: s3
   source:
     bucket: ((aws-bucket))
-    regexp: on-demand-service-broker-(.*)-ubuntu-xenial-(.*).tgz
+    region_name: eu-west-1
+    regexp: on-demand-service-broker-(.*).tgz
+    access_key_id: ((aws-access-key))
+    secret_access_key: ((aws-secret-access-key))
+
+- name: mongodb
+  type: s3
+  source:
+    bucket: ((aws-bucket))
+    region_name: eu-west-1
+    regexp: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
+
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
 
@@ -50,6 +62,7 @@ resources:
   type: s3
   source:
     bucket: ((aws-bucket))
+    region_name: eu-west-1
     regexp: pcf-mongodb-helpers-(.*).tgz
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
@@ -58,6 +71,7 @@ resources:
   type: s3
   source:
     bucket: ((aws-bucket))
+    region_name: eu-west-1
     regexp: syslog-migration-(.*).tgz
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
@@ -66,7 +80,8 @@ resources:
   type: s3
   source:
     bucket: ((aws-bucket))
-    regexp: bpm-release-(.*)-ubuntu-xenial-(.*).tgz
+    region_name: eu-west-1
+    regexp: bpm-release-(.*).tgz
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
 
@@ -74,6 +89,7 @@ resources:
   type: s3
   source:
     bucket: ((aws-bucket))
+    region_name: eu-west-1
     regexp: mongodb-on-demand-(.*).pivotal
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
@@ -83,13 +99,9 @@ resources:
   source:
     bucket: ((release-bucket))
     regexp: mongodb-on-demand-(.*).pivotal
+    region_name: eu-west-1
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
-
-- name: alert
-  type: slack
-  source:
-    url: ((slack-url))
 
 resource_types:
 - name: pivnet
@@ -122,18 +134,17 @@ jobs:
     - get: bpm-release
       params:
         filename: bpm-release-(.*).tgz
+    - get: mongodb
+      params:
+        filename: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
     - get: version
       params:
         pre: rc
   - task: build-tile
     file: ops-manager-cloudfoundry/ci/tasks/build-tile/task.yml
-    on_failure: &alert
-      put: alert
-      params:
-        channel: ((slack-channel))
-        icon_url: ((slack-icon))
-        text: ((slack-failed-text))
-        username: ((slack-username))
+    params:
+      AWS_KEY: ((aws-access-key))
+      AWS_SECRET_KEY: ((aws-secret-access-key))
   - put: artifacts
     params:
       file: artifacts/mongodb-on-demand-*.pivotal
@@ -155,16 +166,17 @@ jobs:
     - get: version
     - get: stemcell
       params:
-        globs: ["*aws*"]
+        globs: ["*azure*"]
   - task: deploy-tile
     file: ops-manager-cloudfoundry/ci/tasks/deploy-tile/task.yml
     params:
       PCF_URL: ((pcf-url))
       PCF_USERNAME: ((pcf-username))
       PCF_PASSWORD: ((pcf-password))
+      OM_API_KEY: ((om-api-key))
       PRODUCT_PROPERTIES: ((product_properties))
       PRODUCT_NETWORK_AZS: ((product_network_azs))
-    on_failure: *alert
+      CONFIG: config
 
 - name: smoke-tests
   serial: true
@@ -180,7 +192,6 @@ jobs:
       PCF_URL: ((pcf-url))
       PCF_USERNAME: ((pcf-username))
       PCF_PASSWORD: ((pcf-password))
-    on_failure: *alert
 
 - name: shipit
   serial: true
@@ -204,18 +215,12 @@ jobs:
     - get: version
       params:
         bump: final
+
   - task: shipit
     file: ops-manager-cloudfoundry/ci/tasks/shipit/task.yml
     params:
       RELEASE_BUCKET_NAME: ((release-bucket))
-    on_failure: *alert
-    on_success:
-      put: alert
-      params:
-        channel: ((slack-channel))
-        icon_url: ((slack-icon))
-        text_file: release/notification
-        username: ((slack-username))
+
   - put: release
     params:
       file: release/mongodb-on-demand-*.pivotal
@@ -233,7 +238,6 @@ jobs:
       PCF_URL: ((pcf-url))
       PCF_USERNAME: ((pcf-username))
       PCF_PASSWORD: ((pcf-password))
-    on_failure: *alert
 
 - name: minor
   plan:
@@ -245,7 +249,6 @@ jobs:
     - put: version
       params:
         file: version/number
-    on_failure: *alert
 
 - name: patch
   plan:
@@ -257,7 +260,6 @@ jobs:
     - put: version
       params:
         file: version/number
-    on_failure: *alert
 
 - name: major
   plan:
@@ -269,4 +271,3 @@ jobs:
     - put: version
       params:
         file: version/number
-    on_failure: *alert

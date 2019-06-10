@@ -2,7 +2,7 @@
 blobstore:
   provider: s3
   options:
-    bucket_name: abelik-pcf
+    bucket_name: pcfstorageartefacts
     access_key_id: AKIAJAGUH46TYDGSSMKA
     region: eu-west-1
     host: s3-eu-west-1.amazonaws.com

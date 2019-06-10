@@ -71,6 +71,8 @@ hostname '<%= spec.id %>.mongodb.internal'
 <% end %>
 
 # Install libsnmp30
+
+dpkg -i /var/vcap/packages/mongod-node/libpci3_3.3.1*.deb
 dpkg -i /var/vcap/packages/mongod-node/perl-base_5*.deb
 dpkg -i /var/vcap/packages/mongod-node/libperl5*.deb
 dpkg -i /var/vcap/packages/mongod-node/libsnmp-base_5*.deb

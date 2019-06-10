@@ -14,44 +14,40 @@ The following should be installed on your local machine
 1. Check out PCF MongoDB On Demand tile generator repo:
 
     ```bash
-    git clone https://github.com/Altoros/mongodb-on-demand-release.git
+    git clone https://github.com/10gqn/ops-manager-cloudfoundry
 
     ```
+2. Install GO, CF CLI, OM
 
-2. Download the following releases into [tile/resources](https://github.com/Altoros/ops-manager-cloudfoundry/tree/master/tile/resources) folder.
+3. CD out of the repository root. 
 
-    - [Pivotal Cloud Foundry On Demand Service Broker Release](https://s3.amazonaws.com/mongodb-tile-ci/on-demand-service-broker-0.22.0-ubuntu-trusty-3586.36.tgz)
-    - [Pivotal Cloud Foundry MongoDB Helpers Release](https://s3.amazonaws.com/mongodb-tile-ci/pcf-mongodb-helpers-0.0.1.tgz)
-    - [Pivotal Cloud Foundry Syslog Migration Release](https://s3.amazonaws.com/mongodb-tile-ci/syslog-migration-11.1.1.tgz)
-    - [Pivotal Cloud Foundry BOSH Process Manager Release](https://s3.amazonaws.com/mongodb-tile-ci/bpm-release-0.12.2-ubuntu-trusty-3586.36.tgz)
+4. Create folder artefacts and version
+    - 10gen
+    |-> artefacts
+    |-> ops-manager-cloudfoundry
+    |-> version
 
-3. Update build version:
 
-   Notice, that it should be in X.X.X format (for example: 3.2.1) 
-    ```bash
-    export VERSION_NUMBER=
-    ```
+5. place file "number" into version folder and add version number 1.x.x
 
-4. Create release tarball and place it into [tile/resources](https://github.com/Altoros/ops-manager-cloudfoundry/tree/master/tile/resources) folder.
 
-    ```bash
-    cd ops-manager-cloudfoundry
-    tarball_path="$PWD/tile/resources/mongodb-${VERSION_NUMBER}.tgz"
-    bosh -n create-release --sha2 --tarball="$tarball_path" --version="${VERSION_NUMBER}"
-    ```
+6. Execute script on bash ops-manager-cloudfoundry/ci/tasks/build-tile/run.sh 
 
-5. Edit `tile.yml` file and check path and versions for ops-manager-cloudfoundry.
-   Ensure that tile file configured with version which was specified in step 4.
 
-    ```bash
-    cd ops-manager-cloudfoundry/tile
-    yq w -i tile.yml packages.[4].path "$(ls resources/mongodb-*.tgz)"
-    yq w -i tile.yml packages.[4].jobs[0].properties.service_deployment.releases[0].version "${VERSION_NUMBER}"
-    yq w -i tile.yml runtime_configs[0].runtime_config.releases[0].version "${VERSION_NUMBER}"
-    ```
+7. check that artefacts contain tile build with correct timestamp
 
-6. Build your tile, after build is finished you can find product file in `tile/product` subdirectory.
+## Deploy Tile
 
-    ```bash
-    tile build "${VERSION_NUMBER}"
-    ```
+1. CD out of the repository root.
+
+2. Make sure PCF Ops Manager has no MongoDB Tile deployed with the same or higher version and that BOSH has release has no conflictin error
+    To check BOSH login to PCF Ops Manager box; run "bosh ... releases" 
+    Make sure that list of saved releases has no conflicting mongodb versions
+    to Delete "bosh ..... delete-release mongodb/1.X.X"
+
+3. Make shure config file has correct configuration:
+    - Check for MongoDB Ops Manager URL, USer and API Key
+
+4. Run CI script to deploy tile ops-manager-cloudfoundry/ci/tasks/deploy-tile/run.sh 1.X.X '<pcf-opsManager-password>
+
+
