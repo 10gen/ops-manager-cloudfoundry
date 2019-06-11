@@ -3,15 +3,15 @@ package adapter
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/digest"
+	"github.com/tidwall/gjson"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
-
-	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/digest"
-	"github.com/tidwall/gjson"
 )
 
 type OMClient struct {
@@ -69,7 +69,7 @@ type Cluster struct {
 	Shards        [][]string
 }
 
-const versionsManifest = "/var/vcap/packages/versions/versions.json"
+var versionsManifest = []string{"/var/vcap/packages/versions/versions.json", "../../mongodb_versions/versions.json"}
 
 func (oc *OMClient) LoadDoc(p string, ctx *DocContext) (string, error) {
 	t, ok := plans[p]
@@ -168,7 +168,7 @@ func (oc *OMClient) CreateGroupAPIKey(groupID string) (string, error) {
 
 	key := gjson.GetBytes(b, "key")
 	if key.String() == "" {
-		log.Fatalf("failed to create agent api key for group %s", groupID)
+		return "", errors.New("Failed to create agent api key for group " + groupID)
 	}
 
 	return key.String(), nil
@@ -336,22 +336,25 @@ func (oc *OMClient) ValidateVersion(groupID string, version string) (string, err
 	v := gjson.GetBytes(b, fmt.Sprintf(`mongoDbVersions.#[name="%s"].name`, version))
 	log.Printf("Using %q version of MongoDB", v.String())
 	if v.String() == "" {
-		log.Fatalf("failed to find expected version, got %s", version)
+		return "", errors.New("failed to find expected version, got " + version)
 	}
 
 	return v.String(), nil
 }
 
 func (oc *OMClient) ValidateVersionManifest(version string) (string, error) {
-	b, err := ioutil.ReadFile(versionsManifest)
+	b, err := ioutil.ReadFile(versionsManifest[0])
 	if err != nil {
-		return "", err
+		b, err = ioutil.ReadFile(versionsManifest[1])
+		if err != nil {
+			return "", err
+		}
 	}
 
 	v := gjson.GetBytes(b, fmt.Sprintf(`versions.#[name="%s"].name`, version))
 	log.Printf("Using %q version of MongoDB", v.String())
 	if v.String() == "" {
-		log.Printf("failed to find expected version, got %s, continue with provided versions", version)
+		return "", errors.New("failed to find expected version, continue with provided versions ")
 	}
 
 	return version, nil
@@ -379,7 +382,6 @@ func (oc *OMClient) doRequest(method string, path string, body io.Reader) ([]byt
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Fatalf("%s %s error: %v", method, uri, err)
 		return nil, err
 	}
 	defer res.Body.Close()

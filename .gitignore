@@ -28,3 +28,4 @@ src/smoke-tests/integration_config.json
 
 !src/libsnmp/*.deb
 !src/common/*.deb
+pcf_info.json

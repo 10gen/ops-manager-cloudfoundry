@@ -2,271 +2,411 @@ package adapter_test
 
 import (
 	"encoding/json"
-	client "github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/adapter"
-	"os"
-	"testing"
+	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/adapter"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"reflect"
 )
 
-var LatestVersion = "3.6.9"
+var GetConfig = func() *adapter.Config {
+	config, err := adapter.LoadConfig("../../mongodb-service-adapter/testdata/manifest.json")
+	if err != nil {
+		return nil
+	}
+	return config
+}
 
-func TestLoadDoc(t *testing.T) {
-	t.Parallel()
-	c := &client.OMClient{}
+var _ = Describe("Client", func() {
 
-	for p, ctx := range map[string]*client.DocContext{
-		client.PlanStandalone: {
-			ID:            "d3a98gf1",
-			Key:           "key",
-			AdminPassword: "pwd",
-			Nodes:         []string{"192.168.1.1", "192.168.1.2", "192.168.1.3", "192.168.1.4"},
-			Version:       "3.2.11",
-		},
+	var (
+		err           error
+		latestVersion string
+		config        *adapter.Config
+		p             string
+		ctx           *adapter.DocContext
+		c             *adapter.OMClient
+		s             string
+	)
 
-		client.PlanShardedCluster: {
-			ID:            "d3a98gf1",
-			Key:           "key",
-			AdminPassword: "pwd",
-			Version:       "3.4.1",
-			Cluster: &client.Cluster{
-				Routers:       []string{"192.168.1.1", "192.168.1.2"},
-				ConfigServers: []string{"192.168.1.3", "192.168.1.4"},
-				Shards: [][]string{
-					{"192.168.0.10", "192.168.0.11", "192.168.0.12"},
-					{"192.168.0.13", "192.168.0.14", "192.168.0.15"},
-				},
-			},
-		},
+	BeforeEach(func() {
 
-		client.PlanReplicaSet: {
-			ID:            "d3a98gf1",
-			Key:           "key",
-			AdminPassword: "pwd",
-			Nodes:         []string{"192.168.1.1", "192.168.1.2", "192.168.1.3", "192.168.1.4"},
-			Version:       "3.2.11",
-		},
-	} {
-		t.Run(string(p), func(t *testing.T) {
-			s, err := c.LoadDoc(p, ctx)
-			if err != nil {
-				t.Fatal(err)
-			}
+		latestVersion = "4.0.7"
+		config = GetConfig()
 
-			// validate json output
-			if err := json.Unmarshal([]byte(s), &map[string]interface{}{}); err != nil {
-				t.Fatal(err)
-			}
+		c = &adapter.OMClient{
+			Url:      config.URL,
+			Username: config.Username,
+			ApiKey:   config.APIKey,
+		}
+
+	})
+
+	Describe("LoadDoc", func() {
+		Context("when plan is standalone", func() {
+			BeforeEach(func() {
+				p = adapter.PlanStandalone
+				ctx = &adapter.DocContext{
+					ID:            "d3a98gf1",
+					Key:           "key",
+					AdminPassword: "pwd",
+					Nodes:         []string{"192.168.1.1", "192.168.1.2", "192.168.1.3", "192.168.1.4"},
+					Version:       "3.2.11",
+				}
+
+				c = &adapter.OMClient{}
+
+				s, err = c.LoadDoc(p, ctx)
+			})
+
+			It("runs without error ", func() {
+				Expect(err).ToNot(HaveOccurred())
+			})
+
+			It("validates json output", func() {
+				err = json.Unmarshal([]byte(s), &map[string]interface{}{})
+				Expect(err).ToNot(HaveOccurred())
+			})
 		})
-	}
-}
 
-func TestGetGroupByName(t *testing.T) {
+		Context("when plan is replica_set", func() {
+			BeforeEach(func() {
+				p = adapter.PlanReplicaSet
+				ctx = &adapter.DocContext{
+					ID:            "d3a98gf1",
+					Key:           "key",
+					AdminPassword: "pwd",
+					Nodes:         []string{"192.168.1.1", "192.168.1.2", "192.168.1.3", "192.168.1.4"},
+					Version:       "3.2.11",
+				}
+
+				c = &adapter.OMClient{}
+
+				s, err = c.LoadDoc(p, ctx)
+			})
+
+			It("runs without error ", func() {
+				Expect(err).ToNot(HaveOccurred())
+			})
+
+			It("validates json output", func() {
+				err = json.Unmarshal([]byte(s), &map[string]interface{}{})
+				Expect(err).ToNot(HaveOccurred())
+			})
+		})
+
+		Context("when plan is sharded cluster", func() {
+			BeforeEach(func() {
+				p = adapter.PlanShardedCluster
+				ctx = &adapter.DocContext{
+					ID:            "d3a98gf1",
+					Key:           "key",
+					AdminPassword: "pwd",
+					Version:       "3.4.1",
+					Cluster: &adapter.Cluster{
+						Routers:       []string{"192.168.1.1", "192.168.1.2"},
+						ConfigServers: []string{"192.168.1.3", "192.168.1.4"},
+						Shards: [][]string{
+							{"192.168.0.10", "192.168.0.11", "192.168.0.12"},
+							{"192.168.0.13", "192.168.0.14", "192.168.0.15"},
+						},
+					},
+				}
+
+				c = &adapter.OMClient{}
+
+				s, err = c.LoadDoc(p, ctx)
+			})
+
+			It("runs without error ", func() {
+				Expect(err).ToNot(HaveOccurred())
+			})
+
+			It("validates json output", func() {
+				err = json.Unmarshal([]byte(s), &map[string]interface{}{})
+				Expect(err).ToNot(HaveOccurred())
+			})
+		})
+
+		Context("when plan name is wrong", func() {
+			BeforeEach(func() {
+				p = "wrongPlan"
+				ctx = &adapter.DocContext{}
+				c = &adapter.OMClient{}
+				s, err = c.LoadDoc(p, ctx)
+			})
+
+			It("returns error plan not found ", func() {
+				Expect(err.Error()).To(ContainSubstring("not found"))
+			})
+		})
+	})
+
+	Describe("GetGroupByName", func() {
+
+		It("returns error when group name is not defined ", func() {
+			name, _ := adapter.GenerateString(5)
+			group, _ := c.GetGroupByName("Why" + name)
+			Expect(group.Name == "").To(BeTrue())
+		})
+
+		It("returns no error", func() {
+			_, err := c.GetGroupByName("Project 2")
+			Expect(err).ToNot(HaveOccurred())
+		})
+	})
+
+	Describe("CreateGroup", func() {
+		It("returns no error when GroupCreateRequest is nil ", func() {
+			id, _ := adapter.GenerateString(10)
+			request := adapter.GroupCreateRequest{}
+			_, err := c.CreateGroup(id, request)
+			Expect(err).ToNot(HaveOccurred())
+		})
+
+		It("returns error when group name not exists", func() {
+			id, _ := adapter.GenerateString(10)
+			request := adapter.GroupCreateRequest{
+				Name: "PCF" + id[0:(len(id)/2)],
+			}
+			_, err := c.CreateGroup(id, request)
+			Expect(err).ToNot(HaveOccurred())
+		})
+
+		It("returns no error ", func() {
+			id := "some-id"
+			request := adapter.GroupCreateRequest{
+				Name: "Project 2",
+			}
+			_, err := c.CreateGroup(id, request)
+			Expect(err).ToNot(HaveOccurred())
+		})
+	})
+
+	Describe("CreateGroupAPIKey", func() {
+
+		It("returns error given wrong id but still creates key", func() {
+			_, err = c.CreateGroupAPIKey("wrong-group-id")
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("returns no error", func() {
+			_, err := c.CreateGroupAPIKey(config.GroupID)
+			Expect(err).ToNot(HaveOccurred())
+		})
+
+	})
+
+	Describe("UpdateGroup", func() {
+
+		It("returns no error if GroupUpdateRequest is nil ", func() {
+			request := adapter.GroupUpdateRequest{}
+			_, err := c.UpdateGroup(config.GroupID, request)
+			Expect(err).ToNot(HaveOccurred())
+		})
+
+		Context("when GroupUpdateRequest is correct", func() {
+
+			var (
+				request adapter.GroupUpdateRequest
+			)
+
+			BeforeEach(func() {
+				request = adapter.GroupUpdateRequest{
+					Tags: []string{
+						"tag1",
+						"tag2",
+					},
+				}
+			})
+
+			It("returns empty group if id is wrong", func() {
+				group, _ := c.UpdateGroup("wrong-id", request)
+				Expect(reflect.DeepEqual(group, adapter.Group{})).To(BeTrue())
+			})
+
+			It("returns no error ", func() {
+				_, err = c.UpdateGroup(config.GroupID, request)
+				Expect(err).ToNot(HaveOccurred())
+			})
+		})
+	})
+
+	Describe("GetGroupAuthAgentPassword", func() {
+
+		It("returns empty if groupID is wrong", func() {
+			pwd, _ := c.GetGroupAuthAgentPassword("wrong-id")
+			Expect(reflect.DeepEqual(pwd, "")).To(BeTrue())
+		})
+
+		It("returns no error", func() {
+			_, err = c.GetGroupAuthAgentPassword(config.GroupID)
+			Expect(err).ToNot(HaveOccurred())
+		})
+	})
+
+	Describe("GetGroup", func() {
+
+		It("return empty given wrong groupID", func() {
+			group, _ := c.GetGroup("wrong-id")
+			Expect(reflect.DeepEqual(group, adapter.Group{})).To(BeTrue())
+		})
+
+		It("returns no error", func() {
+			_, err = c.GetGroup(config.GroupID)
+			Expect(err).ToNot(HaveOccurred())
+		})
 
-	c := getOMClient()
+	})
 
-	_, err := c.GetGroupByName("test-group")
-	if err != nil {
-		t.Fatal(err)
-	}
-}
+	Describe("DeleteGroup", func() {
+		It("returns no error ", func() {
+			err = c.DeleteGroup("test-group-id")
+			Expect(err).ToNot(HaveOccurred())
+		})
+	})
 
-func TestCreateGroup(t *testing.T) {
-	t.Parallel()
+	Describe("GetGroupHosts", func() {
 
-	c := getOMClient()
+		It("returns no error", func() {
+			_, err = c.GetGroupHosts(config.GroupID)
+			Expect(err).ToNot(HaveOccurred())
+		})
 
-	request := client.GroupCreateRequest{
-		Name: "test-group1",
-	}
+		It("returns 0 given wrong id ", func() {
+			groupHosts, _ := c.GetGroupHosts("wrong-group-id")
+			Expect(reflect.DeepEqual(groupHosts.TotalCount, 0)).To(BeTrue())
+		})
+	})
 
-	_, err := c.CreateGroup(os.Getenv("GroupId")+"id", request)
+	Describe("ConfigureGroup", func() {
 
-	if err != nil {
-		t.Fatal(err)
-	}
+		It("returns no error ", func() {
 
-}
+			ctx := &adapter.DocContext{
+				ID:                      "id1",
+				Key:                     GetConfig().AuthKey,
+				AdminPassword:           "admin",
+				AutomationAgentPassword: "admin",
+				Nodes:                   []string{GetConfig().NodeAddresses},
+				Version:                 latestVersion,
+				RequireSSL:              false,
+			}
 
-func TestCreateGroupAPIKey(t *testing.T) {
+			doc, err := c.LoadDoc(adapter.PlanStandalone, ctx)
 
-	c := getOMClient()
+			Expect(err).ToNot(HaveOccurred())
 
-	_, err := c.CreateGroupAPIKey(os.Getenv("GroupId"))
+			err = c.ConfigureGroup(doc, config.GroupID)
 
-	if err != nil {
-		t.Fatal(err)
-	}
+			Expect(err).ToNot(HaveOccurred())
 
-}
+		})
+	})
 
-func TestUpdateGroup(t *testing.T) {
+	Describe("ConfigureMonitoringAgent", func() {
 
-	c := getOMClient()
+		It("returns no error ", func() {
+			ctx := &adapter.DocContext{
+				ID:                      "id1",
+				Key:                     GetConfig().AuthKey,
+				AdminPassword:           "admin",
+				AutomationAgentPassword: "admin",
+				Nodes:                   []string{GetConfig().NodeAddresses},
+				Version:                 latestVersion,
+				RequireSSL:              false,
+			}
 
-	request := client.GroupUpdateRequest{
-		Tags: []string{
-			"tag1",
-			"tag2",
-		},
-	}
+			monitoringAgentDoc, err := c.LoadDoc(adapter.MonitoringAgentConfiguration, ctx)
 
-	_, err := c.UpdateGroup(os.Getenv("GroupId"), request)
+			Expect(err).ToNot(HaveOccurred())
 
-	if err != nil {
-		t.Fatal(err)
-	}
+			err = c.ConfigureMonitoringAgent(monitoringAgentDoc, config.GroupID)
 
-}
+			Expect(err).ToNot(HaveOccurred())
+		})
+	})
 
-func TestGetGroupAuthAgentPassword(t *testing.T) {
+	Describe("ConfigureBackupAgent", func() {
 
-	c := getOMClient()
+		It("returns no error ", func() {
 
-	_, err := c.GetGroupAuthAgentPassword(os.Getenv("GroupId"))
+			ctx := &adapter.DocContext{
+				ID:                      "id1",
+				Key:                     GetConfig().AuthKey,
+				AdminPassword:           "admin",
+				AutomationAgentPassword: "admin",
+				Nodes:                   []string{GetConfig().NodeAddresses},
+				Version:                 "4.0.7",
+				RequireSSL:              false,
+			}
 
-	if err != nil {
-		t.Fatal(err)
-	}
-}
+			backupAgentDoc, err := c.LoadDoc(adapter.BackupAgentConfiguration, ctx)
 
-func TestGetGroup(t *testing.T) {
+			Expect(err).ToNot(HaveOccurred())
 
-	c := getOMClient()
+			err = c.ConfigureBackupAgent(backupAgentDoc, GetConfig().GroupID)
 
-	_, err := c.GetGroup("test-group-id")
+			Expect(err).ToNot(HaveOccurred())
+		})
+	})
 
-	if err != nil {
-		t.Fatal(err)
-	}
+	Describe("GetAvailableVersions", func() {
 
-}
+		It("returns no error ", func() {
 
-func TestDeleteGroup(t *testing.T) {
-	t.Parallel()
+			_, err := c.GetAvailableVersions(config.GroupID)
 
-	c := getOMClient()
+			Expect(err).ToNot(HaveOccurred())
+		})
+	})
 
-	err := c.DeleteGroup("test-group-id")
+	Describe("GetLatestVersion", func() {
 
-	if err != nil {
-		t.Fatal(err)
-	}
-}
+		It("returns error given wrong group id ", func() {
 
-func TestGetGroupHosts(t *testing.T) {
+			_, err := c.GetLatestVersion("wrong-group-id")
 
-	c := getOMClient()
+			Expect(err).To(HaveOccurred())
 
-	_, err := c.GetGroupHosts(os.Getenv("GroupId"))
+		})
 
-	if err != nil {
-		t.Fatal(err)
-	}
-}
+		It("returns no error ", func() {
 
-func TestGetGroupHostnames(t *testing.T) {
+			_, err := c.GetLatestVersion(config.GroupID)
 
-	c := getOMClient()
+			Expect(err).ToNot(HaveOccurred())
+		})
+	})
 
-	_, err := c.GetGroupHostnames(os.Getenv("GroupId"), "test-plan-id")
+	Describe("ValidateVersion", func() {
 
-	if err != nil {
-		t.Fatal(err)
-	}
-}
+		It("returns no error ", func() {
 
-func TestConfigureGroup(t *testing.T) {
-	t.Parallel()
+			_, err := c.ValidateVersion(config.GroupID, latestVersion)
+			Expect(err).ToNot(HaveOccurred())
+		})
 
-	c := getOMClient()
+		It("returns error given wrong version ", func() {
 
-	err := c.ConfigureGroup("configure-doc", os.Getenv("GroupId"))
+			_, err := c.ValidateVersion(config.GroupID, "wrong-version")
+			Expect(err).To(HaveOccurred())
+		})
 
-	if err != nil {
-		t.Fatal(err)
-	}
-}
+	})
 
-func TestConfigureMonitoringAgent(t *testing.T) {
-	t.Parallel()
+	Describe("ValidateVersionManifest", func() {
 
-	c := getOMClient()
+		It("returns no error", func() {
 
-	err := c.ConfigureMonitoringAgent("configure-doc", os.Getenv("GroupId"))
+			_, err := c.ValidateVersionManifest("4.0.2")
+			Expect(err).ToNot(HaveOccurred())
+		})
 
-	if err != nil {
-		t.Fatal(err)
-	}
-}
+		It("returns error when version is not available", func() {
 
-func TestConfigureBackupAgent(t *testing.T) {
-	t.Parallel()
+			_, err := c.ValidateVersionManifest("wrong-version")
+			Expect(err).To(HaveOccurred())
+		})
+	})
 
-	c := getOMClient()
-
-	err := c.ConfigureBackupAgent("configure-doc", os.Getenv("GroupId"))
-
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestGetAvailableVersions(t *testing.T) {
-	t.Parallel()
-
-	c := getOMClient()
-
-	_, err := c.GetAvailableVersions(os.Getenv("GroupId"))
-
-	if err != nil {
-		t.Fatal()
-	}
-}
-
-func TestGetLatestVersion(t *testing.T) {
-	t.Parallel()
-
-	c := getOMClient()
-
-	latestVersion, err := c.GetLatestVersion(os.Getenv("GroupId"))
-
-	if err != nil {
-		t.Fatal()
-	}
-
-	LatestVersion = latestVersion
-}
-
-func TestValidateVersion(t *testing.T) {
-	t.Parallel()
-
-	c := getOMClient()
-
-	_, err := c.ValidateVersion(os.Getenv("GroupId"), LatestVersion)
-
-	if err != nil {
-		t.Fatal()
-	}
-}
-
-func TestValidateVersionManifest(t *testing.T) {
-	t.Parallel()
-
-	c := getOMClient()
-
-	_, err := c.ValidateVersionManifest(LatestVersion)
-
-	if err != nil {
-		t.Fatal()
-	}
-}
-
-func getOMClient() *client.OMClient {
-
-	c := &client.OMClient{
-		Url:      os.Getenv("Url"),
-		Username: os.Getenv("Username"),
-		ApiKey:   os.Getenv("ApiKey"),
-	}
-
-	return c
-}
+})
