@@ -42,11 +42,9 @@ var _ = Describe("Manifest", func() {
 				},
 			},
 			DeploymentName: "deploy_name",
-			Stemcells: []serviceadapter.Stemcell{
-				{
-					OS:      "Ubuntu",
-					Version: "16.X",
-				},
+			Stemcell: serviceadapter.Stemcell{
+				OS:      "Ubuntu",
+				Version: "16.X",
 			},
 		}
 

@@ -275,8 +275,8 @@ func (m ManifestGenerator) GenerateManifest(serviceDeployment serviceadapter.Ser
 		Stemcells: []bosh.Stemcell{
 			{
 				Alias:   StemcellAlias,
-				OS:      serviceDeployment.Stemcells[0].OS,
-				Version: serviceDeployment.Stemcells[0].Version,
+				OS:      serviceDeployment.Stemcell.OS,
+				Version: serviceDeployment.Stemcell.Version,
 			},
 		},
 		InstanceGroups: []bosh.InstanceGroup{
