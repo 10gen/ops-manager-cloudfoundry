@@ -20,6 +20,7 @@ provides:
 - name: mongodb_config_agent
   type: config_agent
   properties:
+  - mongo_ops.admin_password
   - mongo_ops.agent_api_key
   - mongo_ops.api_key
   - mongo_ops.auth_key
