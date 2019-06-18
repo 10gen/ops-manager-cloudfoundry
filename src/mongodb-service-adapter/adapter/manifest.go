@@ -19,7 +19,7 @@ const (
 	BoshDNSEnableJobName          = "bosh-dns-enable"
 	ConfigAgentJobName            = "mongodb_config_agent"
 	CleanupErrandJobName          = "cleanup_service"
-	ConfigureBackupsErrandJobName = "configure_backups"
+	PostSetupErrandJobName = "post_setup"
 	LifecycleErrandType           = "errand"
 )
 
@@ -105,12 +105,12 @@ func (m ManifestGenerator) GenerateManifest(serviceDeployment serviceadapter.Ser
 		}
 	}
 
-	configAgentJobs, err := gatherJobs(serviceDeployment.Releases, []string{ConfigAgentJobName, CleanupErrandJobName, BPMJobName, ConfigureBackupsErrandJobName})
+	configAgentJobs, err := gatherJobs(serviceDeployment.Releases, []string{ConfigAgentJobName, CleanupErrandJobName, BPMJobName, PostSetupErrandJobName})
 	if err != nil {
 		return serviceadapter.GenerateManifestOutput{}, err
 	}
 	if syslogProps["address"].(string) != "" {
-		configAgentJobs, err = gatherJobs(serviceDeployment.Releases, []string{ConfigAgentJobName, CleanupErrandJobName, SyslogJobName, BPMJobName, ConfigureBackupsErrandJobName})
+		configAgentJobs, err = gatherJobs(serviceDeployment.Releases, []string{ConfigAgentJobName, CleanupErrandJobName, SyslogJobName, BPMJobName, PostSetupErrandJobName})
 		if err != nil {
 			return serviceadapter.GenerateManifestOutput{}, err
 		}

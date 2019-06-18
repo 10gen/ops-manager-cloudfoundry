@@ -1,5 +1,5 @@
 ---
-name: configure_backups
+name: post_setup
 
 templates:
   run.erb: bin/run

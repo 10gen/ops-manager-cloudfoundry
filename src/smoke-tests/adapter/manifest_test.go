@@ -17,7 +17,7 @@ func TestGenerateManifest(t *testing.T) {
 				Version: "4.0.6",
 				Jobs: []string{adapter.MongodJobName, adapter.BPMJobName,
 					adapter.SyslogJobName, adapter.ConfigAgentJobName,
-					adapter.CleanupErrandJobName, adapter.ConfigureBackupsErrandJobName,
+					adapter.CleanupErrandJobName, adapter.PostSetupErrandJobName,
 					adapter.BoshDNSEnableJobName},
 			},
 		},
