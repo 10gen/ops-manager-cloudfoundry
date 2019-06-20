@@ -6,7 +6,8 @@ set -ex
 <% conn = link('mongodb_config_agent') %>
 
 source /var/vcap/packages/mongodb-config-agent/mongo_utils.sh
-export PATH=/var/vcap/packages/jq/bin:$PATH
+export PATH=/var/vcap/packages/jq/bin:/var/vcap/packages/mongodb/bin:$PATH
+export JOB_DIR=/var/vcap/jobs/mongodb_config_agent
 
 export MONGO_OM_URL='<%= conn.p('mongo_ops.url').chomp("/") %>'
 export MONGO_OM_USER='<%= conn.p('mongo_ops.username') %>'
@@ -38,11 +39,6 @@ do
   break
 done
 <% end %>
-
-# old post-start
-
-export PATH=/var/vcap/packages/jq/bin:/var/vcap/packages/mongodb/bin:$PATH
-export JOB_DIR=/var/vcap/jobs/mongodb_config_agent
 
 <%
 def node_name(instance)
