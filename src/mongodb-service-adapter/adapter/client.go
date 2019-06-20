@@ -5,13 +5,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/digest"
-	"github.com/tidwall/gjson"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/digest"
+	"github.com/tidwall/gjson"
 )
 
 type OMClient struct {

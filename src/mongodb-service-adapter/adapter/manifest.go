@@ -10,17 +10,17 @@ import (
 )
 
 const (
-	StemcellAlias                 = "mongodb-stemcell"
-	MongodInstanceGroupName       = "mongod_node"
-	MongodJobName                 = "mongod_node"
-	AliasesJobName                = "mongodb-dns-aliases"
-	SyslogJobName                 = "syslog_forwarder"
-	BPMJobName                    = "bpm"
-	BoshDNSEnableJobName          = "bosh-dns-enable"
-	ConfigAgentJobName            = "mongodb_config_agent"
-	CleanupErrandJobName          = "cleanup_service"
-	PostSetupErrandJobName = "post_setup"
-	LifecycleErrandType           = "errand"
+	StemcellAlias           = "mongodb-stemcell"
+	MongodInstanceGroupName = "mongod_node"
+	MongodJobName           = "mongod_node"
+	AliasesJobName          = "mongodb-dns-aliases"
+	SyslogJobName           = "syslog_forwarder"
+	BPMJobName              = "bpm"
+	BoshDNSEnableJobName    = "bosh-dns-enable"
+	ConfigAgentJobName      = "mongodb_config_agent"
+	CleanupErrandJobName    = "cleanup_service"
+	PostSetupErrandJobName  = "post_setup"
+	LifecycleErrandType     = "errand"
 )
 
 type ManifestGenerator struct {
@@ -267,7 +267,7 @@ func (m ManifestGenerator) GenerateManifest(serviceDeployment serviceadapter.Ser
 		Name:     serviceDeployment.DeploymentName,
 		Releases: releases,
 		Addons: []bosh.Addon{
-			bosh.Addon{
+			{
 				Name: "mongodb-dns-helpers",
 				Jobs: addonsJobs,
 			},
