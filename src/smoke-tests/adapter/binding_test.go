@@ -1,101 +1,234 @@
 package adapter_test
 
 import (
-	adapter "../../mongodb-service-adapter/adapter"
+	"fmt"
+	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/adapter"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/on-demand-services-sdk/bosh"
 	"github.com/pivotal-cf/on-demand-services-sdk/serviceadapter"
-	"os"
-	"testing"
 )
 
-func TestGetWithCredentials(t *testing.T) {
-	addrs := []string{os.Getenv("Url")}
+var _ = Describe("Binding", func() {
 
-	_, err := adapter.GetWithCredentials(addrs, "admin", false)
+	var (
+		bindingId              string
+		deploymentTopology     bosh.BoshVMs
+		manifest               bosh.BoshManifest
+		requestParams          serviceadapter.RequestParameters
+		secrets                serviceadapter.ManifestSecrets
+		dnsAddresses           serviceadapter.DNSAddresses
+		binder                 *adapter.Binder
+		createBindingAction    serviceadapter.Binding
+		deleteBindingError     error
+		createBindingError     error
+		getWithCredentialError error
+		config                 *adapter.Config
+		err                    error
+		adminPassword          string
+		addrs                  []string
+	)
 
-	if err != nil {
-		t.Fatal(err)
-	}
+	BeforeEach(func() {
+		config, err = adapter.LoadConfig("../../mongodb-service-adapter/testdata/manifest.json")
 
-	_, err = adapter.GetWithCredentials(addrs, "admin", true)
+		if err != nil {
+			fmt.Print("Error opening manifest file ")
+		}
 
-	if err != nil {
-		t.Fatal(err)
-	}
+		bindingId = "id1"
+		adminPassword = "admin"
+		addrs = []string{config.NodeAddresses + ":28000"}
 
-}
-
-func TestCreateBinding(t *testing.T) {
-
-	deploymentTopology := bosh.BoshVMs{
-		"mongod_node": []string{
-			os.Getenv("mongod_node"),
-		},
-	}
-
-	manifest := bosh.BoshManifest{
-		Properties: map[string]interface{}{
-			"mongo_ops": map[interface{}]interface{}{
-				"url":            os.Getenv("Url"),
-				"group_id":       os.Getenv("GroupId"),
-				"admin_password": "admin",
-				"username":       os.Getenv("Username"),
-				"admin_api_key":  os.Getenv("ApiKey"),
-				"require_ssl":    true,
-				"plan_id":        "sharded_cluster",
-				"routers":        0,
-				"config_servers": 1,
-				"replicas":       1,
+		deploymentTopology = bosh.BoshVMs{
+			"mongod_node": []string{
+				config.NodeAddresses,
 			},
-		},
-	}
+		}
 
-	requestParams := serviceadapter.RequestParameters{}
-	secrets := serviceadapter.ManifestSecrets{}
-	dnsAddresses := serviceadapter.DNSAddresses{}
-	binder := &adapter.Binder{}
-	_, err := binder.CreateBinding("binding1", deploymentTopology, manifest, requestParams, secrets, dnsAddresses)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-}
-
-func TestDeleteBinding(t *testing.T) {
-
-	deploymentTopology := bosh.BoshVMs{
-		"mongod_node": []string{
-			os.Getenv("mongod_node"),
-		},
-	}
-
-	manifest := bosh.BoshManifest{
-		Properties: map[string]interface{}{
-			"mongo_ops": map[interface{}]interface{}{
-				"url":            os.Getenv("Url"),
-				"group_id":       os.Getenv("GroupId"),
-				"admin_password": "admin",
-				"username":       os.Getenv("Username"),
-				"admin_api_key":  os.Getenv("ApiKey"),
-				"require_ssl":    true,
-				"plan_id":        "sharded_cluster",
-				"routers":        0,
-				"config_servers": 1,
-				"replicas":       1,
+		manifest = bosh.BoshManifest{
+			Properties: map[string]interface{}{
+				"mongo_ops": map[interface{}]interface{}{
+					"url":            config.URL,
+					"group_id":       config.GroupID,
+					"admin_password": "admin",
+					"username":       config.Username,
+					"admin_api_key":  config.APIKey,
+					"require_ssl":    false,
+					"plan_id":        "standalone",
+					"routers":        0,
+					"config_servers": 0,
+					"replicas":       0,
+				},
 			},
-		},
-	}
+		}
 
-	requestParams := serviceadapter.RequestParameters{}
-	secrets := serviceadapter.ManifestSecrets{}
+		requestParams = serviceadapter.RequestParameters{}
+		secrets = serviceadapter.ManifestSecrets{}
+		dnsAddresses = serviceadapter.DNSAddresses{}
+		binder = &adapter.Binder{}
 
-	binder := &adapter.Binder{}
+		createBindingAction, createBindingError = binder.CreateBinding(bindingId, deploymentTopology, manifest, requestParams, secrets, dnsAddresses)
+		deleteBindingError = binder.DeleteBinding(bindingId, deploymentTopology, manifest, requestParams, secrets)
+		_, getWithCredentialError = adapter.GetWithCredentials(addrs, adminPassword, false)
+	})
 
-	err := binder.DeleteBinding("binding1", deploymentTopology, manifest, requestParams, secrets)
+	Describe("CreateBinding", func() {
+		Context("when nothing is missing ", func() {
+			It("calls CreateBinding without error ", func() {
+				Expect(createBindingError).ToNot(HaveOccurred())
+			})
 
-	if err != nil {
-		t.Fatal(err)
-	}
+			It("has credentials", func() {
+				Expect(createBindingAction.Credentials != nil).To(BeTrue())
+			})
+		})
 
-}
+		Context("when bindingId is missing", func() {
+			BeforeEach(func() {
+				bindingId = ""
+			})
+
+			It("returns no error", func() {
+				_, err = binder.CreateBinding(bindingId, deploymentTopology, manifest, requestParams, secrets, dnsAddresses)
+				Expect(err).ToNot(HaveOccurred())
+			})
+		})
+
+		Context("when deploymentTopology is missing", func() {
+			BeforeEach(func() {
+				deploymentTopology = nil
+			})
+
+			It("returns error", func() {
+				_, err = binder.CreateBinding(bindingId, deploymentTopology, manifest, requestParams, secrets, dnsAddresses)
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when optional parameters : requestParams, secrets and dnsAddresses are missing", func() {
+			BeforeEach(func() {
+				requestParams = nil
+				secrets = nil
+				dnsAddresses = nil
+			})
+
+			It("returns no error", func() {
+				_, err = binder.CreateBinding(bindingId, deploymentTopology, manifest, requestParams, secrets, dnsAddresses)
+				Expect(err).ToNot(HaveOccurred())
+			})
+		})
+
+		Context("when plan is replica_set", func() {
+			BeforeEach(func() {
+				manifest = bosh.BoshManifest{
+					Properties: map[string]interface{}{
+						"mongo_ops": map[interface{}]interface{}{
+							"url":            config.URL,
+							"group_id":       config.GroupID,
+							"admin_password": "admin",
+							"username":       config.Username,
+							"admin_api_key":  config.APIKey,
+							"require_ssl":    false,
+							"plan_id":        adapter.PlanReplicaSet,
+							"routers":        0,
+							"config_servers": 0,
+							"replicas":       0,
+						},
+					},
+				}
+			})
+
+			It("contains replicaSet=pcf_repl", func() {
+				createBindingAction, err = binder.CreateBinding(bindingId, deploymentTopology, manifest, requestParams, secrets, dnsAddresses)
+				Expect(createBindingAction.Credentials["uri"]).To(ContainSubstring("replicaSet=pcf_repl"))
+			})
+		})
+
+		Context("when plan is sharded_cluster", func() {
+			BeforeEach(func() {
+				manifest = bosh.BoshManifest{
+					Properties: map[string]interface{}{
+						"mongo_ops": map[interface{}]interface{}{
+							"url":            config.URL,
+							"group_id":       config.GroupID,
+							"admin_password": "admin",
+							"username":       config.Username,
+							"admin_api_key":  config.APIKey,
+							"require_ssl":    false,
+							"plan_id":        adapter.PlanShardedCluster,
+							"routers":        1,
+							"config_servers": 0,
+							"replicas":       1,
+						},
+					},
+				}
+			})
+
+			It("returns no error ", func() {
+				_, err = binder.CreateBinding(bindingId, deploymentTopology, manifest, requestParams, secrets, dnsAddresses)
+				Expect(err).ToNot(HaveOccurred())
+			})
+		})
+	})
+
+	Describe("DeleteBinding", func() {
+		Context("when nothing is missing ", func() {
+			It("calls deleteBinding without error ", func() {
+				Expect(deleteBindingError).ToNot(HaveOccurred())
+			})
+		})
+
+		Context("when bindingId is different ", func() {
+			BeforeEach(func() {
+				bindingId = "qwerty"
+			})
+
+			It("returns error", func() {
+				err = binder.DeleteBinding(bindingId, deploymentTopology, manifest, requestParams, secrets)
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when deploymentTopology is missing", func() {
+			BeforeEach(func() {
+				deploymentTopology = nil
+			})
+
+			It("returns error", func() {
+				err = binder.DeleteBinding(bindingId, deploymentTopology, manifest, requestParams, secrets)
+				Expect(err).To(HaveOccurred())
+			})
+		})
+	})
+
+	Describe("GetWitCredentials", func() {
+		Context("when nothing is missing ", func() {
+			It("calls GetWithCredentials without error ", func() {
+				Expect(getWithCredentialError).ToNot(HaveOccurred())
+			})
+		})
+
+		Context("when addrs is missing ", func() {
+			BeforeEach(func() {
+				addrs = nil
+			})
+
+			It("returns error", func() {
+				_, err = adapter.GetWithCredentials(addrs, adminPassword, false)
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when admin password is wrong ", func() {
+			BeforeEach(func() {
+				adminPassword = "wrongPassword"
+			})
+
+			It("returns error", func() {
+				_, err = adapter.GetWithCredentials(addrs, adminPassword, false)
+				Expect(err).To(HaveOccurred())
+			})
+		})
+	})
+})

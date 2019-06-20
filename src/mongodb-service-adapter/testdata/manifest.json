@@ -1,0 +1,9 @@
+{
+    "url" : "http://ec2-54-88-70-89.compute-1.amazonaws.com:9080",
+    "group": "5ca368b5456a4e1f4f0d8550",
+    "username" : "ramin.taghizada@mongodb.com",
+    "api_key" : "0cae0650-db70-485c-8003-34a587b7fa81",
+    "auth_key": "5c9b7bec456a4e1f4fec1f1f232bad7b80a7de75d93b308de25e4a1d",
+    "nodes" : "localhost",
+    "org" : "5c9b208d456a4e1f4febc745"
+}

@@ -3,16 +3,15 @@ package adapter
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/digest"
+	"github.com/tidwall/gjson"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"net/http/httputil"
 	"strings"
-
-	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/digest"
-	"github.com/tidwall/gjson"
 )
 
 type OMClient struct {
@@ -70,7 +69,7 @@ type Cluster struct {
 	Shards        [][]string
 }
 
-const versionsManifest = "/var/vcap/packages/versions/versions.json"
+var versionsManifest = []string{"/var/vcap/packages/versions/versions.json", "../../mongodb_versions/versions.json"}
 
 func (oc *OMClient) LoadDoc(p string, ctx *DocContext) (string, error) {
 	t, ok := plans[p]
@@ -107,11 +106,11 @@ func (oc *OMClient) GetGroupByName(name string) (Group, error) {
 	b, err := oc.doRequest("GET", fmt.Sprintf("/api/public/v1.0/groups/byName/%s", name), nil)
 
 	if err != nil {
-		log.Println("GetGroupByName "+fmt.Sprintf(" oc.doRequest GET/api/public/v1.0/groups/byName/%s , error:: ", name), err)
+		log.Println("Client GetGroupByName "+fmt.Sprintf(" oc.doRequest GET/api/public/v1.0/groups/byName/%s , error:: ", name), err)
 		return group, err
 	}
 	if err = json.Unmarshal(b, &group); err != nil {
-		fmt.Println("GetGroupByName json.Unmarshal error: ", err)
+		fmt.Println("Client GetGroupByName json.Unmarshal error: ", err)
 		return group, err
 	}
 	return group, nil
@@ -153,6 +152,7 @@ func (oc *OMClient) CreateGroup(id string, request GroupCreateRequest) (Group, e
 	}
 
 	if err = json.Unmarshal(b, &group); err != nil {
+		fmt.Println("Client CreateGroup json.Unmarshal error: ", err)
 		return group, err
 	}
 	return group, nil
@@ -168,7 +168,7 @@ func (oc *OMClient) CreateGroupAPIKey(groupID string) (string, error) {
 
 	key := gjson.GetBytes(b, "key")
 	if key.String() == "" {
-		log.Fatalf("failed to create agent api key for group %s", groupID)
+		return "", errors.New("Failed to create agent api key for group " + groupID)
 	}
 
 	return key.String(), nil
@@ -187,6 +187,7 @@ func (oc *OMClient) UpdateGroup(id string, request GroupUpdateRequest) (Group, e
 	}
 
 	if err = json.Unmarshal(b, &group); err != nil {
+		fmt.Println("Client UpdateGroup json.Unmarshal error: ", err)
 		return group, err
 	}
 	return group, nil
@@ -210,6 +211,7 @@ func (oc *OMClient) GetGroup(groupID string) (Group, error) {
 	}
 
 	if err = json.Unmarshal(b, &group); err != nil {
+		fmt.Println("Client GetGroup json.Unmarshal error: ", err)
 		return group, err
 	}
 	return group, nil
@@ -229,6 +231,7 @@ func (oc *OMClient) GetGroupHosts(groupID string) (GroupHosts, error) {
 	}
 
 	if err = json.Unmarshal(b, &groupHosts); err != nil {
+		fmt.Println("Client GetGroupHosts json.Unmarshal error: ", err)
 		return groupHosts, err
 	}
 	return groupHosts, nil
@@ -294,6 +297,7 @@ func (oc *OMClient) GetAvailableVersions(groupID string) (Automation, error) {
 	}
 
 	if err = json.Unmarshal(b, &versions); err != nil {
+		fmt.Println("Client GetAvailableVersions json.Unmarshal error: ", err)
 		return versions, err
 	}
 	return versions, nil
@@ -332,22 +336,25 @@ func (oc *OMClient) ValidateVersion(groupID string, version string) (string, err
 	v := gjson.GetBytes(b, fmt.Sprintf(`mongoDbVersions.#[name="%s"].name`, version))
 	log.Printf("Using %q version of MongoDB", v.String())
 	if v.String() == "" {
-		log.Fatalf("failed to find expected version, got %s", version)
+		return "", errors.New("failed to find expected version, got " + version)
 	}
 
 	return v.String(), nil
 }
 
 func (oc *OMClient) ValidateVersionManifest(version string) (string, error) {
-	b, err := ioutil.ReadFile(versionsManifest)
+	b, err := ioutil.ReadFile(versionsManifest[0])
 	if err != nil {
-		return "", err
+		b, err = ioutil.ReadFile(versionsManifest[1])
+		if err != nil {
+			return "", err
+		}
 	}
 
 	v := gjson.GetBytes(b, fmt.Sprintf(`versions.#[name="%s"].name`, version))
 	log.Printf("Using %q version of MongoDB", v.String())
 	if v.String() == "" {
-		log.Printf("failed to find expected version, got %s, continue with provided versions", version)
+		return "", errors.New("failed to find expected version, continue with provided versions ")
 	}
 
 	return version, nil
@@ -364,25 +371,26 @@ func (oc *OMClient) doRequest(method string, path string, body io.Reader) ([]byt
 	if err = digest.ApplyDigestAuth(oc.Username, oc.ApiKey, uri, req); err != nil {
 		return nil, err
 	}
+	log.Printf("API Call: %s%s", oc.Url, path)
 
-	dump, err := httputil.DumpRequestOut(req, true)
-	if err != nil {
-		return nil, err
-	}
-	log.Printf("API Request: %q", dump)
+	// dump, err := httputil.DumpRequestOut(req, true)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// // log.Printf("API Request: %q", dump)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Fatalf("%s %s error: %v", method, uri, err)
 		return nil, err
 	}
 	defer res.Body.Close()
 
-	dump, err = httputil.DumpResponse(res, true)
-	if err != nil {
-		return nil, err
-	}
-	log.Printf("API Response: %q", dump)
+	// dump, err = httputil.DumpResponse(res, true)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// // log.Printf("API Response: %q", dump)
 
 	b, err := ioutil.ReadAll(res.Body)
 	if err != nil {

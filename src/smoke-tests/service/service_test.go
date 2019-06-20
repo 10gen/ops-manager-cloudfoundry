@@ -131,7 +131,7 @@ var _ = Describe("MongoDB Service", func() {
 		pushArgs := []string{
 			"-m", "256M",
 			"-p", appPath,
-			"-s", "cflinuxfs2",
+			"-s", "cflinuxfs3",
 			"--no-start",
 		}
 
@@ -226,6 +226,7 @@ var _ = Describe("MongoDB Service", func() {
 			app := mongodb.NewApp(uri, testCF.ShortTimeout, retryInterval)
 			testValue := randomName()
 
+			fmt.Println("serviceName : ", mongodbConfig.ServiceName, " planName: ", planName, " serviceInstanceName: ", serviceInstanceName, " planName: ", planName)
 			serviceCreateStep := reporter.NewStep(
 				fmt.Sprintf("Create a '%s' plan instance of MongoDB", planName),
 				testCF.CreateService(mongodbConfig.ServiceName, planName, serviceInstanceName, &skip),

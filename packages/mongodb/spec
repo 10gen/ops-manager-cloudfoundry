@@ -1,5 +1,0 @@
----
-name: mongodb
-
-files:
-  - mongodb/mongodb-linux-x86_64-ubuntu1604-3.6.10.tgz

@@ -3,7 +3,6 @@ name: mongodb_config_agent
 
 packages:
   - jq
-  - mongodb
   - mongodb-config-agent
 
 templates:

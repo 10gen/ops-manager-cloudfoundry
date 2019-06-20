@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+set -x
+
+#CF_COLOR=false CF_VERBOSE_OUTPUT=true ginkgo -r -v ../* -noColor=true -keepGoing=true -trace=true -slowSpecThreshold=300 service
+
+#go test $(go list ../... | grep -v /vendor)
+go test -v ../digest ../service
