@@ -106,6 +106,9 @@ var plansRaw = map[string]string{
         ],
         "key": "{{.Key}}",
         "keyfile": "/var/vcap/store/mongod_node/mongo_om.key",
+        {{if ne .KeyfileWindows ""}}
+            "keyfileWindows": "{{.KeyfileWindows}}",
+        {{end}}
         "disabled": false,
         "usersDeleted": [],
         "usersWanted": [
