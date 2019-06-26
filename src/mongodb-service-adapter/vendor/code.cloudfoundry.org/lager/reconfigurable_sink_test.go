@@ -3,6 +3,7 @@ package lager_test
 import (
 	"code.cloudfoundry.org/lager"
 	"code.cloudfoundry.org/lager/lagertest"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

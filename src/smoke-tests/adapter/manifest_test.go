@@ -2,7 +2,7 @@ package adapter_test
 
 import (
 	"fmt"
-"mongodb-service-adapter/adapter"
+	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/adapter"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/on-demand-services-sdk/bosh"

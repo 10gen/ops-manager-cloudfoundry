@@ -2,7 +2,7 @@ package adapter_test
 
 import (
 	"encoding/json"
-"mongodb-service-adapter/adapter"
+	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/adapter"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"reflect"
