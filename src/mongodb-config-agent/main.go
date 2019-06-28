@@ -26,6 +26,11 @@ func main() {
 	logger := log.New(os.Stderr, "[mongodb-config-agent] ", log.LstdFlags)
 	omClient := adapter.OMClient{Url: config.URL, Username: config.Username, ApiKey: config.APIKey}
 
+	kfw, err := omClient.GetKeyfileWindows(config.GroupID)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
 	nodes := strings.Split(config.NodeAddresses, ",")
 	ctx := &adapter.DocContext{
 		ID:                      config.ID,
@@ -35,6 +40,7 @@ func main() {
 		Nodes:                   nodes,
 		Version:                 config.EngineVersion,
 		RequireSSL:              config.RequireSSL,
+		KeyfileWindows:          kfw,
 	}
 
 	if config.PlanID == adapter.PlanShardedCluster {

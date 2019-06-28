@@ -3,94 +3,112 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:362e2ee4601d53ab6cbb9e41de75455e5e15894a314ff6404a781226b3787587"
   name = "code.cloudfoundry.org/lager"
   packages = ["."]
+  pruneopts = ""
   revision = "dad1709ff3726dd867211a53b8e17efc37a6cfb9"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/10gen/ops-manager-cloudfoundry"
-  packages = [
-    "src/mongodb-service-adapter/adapter",
-    "src/mongodb-service-adapter/digest"
-  ]
-  revision = "54fc71287da9732422848120cf0e3c8c6eee0c56"
-
-[[projects]]
+  digest = "1:20ed7daa9b3b38b6d1d39b48ab3fd31122be5419461470d0c28de3e121c93ecf"
   name = "github.com/gorilla/context"
   packages = ["."]
+  pruneopts = ""
   revision = "1ea25387ff6f684839d82767c1733ff4d4d15d0a"
   version = "v1.1"
 
 [[projects]]
+  digest = "1:a759b98c93c6dab29652eacd70cd7d0e88f02de8bc63051f787329966ec0a0ee"
   name = "github.com/gorilla/mux"
   packages = ["."]
+  pruneopts = ""
   revision = "7f08801859139f86dfafd1c296e2cba9a80d292e"
   version = "v1.6.1"
 
 [[projects]]
+  digest = "1:ffcdd9b3d302a4549cdd588bb358396c3ccb50046bff12751b1ec189b92dd8b3"
   name = "github.com/pivotal-cf/brokerapi"
   packages = [
     ".",
-    "auth"
+    "auth",
   ]
-  revision = "9ed104edeebff19a9ec70c859e312257ae6c5450"
-  version = "v4.0.0"
+  pruneopts = ""
+  revision = "4048f6de26b2169b7bc3063076b47964d02045eb"
+  version = "v3.0.7"
 
 [[projects]]
+  digest = "1:603a3e047dbe2bc144ea5c46511b69d3f07b98b13358570a6e81f2ef672d028b"
   name = "github.com/pivotal-cf/on-demand-services-sdk"
   packages = [
     "bosh",
-    "serviceadapter"
+    "serviceadapter",
   ]
+  pruneopts = ""
   revision = "980106fb549f2e8d7fa20b7c8f998e5d30706188"
-  version = "v0.25.0"
+  version = "v0.24.0"
 
 [[projects]]
+  digest = "1:7365acd48986e205ccb8652cc746f09c8b7876030d53710ea6ef7d0bd0dcd7ca"
   name = "github.com/pkg/errors"
   packages = ["."]
+  pruneopts = ""
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
   version = "v0.8.0"
 
 [[projects]]
+  digest = "1:e139a0dfe24e723193005b291ed82a975041718cfcab9136aa6c9540df70a4ff"
   name = "github.com/tidwall/gjson"
   packages = ["."]
+  pruneopts = ""
   revision = "f123b340873a0084cb27267eddd8ff615115fbff"
   version = "v1.1.2"
 
 [[projects]]
   branch = "master"
+  digest = "1:4db4f92bb9cb04cfc4fccb36aba2598b02a988008c4cc0692b241214ad8ac96e"
   name = "github.com/tidwall/match"
   packages = ["."]
+  pruneopts = ""
   revision = "1731857f09b1f38450e2c12409748407822dc6be"
 
 [[projects]]
+  digest = "1:dd549e360e5a8f982a28c2bcbe667307ceffe538ed9afc7c965524f1ac285b3f"
   name = "gopkg.in/go-playground/validator.v8"
   packages = ["."]
+  pruneopts = ""
   revision = "5f1438d3fca68893a817e4a66806cea46a9e4ebf"
   version = "v8.18.2"
 
 [[projects]]
   branch = "v2"
+  digest = "1:c80894778314c7fb90d94a5ab925214900e1341afeddc953cda7398b8cdcd006"
   name = "gopkg.in/mgo.v2"
   packages = [
     ".",
     "bson",
     "internal/json",
     "internal/sasl",
-    "internal/scram"
+    "internal/scram",
   ]
+  pruneopts = ""
   revision = "3f83fa5005286a7fe593b055f0d7771a7dce4655"
 
 [[projects]]
   branch = "v2"
+  digest = "1:f769ed60e075e4221612c2f4162fccc9d3795ef358fa463425e3b3d7a5debb27"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
+  pruneopts = ""
   revision = "287cf08546ab5e7e37d55a84f7ed3fd1db036de5"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d83e0cc28dbf60fee9e2b482283826eb5fe5494d296db28d0ee138c61b503247"
+  input-imports = [
+    "github.com/pivotal-cf/on-demand-services-sdk/bosh",
+    "github.com/pivotal-cf/on-demand-services-sdk/serviceadapter",
+    "github.com/tidwall/gjson",
+    "gopkg.in/mgo.v2",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1

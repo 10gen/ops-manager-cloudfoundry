@@ -62,6 +62,7 @@ type DocContext struct {
 	Cluster                 *Cluster
 	Password                string
 	RequireSSL              bool
+	KeyfileWindows          string
 }
 
 type Cluster struct {
@@ -255,6 +256,19 @@ func (oc *OMClient) GetGroupHostnames(groupID string, planID string) ([]string, 
 	}
 
 	return servers, nil
+}
+
+// TODO: refactor the client to avoid this call
+func (oc *OMClient) GetKeyfileWindows(groupID string) (string, error) {
+	u := fmt.Sprintf("/api/public/v1.0/groups/%s/automationConfig", groupID)
+	b, err := oc.doRequest(http.MethodGet, u, nil)
+	if err != nil {
+		return "", err
+	}
+	log.Println(string(b))
+
+	kfw := gjson.GetBytes(b, "auth.keyfileWindows")
+	return kfw.String(), nil
 }
 
 func (oc *OMClient) ConfigureGroup(configurationDoc string, groupID string) error {
