@@ -12,6 +12,7 @@ inputs:
 - name: bpm-release
 - name: syslog-migration-release
 - name: pcf-mongodb-helpers
+- name: mongodb
 - name: version
 
 outputs:
