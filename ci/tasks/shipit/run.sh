@@ -14,9 +14,20 @@ cp "$base"/on-demand-service-broker-release/on-demand-service-broker-*.tgz "$bas
 cp "$base"/syslog-migration-release/syslog-migration-*.tgz "$base"/ops-manager-cloudfoundry/tile/resources
 cp "$base"/pcf-mongodb-helpers/pcf-mongodb-helpers-*.tgz "$base"/ops-manager-cloudfoundry/tile/resources
 cp "$base"/bpm-release/bpm-release-*.tgz "$base"/ops-manager-cloudfoundry/tile/resources
+cp "$base"/mongodb/mongodb-linux-x86_64-ubuntu1604-*.tgz "$base"/ops-manager-cloudfoundry/src/mongodb
 
 (
 cd ops-manager-cloudfoundry
+cat > config/private.yml << EOF
+---
+blobstore:
+  options:
+    access_key_id: "$AWS_KEY"
+    secret_access_key: "$AWS_SECRET_KEY"
+EOF
+rm -r -f dev_releases
+rm -r -f tile/product/*
+rm -r -f tile/resources/mongodb-*
 
 tarball_path="$base/ops-manager-cloudfoundry/tile/resources/mongodb-${VERSION}.tgz"
 mkdir -p "$(dirname "$tarball_path")"
@@ -31,7 +42,7 @@ yq w -i tile.yml packages.[4].jobs[0].properties.service_deployment.releases[0].
 yq w -i tile.yml runtime_configs[0].runtime_config.releases[0].version "${VERSION}"
 tile build "${VERSION}"
 )
-
+mkdir -p "$base"/release
 cp "$base"/ops-manager-cloudfoundry/tile/product/mongodb-on-demand-*.pivotal "$base"/release
 
 TILE_FILE=`cd release; ls *-${VERSION}.pivotal`
