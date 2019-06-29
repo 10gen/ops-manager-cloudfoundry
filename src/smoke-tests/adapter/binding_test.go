@@ -202,7 +202,7 @@ var _ = Describe("Binding", func() {
 		})
 	})
 
-	Describe("GetWitCredentials", func() {
+	Describe("GetWithCredentials", func() {
 		Context("when nothing is missing ", func() {
 			It("calls GetWithCredentials without error ", func() {
 				Expect(getWithCredentialError).ToNot(HaveOccurred())

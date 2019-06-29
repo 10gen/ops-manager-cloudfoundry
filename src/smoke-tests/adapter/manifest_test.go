@@ -42,11 +42,9 @@ var _ = Describe("Manifest", func() {
 				},
 			},
 			DeploymentName: "deploy_name",
-			Stemcells: []serviceadapter.Stemcell{
-				{
-					OS:      "Ubuntu",
-					Version: "16.X",
-				},
+			Stemcell: serviceadapter.Stemcell{
+				OS:      "Ubuntu",
+				Version: "16.X",
 			},
 		}
 
@@ -206,7 +204,7 @@ var _ = Describe("Manifest", func() {
 			Expect(err).To(HaveOccurred())
 		})
 
-		It("returns error when wrong plan id provided", func() {
+		It("returns error when wrong plan id is provided", func() {
 
 			plan.Properties["id"] = "wrong_plan"
 
