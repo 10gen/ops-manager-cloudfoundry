@@ -31,7 +31,7 @@ rm -r -f tile/resources/mongodb-*
 
 tarball_path="$base/ops-manager-cloudfoundry/tile/resources/mongodb-${VERSION}.tgz"
 mkdir -p "$(dirname "$tarball_path")"
-bosh -n create-release --sha2 --tarball="$tarball_path" --version="${VERSION}"
+bosh -n create-release --sha2 --tarball="$tarball_path" --version="${VERSION}" --force
 )
 
 (
