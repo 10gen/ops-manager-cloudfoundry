@@ -9,6 +9,12 @@ if [ -z "${VERSION:-}" ]; then
   echo "missing version number"
   exit 1
 fi
+rm -r -f "$base/ops-manager-cloudfoundry/.dev_builds"
+rm -r -f "$base/ops-manager-cloudfoundry/dev_releases"
+rm -r -f "$base/ops-manager-cloudfoundry/tile/releases/*"
+rm -r -f "$base/ops-manager-cloudfoundry/tile/resources/mongodb-*"
+rm -r -f "$base/artefacts/mongodb-on-demand-${VERSION}.pivotal"
+mkdir -p "$base"/ops-manager-cloudfoundry/src/mongodb
 
 cp "$base"/on-demand-service-broker-release/on-demand-service-broker-*.tgz "$base"/ops-manager-cloudfoundry/tile/resources
 cp "$base"/syslog-migration-release/syslog-migration-*.tgz "$base"/ops-manager-cloudfoundry/tile/resources
