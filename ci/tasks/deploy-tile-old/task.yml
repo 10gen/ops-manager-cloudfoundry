@@ -11,7 +11,7 @@ inputs:
 - name: stemcell
 - name: artifacts
 - name: version
-- name: artifacts
+- name: tileold
 
 params:
   PCF_URL:
