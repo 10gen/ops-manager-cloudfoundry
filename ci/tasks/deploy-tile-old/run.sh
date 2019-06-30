@@ -13,11 +13,10 @@ if [ -z "${VERSION:-}" ]; then
   echo "missing version number"
   exit 1
 fi
-# cp "$base"/tileold/*-${VERSION}.pivotal "$base"/artifacts/
 ls "$base"
 TILE_FILE=`cd tileold; ls *-${VERSION}.pivotal`
 if [ -z "${TILE_FILE}" ]; then
-	echo "No files matching artifacts/*.pivotal"
+	echo "No files matching tileold/*.pivotal"
 	ls -lR artifacts
 	exit 1
 fi
@@ -36,7 +35,7 @@ echo "Product " $PRODUCT
 # fi
 om="om -t $PCF_URL -u $PCF_USERNAME -p $PCF_PASSWORD -k"
 echo ${om} $TILE_FILE
-${om} upload-product --product "artifacts/$TILE_FILE"
+${om} upload-product --product "tileold/$TILE_FILE"
 ${om} upload-stemcell --stemcell "stemcell/$STEMCELL_FILE"
 ${om} available-products
 ${om} stage-product --product-name "$PRODUCT" --product-version "$VERSION"
