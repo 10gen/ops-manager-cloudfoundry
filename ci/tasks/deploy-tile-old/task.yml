@@ -21,4 +21,4 @@ params:
   PRODUCT_NETWORK_AZS:
 
 run:
-  path: ops-manager-cloudfoundry/ci/tasks/deploy-tile/run.sh
+  path: ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/run.sh
