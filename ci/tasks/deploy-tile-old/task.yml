@@ -8,11 +8,17 @@ image_resource:
 
 inputs:
 - name: ops-manager-cloudfoundry
+- name: stemcell
+- name: artifacts
+- name: version
+- name: artifacts
 
 params:
   PCF_URL:
   PCF_USERNAME:
   PCF_PASSWORD:
+  PRODUCT_PROPERTIES:
+  PRODUCT_NETWORK_AZS:
 
 run:
-  path: ops-manager-cloudfoundry/ci/tasks/delete-tile/run.sh
+  path: ops-manager-cloudfoundry/ci/tasks/deploy-tile/run.sh
