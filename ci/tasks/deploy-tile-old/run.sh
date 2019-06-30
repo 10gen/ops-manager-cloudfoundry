@@ -13,8 +13,8 @@ if [ -z "${VERSION:-}" ]; then
   echo "missing version number"
   exit 1
 fi
-# cp "base"/tileold/*-${VERSION}.pivotal "base"/artifacts/
-
+# cp "$base"/tileold/*-${VERSION}.pivotal "$base"/artifacts/
+ls "$base"
 TILE_FILE=`cd tileold; ls *-${VERSION}.pivotal`
 if [ -z "${TILE_FILE}" ]; then
 	echo "No files matching artifacts/*.pivotal"
