@@ -10,6 +10,7 @@ inputs:
 - name: ops-manager-cloudfoundry
 - name: stemcell
 - name: artifacts
+- name: versionold
 - name: version
 - name: tileold
 

@@ -39,6 +39,17 @@ resources:
     secret_access_key: ((aws-secret-access-key))
     initial_version: 1.0.33
 
+- name: versionold
+  type: semver
+  source:
+    driver: s3
+    bucket: ((aws-bucket))
+    key: versionold
+    region_name: eu-west-1
+    access_key_id: ((aws-access-key))
+    secret_access_key: ((aws-secret-access-key))
+    initial_version: 1.0.33
+
 - name: artifacts
   type: s3
   source:
@@ -72,6 +83,7 @@ jobs:
       params:
         file: artifacts/mongodb-on-demand-*.pivotal
     - get: version
+    - get: versionold
     - get: stemcell
       params:
         globs: ["*azure*"]
