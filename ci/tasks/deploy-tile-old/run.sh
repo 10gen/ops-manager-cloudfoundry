@@ -15,7 +15,7 @@ if [ -z "${VERSION:-}" ]; then
 fi
 cp "base"/tileold/*-${VERSION}.pivotal "base"/artifacts/
 
-TILE_FILE=`cd artifacts; ls *-${VERSION}.pivotal`
+TILE_FILE=`cd tileold; ls *-${VERSION}.pivotal`
 if [ -z "${TILE_FILE}" ]; then
 	echo "No files matching artifacts/*.pivotal"
 	ls -lR artifacts
