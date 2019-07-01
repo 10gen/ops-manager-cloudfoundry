@@ -4,7 +4,7 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: andreikrasnitski/ci
+    repository: theburi/ci
 
 inputs:
 - name: ops-manager-cloudfoundry
@@ -12,6 +12,7 @@ inputs:
 - name: bpm-release
 - name: syslog-migration-release
 - name: pcf-mongodb-helpers
+- name: mongodb
 - name: version
 
 outputs:

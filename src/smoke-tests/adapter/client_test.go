@@ -278,6 +278,26 @@ var _ = Describe("Client", func() {
 		})
 	})
 
+	Describe("GetGroupHostnames", func() {
+
+		It("returns no error", func() {
+			_, err = c.GetGroupHostnames(config.GroupID, adapter.PlanStandalone)
+			Expect(err).ToNot(HaveOccurred())
+		})
+
+		It("returns servers if planID is sharded_cluster", func() {
+			_, err := c.GetGroupHostnames(config.GroupID, adapter.PlanShardedCluster)
+			Expect(err).ToNot(HaveOccurred())
+		})
+	})
+
+	Describe("GetKeyfileWindows", func() {
+		It("returns no error", func() {
+			_, err := c.GetKeyfileWindows(config.GroupID)
+			Expect(err).ToNot(HaveOccurred())
+		})
+	})
+
 	Describe("ConfigureGroup", func() {
 
 		It("returns no error ", func() {

@@ -22,6 +22,7 @@ blobs
 ci/secret.yml
 ci/creds*.yml
 src/smoke-tests/integration_config.json
+src/mongodb
 
 /bin
 /pkg

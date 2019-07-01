@@ -212,6 +212,9 @@ jobs:
     - get: bpm-release
       params:
         filename: bpm-release-(.*).tgz
+    - get: mongodb
+      params:
+        filename: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
     - get: version
       params:
         bump: final
@@ -220,7 +223,8 @@ jobs:
     file: ops-manager-cloudfoundry/ci/tasks/shipit/task.yml
     params:
       RELEASE_BUCKET_NAME: ((release-bucket))
-
+      AWS_KEY: ((aws-access-key))
+      AWS_SECRET_KEY: ((aws-secret-access-key))
   - put: release
     params:
       file: release/mongodb-on-demand-*.pivotal

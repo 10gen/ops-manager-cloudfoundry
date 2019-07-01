@@ -204,7 +204,7 @@ var _ = Describe("Manifest", func() {
 			Expect(err).To(HaveOccurred())
 		})
 
-		It("returns error when wrong plan id provided", func() {
+		It("returns error when wrong plan id is provided", func() {
 
 			plan.Properties["id"] = "wrong_plan"
 
