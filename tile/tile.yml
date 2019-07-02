@@ -469,7 +469,7 @@ packages:
           - mongodb_config_agent
           - mongodb-dns-aliases
           - cleanup_service
-          - configure_backups
+          - post_setup
         - name: pcf-mongodb-helpers
           version: 0.0.1
           jobs:
@@ -511,7 +511,7 @@ packages:
           description: Standalone Small Instance
           lifecycle_errands:
             post_deploy:
-            - name: configure_backups
+            - name: post_setup
               instances:
               - mongodb-config-agent/0
             pre_delete:
@@ -556,7 +556,7 @@ packages:
           description: Standalone Medium Instance
           lifecycle_errands:
             post_deploy:
-            - name: configure_backups
+            - name: post_setup
               instances:
               - mongodb-config-agent/0
             pre_delete:
@@ -601,7 +601,7 @@ packages:
           description: Standalone Large Instance
           lifecycle_errands:
             post_deploy:
-            - name: configure_backups
+            - name: post_setup
               instances:
               - mongodb-config-agent/0
             pre_delete:
@@ -646,7 +646,7 @@ packages:
           description: Replica Set Small
           lifecycle_errands:
             post_deploy:
-            - name: configure_backups
+            - name: post_setup
               instances:
               - mongodb-config-agent/0
             pre_delete:
@@ -691,7 +691,7 @@ packages:
           description: Replica Set Medium
           lifecycle_errands:
             post_deploy:
-            - name: configure_backups
+            - name: post_setup
               instances:
               - mongodb-config-agent/0
             pre_delete:
@@ -736,7 +736,7 @@ packages:
           description: Replica Set Large
           lifecycle_errands:
             post_deploy:
-            - name: configure_backups
+            - name: post_setup
               instances:
               - mongodb-config-agent/0
             pre_delete:
@@ -781,7 +781,7 @@ packages:
           description: Sharded Cluster Small
           lifecycle_errands:
             post_deploy:
-            - name: configure_backups
+            - name: post_setup
               instances:
               - mongodb-config-agent/0
             pre_delete:
@@ -828,7 +828,7 @@ packages:
           description: Sharded Cluster Medium
           lifecycle_errands:
             post_deploy:
-            - name: configure_backups
+            - name: post_setup
               instances:
               - mongodb-config-agent/0
             pre_delete:
@@ -875,7 +875,7 @@ packages:
           description: Sharded Cluster Large
           lifecycle_errands:
             post_deploy:
-            - name: configure_backups
+            - name: post_setup
               instances:
               - mongodb-config-agent/0
             pre_delete:

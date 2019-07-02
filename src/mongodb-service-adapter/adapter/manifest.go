@@ -10,17 +10,17 @@ import (
 )
 
 const (
-	StemcellAlias                 = "mongodb-stemcell"
-	MongodInstanceGroupName       = "mongod_node"
-	MongodJobName                 = "mongod_node"
-	AliasesJobName                = "mongodb-dns-aliases"
-	SyslogJobName                 = "syslog_forwarder"
-	BPMJobName                    = "bpm"
-	BoshDNSEnableJobName          = "bosh-dns-enable"
-	ConfigAgentJobName            = "mongodb_config_agent"
-	CleanupErrandJobName          = "cleanup_service"
-	ConfigureBackupsErrandJobName = "configure_backups"
-	LifecycleErrandType           = "errand"
+	StemcellAlias           = "mongodb-stemcell"
+	MongodInstanceGroupName = "mongod_node"
+	MongodJobName           = "mongod_node"
+	AliasesJobName          = "mongodb-dns-aliases"
+	SyslogJobName           = "syslog_forwarder"
+	BPMJobName              = "bpm"
+	BoshDNSEnableJobName    = "bosh-dns-enable"
+	ConfigAgentJobName      = "mongodb_config_agent"
+	CleanupErrandJobName    = "cleanup_service"
+	PostSetupErrandJobName  = "post_setup"
+	LifecycleErrandType     = "errand"
 )
 
 type ManifestGenerator struct {
@@ -105,12 +105,12 @@ func (m ManifestGenerator) GenerateManifest(serviceDeployment serviceadapter.Ser
 		mongodJobs[0].AddSharedProvidesLink(MongodJobName)
 	}
 
-	configAgentJobs, err := gatherJobs(serviceDeployment.Releases, []string{ConfigAgentJobName, CleanupErrandJobName, BPMJobName, ConfigureBackupsErrandJobName})
+	configAgentJobs, err := gatherJobs(serviceDeployment.Releases, []string{ConfigAgentJobName, CleanupErrandJobName, BPMJobName, PostSetupErrandJobName})
 	if err != nil {
 		return serviceadapter.GenerateManifestOutput{}, err
 	}
 	if syslogProps["address"].(string) != "" {
-		configAgentJobs, err = gatherJobs(serviceDeployment.Releases, []string{ConfigAgentJobName, CleanupErrandJobName, SyslogJobName, BPMJobName, ConfigureBackupsErrandJobName})
+		configAgentJobs, err = gatherJobs(serviceDeployment.Releases, []string{ConfigAgentJobName, CleanupErrandJobName, SyslogJobName, BPMJobName, PostSetupErrandJobName})
 		if err != nil {
 			return serviceadapter.GenerateManifestOutput{}, err
 		}
@@ -267,7 +267,7 @@ func (m ManifestGenerator) GenerateManifest(serviceDeployment serviceadapter.Ser
 		Name:     serviceDeployment.DeploymentName,
 		Releases: releases,
 		Addons: []bosh.Addon{
-			bosh.Addon{
+			{
 				Name: "mongodb-dns-helpers",
 				Jobs: addonsJobs,
 			},

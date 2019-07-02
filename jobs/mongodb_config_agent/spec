@@ -7,8 +7,8 @@ packages:
 
 templates:
   bin/mongodb_config_agent_ctl.erb: bin/mongodb_config_agent_ctl
-  bin/post-start.erb: bin/post-start
   bin/pre-start.erb: bin/pre-start
+  bin/post-start.erb: bin/post-start
   config/bpm.yml.erb: config/bpm.yml
   config/cacert.pem.erb: config/cacert.pem
   config/mongodb_config_agent.json.erb: config/mongodb_config_agent.json
@@ -19,6 +19,7 @@ provides:
 - name: mongodb_config_agent
   type: config_agent
   properties:
+  - mongo_ops.admin_password
   - mongo_ops.agent_api_key
   - mongo_ops.api_key
   - mongo_ops.auth_key
