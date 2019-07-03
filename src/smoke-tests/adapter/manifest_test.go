@@ -37,7 +37,7 @@ var _ = Describe("Manifest", func() {
 					Version: "4.0.7",
 					Jobs: []string{adapter.MongodJobName, adapter.BPMJobName,
 						adapter.SyslogJobName, adapter.ConfigAgentJobName,
-						adapter.CleanupErrandJobName, adapter.ConfigureBackupsErrandJobName,
+						adapter.CleanupErrandJobName, adapter.PostSetupErrandJobName,
 						adapter.BoshDNSEnableJobName},
 				},
 			},
@@ -166,7 +166,7 @@ var _ = Describe("Manifest", func() {
 
 		It("returns error when cleanup_service job not exists ", func() {
 			serviceDeployment.Releases[0].Jobs = []string{adapter.MongodJobName,
-				adapter.BPMJobName, adapter.SyslogJobName, adapter.ConfigAgentJobName, adapter.ConfigureBackupsErrandJobName}
+				adapter.BPMJobName, adapter.SyslogJobName, adapter.ConfigAgentJobName, adapter.PostSetupErrandJobName}
 			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan, nil)
 
 			Expect(err.Error()).To(ContainSubstring("no release provided for job 'cleanup_service'"))
@@ -174,7 +174,7 @@ var _ = Describe("Manifest", func() {
 
 		It("returns error when bosh-dns-enable job not exists ", func() {
 			serviceDeployment.Releases[0].Jobs = []string{adapter.MongodJobName,
-				adapter.BPMJobName, adapter.CleanupErrandJobName, adapter.SyslogJobName, adapter.ConfigAgentJobName, adapter.ConfigureBackupsErrandJobName}
+				adapter.BPMJobName, adapter.CleanupErrandJobName, adapter.SyslogJobName, adapter.ConfigAgentJobName, adapter.PostSetupErrandJobName}
 			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan, nil)
 
 			Expect(err.Error()).To(ContainSubstring("no release provided for job 'bosh-dns-enable'"))
@@ -183,7 +183,7 @@ var _ = Describe("Manifest", func() {
 		It("returns error when no networks definition exists ", func() {
 			serviceDeployment.Releases[0].Jobs = []string{adapter.MongodJobName,
 				adapter.BPMJobName, adapter.BoshDNSEnableJobName, adapter.CleanupErrandJobName, adapter.SyslogJobName, adapter.ConfigAgentJobName,
-				adapter.ConfigureBackupsErrandJobName}
+				adapter.PostSetupErrandJobName}
 			plan.InstanceGroups[0].Networks = []string{}
 
 			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan, nil)

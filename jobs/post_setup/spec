@@ -1,5 +1,5 @@
 ---
-name: configure_backups
+name: post_setup
 
 templates:
   run.erb: bin/run
@@ -7,6 +7,8 @@ templates:
 consumes:
 - name: mongodb_config_agent
   type: config_agent
+- name: mongod_node
+  type: node
 
 packages:
   - jq
