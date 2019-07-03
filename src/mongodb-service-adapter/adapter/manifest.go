@@ -370,7 +370,6 @@ func (m ManifestGenerator) GenerateManifest(serviceDeployment serviceadapter.Ser
 		},
 	}
 
-	m.logf("generated manifest: %#v", manifest)
 	return serviceadapter.GenerateManifestOutput{
 		Manifest:          manifest,
 		ODBManagedSecrets: serviceadapter.ODBManagedSecrets{},
