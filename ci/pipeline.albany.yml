@@ -90,7 +90,7 @@ resources:
   source:
     bucket: ((aws-bucket))
     region_name: eu-west-1
-    regexp: mongodb-on-demand-(.*).pivotal
+    regexp: mongodb-on-demand-(1\.0.*).pivotal
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
 
@@ -166,7 +166,7 @@ jobs:
     - get: version
     - get: stemcell
       params:
-        globs: ["*azure*"]
+        globs: ["*google*"]
   - task: deploy-tile
     file: ops-manager-cloudfoundry/ci/tasks/deploy-tile/task.yml
     params:
