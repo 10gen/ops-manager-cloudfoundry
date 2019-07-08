@@ -60,10 +60,10 @@ func defaultServiceDeployment() serviceadapter.ServiceDeployment {
 				Jobs:    []string{"job_one", "job_two"},
 			},
 		},
-		Stemcell: serviceadapter.Stemcell{
+		Stemcells: []serviceadapter.Stemcell{{
 			OS:      "BeOS",
 			Version: "2",
-		},
+		}},
 	}
 }
 
@@ -73,6 +73,10 @@ func defaultRequestParams() serviceadapter.RequestParameters {
 
 func defaultSecretParams() serviceadapter.ManifestSecrets {
 	return serviceadapter.ManifestSecrets{"((/a/secret/path))": "some r34||y s3cr3t v41", "((another))": "one"}
+}
+
+func defaultDNSParams() serviceadapter.DNSAddresses {
+	return serviceadapter.DNSAddresses{"foo": "a.b.c", "bar": "d.e.f"}
 }
 
 func defaultPlan() serviceadapter.Plan {
@@ -140,6 +144,14 @@ func defaultPreviousManifest() bosh.BoshManifest {
 				Version: "3.1",
 			},
 		},
+	}
+}
+
+func defaultPreviousBoshConfigs() serviceadapter.BOSHConfigs {
+	return serviceadapter.BOSHConfigs{
+		"cloud-config":   "fake-cloud-config",
+		"cpi-config":     "fake-cpi-config",
+		"runtime-config": "fake-runtime-config",
 	}
 }
 

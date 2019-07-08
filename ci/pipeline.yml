@@ -17,7 +17,7 @@ resources:
 - name: ops-manager-cloudfoundry
   type: git
   source:
-    branch: master
+    branch: feature/CFTILE-31
     uri: git@github.com:10gen/ops-manager-cloudfoundry.git
     private_key: ((git-private-key))
 

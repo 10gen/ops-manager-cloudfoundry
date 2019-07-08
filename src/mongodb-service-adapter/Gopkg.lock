@@ -3,73 +3,81 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:362e2ee4601d53ab6cbb9e41de75455e5e15894a314ff6404a781226b3787587"
+  digest = "1:98a0a95c73a9b62d412530d393f5442bd2145c4bb9a100b6fcc02bbc55298e48"
   name = "code.cloudfoundry.org/lager"
-  packages = ["."]
+  packages = [
+    ".",
+    "internal/truncate",
+  ]
   pruneopts = ""
-  revision = "dad1709ff3726dd867211a53b8e17efc37a6cfb9"
+  revision = "54c4f2530ddeb742ce9c9ee26f5fa758d6c1b3b6"
 
 [[projects]]
-  digest = "1:20ed7daa9b3b38b6d1d39b48ab3fd31122be5419461470d0c28de3e121c93ecf"
-  name = "github.com/gorilla/context"
-  packages = ["."]
-  pruneopts = ""
-  revision = "1ea25387ff6f684839d82767c1733ff4d4d15d0a"
-  version = "v1.1"
-
-[[projects]]
-  digest = "1:a759b98c93c6dab29652eacd70cd7d0e88f02de8bc63051f787329966ec0a0ee"
+  digest = "1:883e2fdbdd0e577187bd8106fec775b1176059af267a7f40eba5308955c67d52"
   name = "github.com/gorilla/mux"
   packages = ["."]
   pruneopts = ""
-  revision = "7f08801859139f86dfafd1c296e2cba9a80d292e"
-  version = "v1.6.1"
+  revision = "00bdffe0f3c77e27d2cf6f5c70232a2d3e4d9c15"
+  version = "v1.7.3"
 
 [[projects]]
-  digest = "1:ffcdd9b3d302a4549cdd588bb358396c3ccb50046bff12751b1ec189b92dd8b3"
+  digest = "1:e397f3ce8424e8409089c7bcfbf8418e1662fa2dd39ebbdcd9869272172ef2ab"
   name = "github.com/pivotal-cf/brokerapi"
   packages = [
     ".",
     "auth",
+    "domain",
+    "domain/apiresponses",
+    "handlers",
+    "middlewares",
+    "utils",
   ]
   pruneopts = ""
-  revision = "4048f6de26b2169b7bc3063076b47964d02045eb"
-  version = "v3.0.7"
+  revision = "e7d54e46385921bf37584975d398ce8b35d5351c"
+  version = "v5.1.0"
 
 [[projects]]
-  digest = "1:603a3e047dbe2bc144ea5c46511b69d3f07b98b13358570a6e81f2ef672d028b"
+  digest = "1:52dddd33f3c2e815e93b6aea5c8a984583db4c6beae7ae7accb07acd42b3d5ac"
   name = "github.com/pivotal-cf/on-demand-services-sdk"
   packages = [
     "bosh",
     "serviceadapter",
   ]
   pruneopts = ""
-  revision = "980106fb549f2e8d7fa20b7c8f998e5d30706188"
-  version = "v0.24.0"
+  revision = "6e50ec91dba0e137c6cce2c15fc523b745f86db5"
+  version = "v0.31.0"
 
 [[projects]]
-  digest = "1:7365acd48986e205ccb8652cc746f09c8b7876030d53710ea6ef7d0bd0dcd7ca"
+  digest = "1:1d7e1867c49a6dd9856598ef7c3123604ea3daabf5b83f303ff457bcbc410b1d"
   name = "github.com/pkg/errors"
   packages = ["."]
   pruneopts = ""
-  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
-  version = "v0.8.0"
+  revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
+  version = "v0.8.1"
 
 [[projects]]
-  digest = "1:e139a0dfe24e723193005b291ed82a975041718cfcab9136aa6c9540df70a4ff"
+  digest = "1:30e9a79822702670b96d3461aca7da11b8cc6e7954eb4e859e886559ed4802a4"
   name = "github.com/tidwall/gjson"
   packages = ["."]
   pruneopts = ""
-  revision = "f123b340873a0084cb27267eddd8ff615115fbff"
-  version = "v1.1.2"
+  revision = "c5e72cdf74dff23857243dd662c465b810891c21"
+  version = "v1.3.2"
 
 [[projects]]
-  branch = "master"
-  digest = "1:4db4f92bb9cb04cfc4fccb36aba2598b02a988008c4cc0692b241214ad8ac96e"
+  digest = "1:72511ec1089fee111c995492d1d390a38ac7ab888aabdb1188985f2a1719c599"
   name = "github.com/tidwall/match"
   packages = ["."]
   pruneopts = ""
-  revision = "1731857f09b1f38450e2c12409748407822dc6be"
+  revision = "33827db735fff6510490d69a8622612558a557ed"
+  version = "v1.0.1"
+
+[[projects]]
+  digest = "1:1d7cab09854959fe179fe2f209400626f3dda9ec8e8b719c661d7b2add7b54b5"
+  name = "github.com/tidwall/pretty"
+  packages = ["."]
+  pruneopts = ""
+  revision = "1166b9ac2b65e46a43d8618d30d1554f4652d49b"
+  version = "v1.0.0"
 
 [[projects]]
   digest = "1:dd549e360e5a8f982a28c2bcbe667307ceffe538ed9afc7c965524f1ac285b3f"
@@ -81,7 +89,7 @@
 
 [[projects]]
   branch = "v2"
-  digest = "1:c80894778314c7fb90d94a5ab925214900e1341afeddc953cda7398b8cdcd006"
+  digest = "1:f54ba71a035aac92ced3e902d2bff3734a15d1891daff73ec0f90ef236750139"
   name = "gopkg.in/mgo.v2"
   packages = [
     ".",
@@ -91,15 +99,15 @@
     "internal/scram",
   ]
   pruneopts = ""
-  revision = "3f83fa5005286a7fe593b055f0d7771a7dce4655"
+  revision = "9856a29383ce1c59f308dd1cf0363a79b5bef6b5"
 
 [[projects]]
   branch = "v2"
-  digest = "1:f769ed60e075e4221612c2f4162fccc9d3795ef358fa463425e3b3d7a5debb27"
+  digest = "1:60ccede33d50c82c86e907255319a6f40dca4ac395e5ee143638176d3b871069"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   pruneopts = ""
-  revision = "287cf08546ab5e7e37d55a84f7ed3fd1db036de5"
+  revision = "7b8349ac747c6a24702b762d2c4fd9266cf4f1d6"
 
 [solve-meta]
   analyzer-name = "dep"
