@@ -212,6 +212,21 @@ var _ = Describe("Manifest", func() {
 			Expect(err.Error()).To(ContainSubstring("unknown plan"))
 		})
 
+		It("returns unable to find the latest MongoDB version from the MongoDB", func() {
+
+			previousManifest.InstanceGroups[1].Properties = map[string]interface{}{
+				"mongo_ops": map[interface{}]interface{}{
+					"admin_password": "admin",
+					"id":             "standalone",
+					"group_id":       "0123456789",
+					"agent_api_key":  config.APIKey,
+					"auth_key":       config.AuthKey,
+				},
+			}
+
+			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan, nil)
+			Expect(err.Error()).To(ContainSubstring("unable to find the latest MongoDB version from the MongoDB Ops Manager API"))
+		})
 	})
 
 })
