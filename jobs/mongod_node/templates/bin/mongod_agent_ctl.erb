@@ -19,7 +19,7 @@ case $1 in
     echo $$ > ${PIDFILE}
 
     # Start MongoDB Automation Agent
-    exec /var/vcap/packages/mongod-node/bin/mongodb-mms-automation-agent \
+    exec chpst -u vcap:vcap /var/vcap/packages/mongod-node/bin/mongodb-mms-automation-agent \
       --config=/var/vcap/jobs/mongod_node/config/local.conf \
       >>  ${LOG_DIR}/mongodb-automation-agent.stdout.log \
       2>> ${LOG_DIR}/mongodb-automation-agent.stderr.log
