@@ -17,7 +17,7 @@ resources:
 - name: ops-manager-cloudfoundry
   type: git
   source:
-    branch: master
+    branch: feature/CFTILE-27
     uri: git@github.com:10gen/ops-manager-cloudfoundry.git
     private_key: ((git-private-key))
 
@@ -44,7 +44,7 @@ resources:
   source:
     bucket: ((aws-bucket))
     region_name: eu-west-1
-    regexp: on-demand-service-broker-(.*).tgz
+    regexp: on-demand-service-broker-(0.24.*).tgz
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
 
@@ -81,7 +81,7 @@ resources:
   source:
     bucket: ((aws-bucket))
     region_name: eu-west-1
-    regexp: bpm-release-(.*).tgz
+    regexp: bpm-release-(1.0.*).tgz
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
 
@@ -90,7 +90,7 @@ resources:
   source:
     bucket: ((aws-bucket))
     region_name: eu-west-1
-    regexp: mongodb-on-demand-(1.0.*).pivotal
+    regexp: mongodb-on-demand-(1.*).pivotal
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
 
