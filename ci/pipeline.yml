@@ -98,7 +98,7 @@ resources:
   type: s3
   source:
     bucket: ((release-bucket))
-    regexp: mongodb-on-demand-(.*).pivotal
+    regexp: mongodb-on-demand-(1.*).pivotal
     region_name: eu-west-1
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
@@ -166,7 +166,7 @@ jobs:
     - get: version
     - get: stemcell
       params:
-        globs: ["*azure*"]
+        globs: ["*google*"]
   - task: deploy-tile
     file: ops-manager-cloudfoundry/ci/tasks/deploy-tile/task.yml
     params:
@@ -176,7 +176,7 @@ jobs:
       OM_API_KEY: ((om-api-key))
       PRODUCT_PROPERTIES: ((product_properties))
       PRODUCT_NETWORK_AZS: ((product_network_azs))
-      CONFIG: config
+      CONFIG: config.pie22
 
 - name: smoke-tests
   serial: true
