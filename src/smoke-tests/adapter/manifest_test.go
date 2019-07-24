@@ -81,7 +81,7 @@ var _ = Describe("Manifest", func() {
 
 		requestParams = serviceadapter.RequestParameters{
 			"parameters": map[string]interface{}{
-				"project_name": "Project 2",
+				"project_name": "Project 0",
 				"orgId":        config.OrgID,
 			},
 		}

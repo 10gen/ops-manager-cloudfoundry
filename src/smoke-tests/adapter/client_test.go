@@ -150,7 +150,7 @@ var _ = Describe("Client", func() {
 		})
 
 		It("returns no error", func() {
-			_, err := c.GetGroupByName("Project 2")
+			_, err := c.GetGroupByName("Project 0")
 			Expect(err).ToNot(HaveOccurred())
 		})
 	})
@@ -159,7 +159,7 @@ var _ = Describe("Client", func() {
 		It("returns no error when GroupCreateRequest is nil ", func() {
 			id, _ := adapter.GenerateString(10)
 			request := adapter.GroupCreateRequest{}
-			_, err := c.CreateGroup(id, request)
+			_, err = c.CreateGroup(id, request)
 			Expect(err).ToNot(HaveOccurred())
 		})
 
@@ -175,7 +175,7 @@ var _ = Describe("Client", func() {
 		It("returns no error ", func() {
 			id := "some-id"
 			request := adapter.GroupCreateRequest{
-				Name: "Project 2",
+				Name: "Project 0",
 			}
 			_, err := c.CreateGroup(id, request)
 			Expect(err).ToNot(HaveOccurred())
@@ -252,7 +252,7 @@ var _ = Describe("Client", func() {
 		})
 
 		It("returns no error", func() {
-			_, err = c.GetGroup(config.GroupID)
+			_, err := c.GetGroup(config.GroupID)
 			Expect(err).ToNot(HaveOccurred())
 		})
 
@@ -331,7 +331,7 @@ var _ = Describe("Client", func() {
 				Key:                     GetConfig().AuthKey,
 				AdminPassword:           "admin",
 				AutomationAgentPassword: "admin",
-				Nodes:                   []string{GetConfig().NodeAddresses},
+	                        Nodes:                   []string{GetConfig().NodeAddresses},
 				Version:                 latestVersion,
 				RequireSSL:              false,
 			}

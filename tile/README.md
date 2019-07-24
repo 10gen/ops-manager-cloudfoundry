@@ -14,7 +14,7 @@ The following should be installed on your local machine
 1. Check out PCF MongoDB On Demand tile generator repo:
 
     ```bash
-    git clone https://github.com/10gqn/ops-manager-cloudfoundry
+    git clone https://github.com/10gen/ops-manager-cloudfoundry
 
     ```
 2. Install GO, CF CLI, OM
