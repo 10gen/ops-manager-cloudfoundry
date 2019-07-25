@@ -14,3 +14,6 @@ processes:
       - path: /var/lib/mongodb-mms-automation
         writable: true
         allow_executions: true
+      - path: /var/vcap/data/packages/mongod-node/
+        writable: true
+        allow_executions: true
