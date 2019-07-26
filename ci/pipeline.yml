@@ -17,7 +17,7 @@ resources:
 - name: ops-manager-cloudfoundry
   type: git
   source:
-    branch: master
+    branch: 1.1.0
     uri: git@github.com:10gen/ops-manager-cloudfoundry.git
     private_key: ((git-private-key))
 
@@ -33,11 +33,11 @@ resources:
   source:
     driver: s3
     bucket: ((aws-bucket))
-    key: version
+    key: versionRelease
     region_name: eu-west-1
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
-    initial_version: 1.0.34
+    initial_version: 1.1.0
 
 - name: on-demand-service-broker-release
   type: s3

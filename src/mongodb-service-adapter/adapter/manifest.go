@@ -260,7 +260,7 @@ func (m ManifestGenerator) GenerateManifest(serviceDeployment serviceadapter.Ser
 		Canaries:        1,
 		CanaryWatchTime: "3000-180000",
 		UpdateWatchTime: "3000-180000",
-		MaxInFlight:     4,
+		MaxInFlight:     1,
 	}
 
 	manifest := bosh.BoshManifest{
@@ -370,7 +370,6 @@ func (m ManifestGenerator) GenerateManifest(serviceDeployment serviceadapter.Ser
 		},
 	}
 
-	m.logf("generated manifest: %#v", manifest)
 	return serviceadapter.GenerateManifestOutput{
 		Manifest:          manifest,
 		ODBManagedSecrets: serviceadapter.ODBManagedSecrets{},

@@ -125,10 +125,6 @@ func (b Binder) CreateBinding(bindingID string, deploymentTopology bosh.BoshVMs,
 		strings.Join(connectionOptions, ""),
 	)
 
-	b.logf("url: %s", url)
-	b.logf("username: %s", username)
-	b.logf("password: %s", password)
-
 	return serviceadapter.Binding{
 		Credentials: map[string]interface{}{
 			"username": username,
