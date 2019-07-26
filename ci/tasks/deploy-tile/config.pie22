@@ -40,7 +40,7 @@ resource-config:
       size_mb: automatic
     instance_type:
       id: automatic
-    internet_connected: false
+    internet_connected: true
 errand-config:
   delete-all-service-instances:
     pre-delete-state: true
