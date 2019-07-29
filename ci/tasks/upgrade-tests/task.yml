@@ -9,10 +9,5 @@ image_resource:
 inputs:
 - name: ops-manager-cloudfoundry
 
-params:
-  PCF_URL:
-  PCF_USERNAME:
-  PCF_PASSWORD:
-
 run:
-  path: ops-manager-cloudfoundry/ci/tasks/delete-tile/run.sh
+  path: ops-manager-cloudfoundry/ci/tasks/upgrade-tests/run.sh

@@ -123,10 +123,6 @@ func (b Binder) CreateBinding(params serviceadapter.CreateBindingParams) (servic
 		strings.Join(connectionOptions, ""),
 	)
 
-	b.logf("url: %s", url)
-	b.logf("username: %s", username)
-	b.logf("password: %s", password)
-
 	return serviceadapter.Binding{
 		Credentials: map[string]interface{}{
 			"username": username,

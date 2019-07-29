@@ -117,7 +117,7 @@ var _ = Describe("MongoDB Service", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		// Set $CF_HOME so that cf cli state is not shared between nodes
-		cfHomeDir, err := ioutil.TempDir("", "cf-redis-smoke-tests")
+		cfHomeDir, err := ioutil.TempDir("", "cf-mongodb-smoke-tests")
 		Expect(err).NotTo(HaveOccurred())
 		os.Setenv("CF_HOME", cfHomeDir)
 	})
