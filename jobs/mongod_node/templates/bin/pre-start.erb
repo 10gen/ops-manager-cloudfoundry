@@ -58,7 +58,10 @@ tar xvzf ${TMP_DIR}/mongodb.agent.tgz -C ${TMP_DIR}
 
 mkdir -p  /var/vcap/packages/mongod-node/bin
 cp -f ${TMP_DIR}/**/mongodb-mms-automation-agent /var/vcap/packages/mongod-node/bin
+cp -f ${TMP_DIR}/**/mongodb-mms-automation-agent /var/lib/mongodb-mms-automation
+
 chmod -R 777 /var/vcap/packages/mongod-node/bin
+chmod -R 777 /var/lib/mongodb-mms-automation
 
 <%
   this_host = "#{spec.name.gsub('_', '-')}-#{spec.index}"
