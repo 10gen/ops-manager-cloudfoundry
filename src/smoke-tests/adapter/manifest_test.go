@@ -61,8 +61,8 @@ var _ = Describe("Manifest", func() {
 					"tags":             nil,
 				},
 				"syslog": map[string]interface{}{
-					"address":        config.NodeAddresses,
-					"port":           "28000",
+					"address":        10.0.8.4,
+					"port":           554,
 					"transport":      "tls",
 					"tls_enabled":    false,
 					"permitted_peer": 1,
