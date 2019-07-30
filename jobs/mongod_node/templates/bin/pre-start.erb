@@ -57,8 +57,9 @@ wget --quiet --no-check-certificate -O ${TMP_DIR}/mongodb.agent.tgz "${DOWNLOAD}
 tar xvzf ${TMP_DIR}/mongodb.agent.tgz -C ${TMP_DIR}
 
 mkdir -p  /var/vcap/packages/mongod-node/bin
+mkdir -p  /var/lib/mongodb-mms-automation/bin
 cp -f ${TMP_DIR}/**/mongodb-mms-automation-agent /var/vcap/packages/mongod-node/bin
-cp -f ${TMP_DIR}/**/mongodb-mms-automation-agent /var/lib/mongodb-mms-automation
+cp -f ${TMP_DIR}/**/mongodb-mms-automation-agent /var/lib/mongodb-mms-automation/bin/
 
 chmod -R 777 /var/vcap/packages/mongod-node/bin
 chmod -R 777 /var/lib/mongodb-mms-automation
