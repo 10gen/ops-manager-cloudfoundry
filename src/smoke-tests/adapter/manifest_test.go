@@ -1,7 +1,6 @@
 package adapter_test
 
 import (
-	"fmt"
 	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/adapter"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -62,8 +61,8 @@ var _ = Describe("Manifest", func() {
 					"tags":             nil,
 				},
 				"syslog": map[string]interface{}{
-					"address":        config.NodeAddresses,
-					"port":           "28000",
+					"address":        10.0.8.4,
+					"port":           554,
 					"transport":      "tls",
 					"tls_enabled":    false,
 					"permitted_peer": 1,
@@ -154,6 +153,15 @@ var _ = Describe("Manifest", func() {
 			_, err = mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan, nil)
 
 			Expect(err.Error()).To(ContainSubstring("no release provided for job 'syslog_forwarder'"))
+		})
+
+		It("returns error when SyslogJobName job not exists ", func() {
+			serviceDeployment.Releases[0].Jobs = []string{adapter.ConfigAgentJobName,
+				adapter.CleanupErrandJobName, adapter.BPMJobName, adapter.PostSetupErrandJobName,
+			}
+			_, err := mGenerator.GenerateManifest(serviceDeployment, plan, requestParams, previousManifest, previousPlan, nil)
+
+			Expect(err).To(HaveOccurred())
 		})
 
 		It("returns error when mongodb_config_agent job not exists ", func() {
