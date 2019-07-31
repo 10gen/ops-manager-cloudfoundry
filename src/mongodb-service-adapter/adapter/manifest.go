@@ -15,7 +15,6 @@ const (
 	MongodJobName           = "mongod_node"
 	AliasesJobName          = "mongodb-dns-aliases"
 	SyslogJobName           = "syslog_forwarder"
-	BPMJobName              = "bpm"
 	BoshDNSEnableJobName    = "bosh-dns-enable"
 	ConfigAgentJobName      = "mongodb_config_agent"
 	CleanupErrandJobName    = "cleanup_service"
@@ -33,19 +32,13 @@ func (m *ManifestGenerator) logf(msg string, v ...interface{}) {
 	}
 }
 
-func (m ManifestGenerator) GenerateManifest(serviceDeployment serviceadapter.ServiceDeployment,
-	plan serviceadapter.Plan,
-	requestParams serviceadapter.RequestParameters,
-	previousManifest *bosh.BoshManifest,
-	previousPlan *serviceadapter.Plan,
-	previousSecrets serviceadapter.ManifestSecrets) (serviceadapter.GenerateManifestOutput, error) {
+func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManifestParams) (serviceadapter.GenerateManifestOutput, error) {
+	m.logf("request params: %#v", params.RequestParams)
 
-	m.logf("request params: %#v", requestParams)
+	arbitraryParams := params.RequestParams.ArbitraryParams()
 
-	arbitraryParams := requestParams.ArbitraryParams()
-
-	mongoOps := plan.Properties["mongo_ops"].(map[string]interface{})
-	syslogProps := plan.Properties["syslog"].(map[string]interface{})
+	mongoOps := params.Plan.Properties["mongo_ops"].(map[string]interface{})
+	syslogProps := params.Plan.Properties["syslog"].(map[string]interface{})
 
 	username := mongoOps["username"].(string)
 	apiKey := mongoOps["api_key"].(string)
@@ -59,8 +52,8 @@ func (m ManifestGenerator) GenerateManifest(serviceDeployment serviceadapter.Ser
 
 	var previousMongoProperties map[interface{}]interface{}
 
-	if previousManifest != nil {
-		previousMongoProperties = mongoPlanProperties(*previousManifest)
+	if params.PreviousManifest != nil {
+		previousMongoProperties = mongoPlanProperties(*params.PreviousManifest)
 	}
 
 	adminPassword, err := passwordForMongoServer(previousMongoProperties)
@@ -73,50 +66,50 @@ func (m ManifestGenerator) GenerateManifest(serviceDeployment serviceadapter.Ser
 		return serviceadapter.GenerateManifestOutput{}, err
 	}
 
-	group, err := groupForMongoServer(id, oc, plan.Properties, previousMongoProperties, arbitraryParams)
+	group, err := groupForMongoServer(id, oc, params.Plan.Properties, previousMongoProperties, arbitraryParams)
 	if err != nil {
 		return serviceadapter.GenerateManifestOutput{}, fmt.Errorf("could not create new group (%s)", err.Error())
 	}
 	m.logf("created group %s", group.ID)
 
 	releases := []bosh.Release{}
-	for _, release := range serviceDeployment.Releases {
+	for _, release := range params.ServiceDeployment.Releases {
 		releases = append(releases, bosh.Release{
 			Name:    release.Name,
 			Version: release.Version,
 		})
 	}
 
-	mongodInstanceGroup := findInstanceGroup(plan, MongodInstanceGroupName)
+	mongodInstanceGroup := findInstanceGroup(params.Plan, MongodInstanceGroupName)
 	if mongodInstanceGroup == nil {
 		return serviceadapter.GenerateManifestOutput{}, fmt.Errorf("no definition found for instance group '%s'", MongodInstanceGroupName)
 	}
 
-	mongodJobs, err := gatherJobs(serviceDeployment.Releases, []string{MongodJobName, BPMJobName})
+	mongodJobs, err := gatherJobs(params.ServiceDeployment.Releases, []string{MongodJobName})
 	if err != nil {
 		return serviceadapter.GenerateManifestOutput{}, err
 	}
 	mongodJobs[0].AddSharedProvidesLink(MongodJobName)
 	if syslogProps["address"].(string) != "" {
-		mongodJobs, err = gatherJobs(serviceDeployment.Releases, []string{MongodJobName, SyslogJobName, BPMJobName})
+		mongodJobs, err = gatherJobs(params.ServiceDeployment.Releases, []string{MongodJobName, SyslogJobName})
 		if err != nil {
 			return serviceadapter.GenerateManifestOutput{}, err
 		}
 		mongodJobs[0].AddSharedProvidesLink(MongodJobName)
 	}
 
-	configAgentJobs, err := gatherJobs(serviceDeployment.Releases, []string{ConfigAgentJobName, CleanupErrandJobName, BPMJobName, PostSetupErrandJobName})
+	configAgentJobs, err := gatherJobs(params.ServiceDeployment.Releases, []string{ConfigAgentJobName, CleanupErrandJobName, PostSetupErrandJobName})
 	if err != nil {
 		return serviceadapter.GenerateManifestOutput{}, err
 	}
 	if syslogProps["address"].(string) != "" {
-		configAgentJobs, err = gatherJobs(serviceDeployment.Releases, []string{ConfigAgentJobName, CleanupErrandJobName, SyslogJobName, BPMJobName, PostSetupErrandJobName})
+		configAgentJobs, err = gatherJobs(params.ServiceDeployment.Releases, []string{ConfigAgentJobName, CleanupErrandJobName, SyslogJobName, PostSetupErrandJobName})
 		if err != nil {
 			return serviceadapter.GenerateManifestOutput{}, err
 		}
 	}
 
-	addonsJobs, err := gatherJobs(serviceDeployment.Releases, []string{BoshDNSEnableJobName})
+	addonsJobs, err := gatherJobs(params.ServiceDeployment.Releases, []string{BoshDNSEnableJobName})
 	if err != nil {
 		return serviceadapter.GenerateManifestOutput{}, err
 	}
@@ -168,7 +161,7 @@ func (m ManifestGenerator) GenerateManifest(serviceDeployment serviceadapter.Ser
 	// sharded_cluster: shards*replicas + config_servers + mongos
 	instances := mongodInstanceGroup.Instances
 
-	planID := plan.Properties["id"].(string)
+	planID := params.Plan.Properties["id"].(string)
 	switch planID {
 	case PlanStandalone:
 		// ok
@@ -230,7 +223,7 @@ func (m ManifestGenerator) GenerateManifest(serviceDeployment serviceadapter.Ser
 		}
 	}
 
-	if previousManifest == nil {
+	if params.PreviousManifest == nil {
 		var err error
 		group.AuthAgentPassword, err = GenerateString(32)
 		if err != nil {
@@ -239,7 +232,7 @@ func (m ManifestGenerator) GenerateManifest(serviceDeployment serviceadapter.Ser
 	}
 
 	// if manifest updates we should use password from previous manifest
-	if group.AuthAgentPassword == "" && previousManifest != nil {
+	if group.AuthAgentPassword == "" && params.PreviousManifest != nil {
 		var err error
 		group.AuthAgentPassword, err = oc.GetGroupAuthAgentPassword(group.ID)
 		if err != nil {
@@ -264,7 +257,7 @@ func (m ManifestGenerator) GenerateManifest(serviceDeployment serviceadapter.Ser
 	}
 
 	manifest := bosh.BoshManifest{
-		Name:     serviceDeployment.DeploymentName,
+		Name:     params.ServiceDeployment.DeploymentName,
 		Releases: releases,
 		Addons: []bosh.Addon{
 			{
@@ -275,8 +268,8 @@ func (m ManifestGenerator) GenerateManifest(serviceDeployment serviceadapter.Ser
 		Stemcells: []bosh.Stemcell{
 			{
 				Alias:   StemcellAlias,
-				OS:      serviceDeployment.Stemcell.OS,
-				Version: serviceDeployment.Stemcell.Version,
+				OS:      params.ServiceDeployment.Stemcells[0].OS,
+				Version: params.ServiceDeployment.Stemcells[0].Version,
 			},
 		},
 		InstanceGroups: []bosh.InstanceGroup{

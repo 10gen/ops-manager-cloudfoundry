@@ -38,6 +38,7 @@ var _ = Describe("GenerateManifest", func() {
 		previousPlan          serviceadapter.Plan
 		previousManifest      bosh.BoshManifest
 		secretsMap            serviceadapter.ManifestSecrets
+		previousBoshConfigs   serviceadapter.BOSHConfigs
 		expectedInputParams   serviceadapter.InputParams
 		action                *serviceadapter.GenerateManifestAction
 		outputBuffer          *gbytes.Buffer
@@ -53,10 +54,11 @@ var _ = Describe("GenerateManifest", func() {
 		secretsMap = serviceadapter.ManifestSecrets{
 			"foo": "b4r",
 		}
+		previousBoshConfigs = defaultPreviousBoshConfigs()
 		outputBuffer = gbytes.NewBuffer()
 
 		expectedInputParams = serviceadapter.InputParams{
-			GenerateManifest: serviceadapter.GenerateManifestParams{
+			GenerateManifest: serviceadapter.GenerateManifestJSONParams{
 				ServiceDeployment: toJson(serviceDeployment),
 				Plan:              toJson(plan),
 				PreviousPlan:      toJson(previousPlan),
@@ -84,6 +86,7 @@ var _ = Describe("GenerateManifest", func() {
 		When("giving arguments in stdin", func() {
 			It("can parse arguments from stdin", func() {
 				expectedInputParams.GenerateManifest.PreviousSecrets = toJson(secretsMap)
+				expectedInputParams.GenerateManifest.PreviousConfigs = toJson(previousBoshConfigs)
 				input := bytes.NewBuffer([]byte(toJson(expectedInputParams)))
 				actualInputParams, err := action.ParseArgs(input, []string{})
 
@@ -144,27 +147,52 @@ var _ = Describe("GenerateManifest", func() {
 	Describe("Execute", func() {
 		It("calls the supplied handler passing args through", func() {
 			manifest := bosh.BoshManifest{Name: "bill"}
-			fakeManifestGenerator.GenerateManifestReturns(serviceadapter.GenerateManifestOutput{Manifest: manifest, ODBManagedSecrets: serviceadapter.ODBManagedSecrets{}}, nil)
+			fakeManifestGenerator.GenerateManifestReturns(serviceadapter.GenerateManifestOutput{
+				Manifest:          manifest,
+				ODBManagedSecrets: serviceadapter.ODBManagedSecrets{},
+				Configs:           serviceadapter.BOSHConfigs{},
+			}, nil)
 
 			expectedInputParams.GenerateManifest.PreviousSecrets = toJson(secretsMap)
+			expectedInputParams.GenerateManifest.PreviousConfigs = toJson(previousBoshConfigs)
 			err := action.Execute(expectedInputParams, outputBuffer)
 
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(fakeManifestGenerator.GenerateManifestCallCount()).To(Equal(1))
-			actualServiceDeployment, actualPlan, actualRequestParams, actualPreviousManifest, actualPreviousPlan, actualSecretsMap :=
-				fakeManifestGenerator.GenerateManifestArgsForCall(0)
+			actualParams := fakeManifestGenerator.GenerateManifestArgsForCall(0)
 
-			Expect(actualServiceDeployment).To(Equal(serviceDeployment))
-			Expect(actualPlan).To(Equal(plan))
-			Expect(actualRequestParams).To(Equal(requestParams))
-			Expect(actualPreviousManifest).To(Equal(&previousManifest))
-			Expect(actualPreviousPlan).To(Equal(&previousPlan))
-			Expect(actualSecretsMap).To(Equal(secretsMap))
+			Expect(actualParams.ServiceDeployment).To(Equal(serviceDeployment))
+			Expect(actualParams.Plan).To(Equal(plan))
+			Expect(actualParams.RequestParams).To(Equal(requestParams))
+			Expect(actualParams.PreviousManifest).To(Equal(&previousManifest))
+			Expect(actualParams.PreviousPlan).To(Equal(&previousPlan))
+			Expect(actualParams.PreviousSecrets).To(Equal(secretsMap))
+			Expect(actualParams.PreviousConfigs).To(Equal(previousBoshConfigs))
 
 			var output serviceadapter.MarshalledGenerateManifest
 			Expect(json.Unmarshal(outputBuffer.Contents(), &output)).To(Succeed())
 			Expect(output.Manifest).To(Equal(toYaml(manifest)))
+		})
+
+		It("returns the bosh configs", func() {
+			manifest := bosh.BoshManifest{Name: "bill"}
+			expectedBoshConfigs := serviceadapter.BOSHConfigs{
+				"foo": "{}",
+			}
+			fakeManifestGenerator.GenerateManifestReturns(serviceadapter.GenerateManifestOutput{
+				Manifest: manifest,
+				Configs:  expectedBoshConfigs,
+			}, nil)
+
+			err := action.Execute(expectedInputParams, outputBuffer)
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(fakeManifestGenerator.GenerateManifestCallCount()).To(Equal(1))
+
+			var output serviceadapter.MarshalledGenerateManifest
+			Expect(json.Unmarshal(outputBuffer.Contents(), &output)).To(Succeed())
+			Expect(output.Configs).To(Equal(expectedBoshConfigs))
 		})
 
 		When("not outputting json", func() {
@@ -227,6 +255,12 @@ var _ = Describe("GenerateManifest", func() {
 				expectedInputParams.GenerateManifest.PreviousPlan = "{}"
 				err := action.Execute(expectedInputParams, outputBuffer)
 				Expect(err).To(MatchError(ContainSubstring("validating previous service plan")))
+			})
+
+			It("returns an error when previous configs is invalid", func() {
+				expectedInputParams.GenerateManifest.PreviousConfigs = "not-json"
+				err := action.Execute(expectedInputParams, outputBuffer)
+				Expect(err).To(MatchError(ContainSubstring("unmarshalling previous configs")))
 			})
 
 			It("returns an error when manifestGenerator returns an error", func() {

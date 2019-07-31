@@ -67,10 +67,10 @@ var (
 				Jobs:    []string{"job_one", "job_two"},
 			},
 		},
-		Stemcell: serviceadapter.Stemcell{
+		Stemcells: []serviceadapter.Stemcell{{
 			OS:      "BeOS",
 			Version: "2",
-		},
+		}},
 	}
 
 	expectedCurrentPlan = serviceadapter.Plan{
@@ -241,7 +241,7 @@ var _ = Describe("Command line handler", func() {
 
 			It("succeeds", func() {
 				rawInputParams := serviceadapter.InputParams{
-					GenerateManifest: serviceadapter.GenerateManifestParams{
+					GenerateManifest: serviceadapter.GenerateManifestJSONParams{
 						ServiceDeployment: toJson(expectedServiceDeployment),
 						Plan:              toJson(expectedCurrentPlan),
 						PreviousPlan:      toJson(expectedPreviousPlan),
@@ -266,7 +266,7 @@ var _ = Describe("Command line handler", func() {
 
 			It("succeeds with optional parameters", func() {
 				rawInputParams := serviceadapter.InputParams{
-					GenerateManifest: serviceadapter.GenerateManifestParams{
+					GenerateManifest: serviceadapter.GenerateManifestJSONParams{
 						ServiceDeployment: toJson(expectedServiceDeployment),
 						Plan:              toJson(expectedCurrentPlan),
 						PreviousPlan:      toJson(expectedPreviousPlan),
@@ -287,7 +287,7 @@ var _ = Describe("Command line handler", func() {
 
 			It("logs and exits with 1 when a required field param is missing", func() {
 				rawInputParams := serviceadapter.InputParams{
-					GenerateManifest: serviceadapter.GenerateManifestParams{
+					GenerateManifest: serviceadapter.GenerateManifestJSONParams{
 						ServiceDeployment: toJson(expectedServiceDeployment),
 						Plan:              "{}",
 						PreviousPlan:      toJson(expectedPreviousPlan),
@@ -305,7 +305,7 @@ var _ = Describe("Command line handler", func() {
 
 			It("exits 1 and logs when a generic error occurs", func() {
 				rawInputParams := serviceadapter.InputParams{
-					GenerateManifest: serviceadapter.GenerateManifestParams{
+					GenerateManifest: serviceadapter.GenerateManifestJSONParams{
 						ServiceDeployment: toJson(expectedServiceDeployment),
 						Plan:              toJson(expectedCurrentPlan),
 						PreviousPlan:      toJson(expectedPreviousPlan),
@@ -372,7 +372,7 @@ var _ = Describe("Command line handler", func() {
 
 			BeforeEach(func() {
 				rawInputParams = serviceadapter.InputParams{
-					CreateBinding: serviceadapter.CreateBindingParams{
+					CreateBinding: serviceadapter.CreateBindingJSONParams{
 						BoshVms:           toJson(expectedBoshVMs),
 						BindingId:         expectedBindingID,
 						RequestParameters: toJson(expectedRequestParams),
@@ -463,7 +463,7 @@ var _ = Describe("Command line handler", func() {
 			var rawInputParams serviceadapter.InputParams
 			BeforeEach(func() {
 				rawInputParams = serviceadapter.InputParams{
-					DeleteBinding: serviceadapter.DeleteBindingParams{
+					DeleteBinding: serviceadapter.DeleteBindingJSONParams{
 						BoshVms:           toJson(expectedBoshVMs),
 						BindingId:         expectedBindingID,
 						RequestParameters: toJson(expectedRequestParams),
@@ -550,7 +550,7 @@ var _ = Describe("Command line handler", func() {
 
 			It("succeeds", func() {
 				rawInputParams := serviceadapter.InputParams{
-					DashboardUrl: serviceadapter.DashboardUrlParams{
+					DashboardUrl: serviceadapter.DashboardUrlJSONParams{
 						InstanceId: "some-id",
 						Plan:       toJson(expectedCurrentPlan),
 						Manifest:   toYaml(expectedManifest),
@@ -570,7 +570,7 @@ var _ = Describe("Command line handler", func() {
 
 			It("exits with 1 if a generic error occurs", func() {
 				rawInputParams := serviceadapter.InputParams{
-					DashboardUrl: serviceadapter.DashboardUrlParams{
+					DashboardUrl: serviceadapter.DashboardUrlJSONParams{
 						InstanceId: "some-id",
 						Plan:       toJson(expectedCurrentPlan),
 						Manifest:   toYaml(expectedManifest),
@@ -651,7 +651,7 @@ var _ = Describe("Command line handler", func() {
 
 			It("returns 0 and output the schema for a plan", func() {
 				rawInputParams := serviceadapter.InputParams{
-					GeneratePlanSchemas: serviceadapter.GeneratePlanSchemasParams{
+					GeneratePlanSchemas: serviceadapter.GeneratePlanSchemasJSONParams{
 						Plan: toJson(expectedCurrentPlan),
 					},
 				}
@@ -685,7 +685,7 @@ var _ = Describe("Command line handler", func() {
 
 			It("returns 1 if an error occurred while generating the schema", func() {
 				rawInputParams := serviceadapter.InputParams{
-					GeneratePlanSchemas: serviceadapter.GeneratePlanSchemasParams{
+					GeneratePlanSchemas: serviceadapter.GeneratePlanSchemasJSONParams{
 						Plan: toJson(expectedCurrentPlan),
 					},
 				}

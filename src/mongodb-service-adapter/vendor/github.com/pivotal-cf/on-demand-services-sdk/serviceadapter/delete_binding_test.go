@@ -19,6 +19,7 @@ var _ = Describe("DeleteBinding", func() {
 		boshVMs       bosh.BoshVMs
 		requestParams serviceadapter.RequestParameters
 		secrets       serviceadapter.ManifestSecrets
+		dnsAddresses  serviceadapter.DNSAddresses
 		manifest      bosh.BoshManifest
 
 		expectedInputParams serviceadapter.InputParams
@@ -32,11 +33,12 @@ var _ = Describe("DeleteBinding", func() {
 		boshVMs = bosh.BoshVMs{}
 		requestParams = defaultRequestParams()
 		secrets = defaultSecretParams()
+		dnsAddresses = defaultDNSParams()
 		manifest = defaultManifest()
 		outputBuffer = gbytes.NewBuffer()
 
 		expectedInputParams = serviceadapter.InputParams{
-			DeleteBinding: serviceadapter.DeleteBindingParams{
+			DeleteBinding: serviceadapter.DeleteBindingJSONParams{
 				BindingId:         bindingId,
 				BoshVms:           toJson(boshVMs),
 				Manifest:          toYaml(manifest),
@@ -61,7 +63,8 @@ var _ = Describe("DeleteBinding", func() {
 	Describe("ParseArgs", func() {
 		When("giving arguments in stdin", func() {
 			It("can parse arguments from stdin", func() {
-				expectedInputParams.DeleteBinding.Secrets = toJson(defaultSecretParams())
+				expectedInputParams.DeleteBinding.Secrets = toJson(secrets)
+				expectedInputParams.DeleteBinding.DNSAddresses = toJson(dnsAddresses)
 				input := bytes.NewBuffer([]byte(toJson(expectedInputParams)))
 				actualInputParams, err := action.ParseArgs(input, []string{})
 
@@ -116,18 +119,20 @@ var _ = Describe("DeleteBinding", func() {
 			fakeBinder.DeleteBindingReturns(nil)
 
 			expectedInputParams.DeleteBinding.Secrets = toJson(secrets)
+			expectedInputParams.DeleteBinding.DNSAddresses = toJson(dnsAddresses)
 			err := action.Execute(expectedInputParams, outputBuffer)
 
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(fakeBinder.DeleteBindingCallCount()).To(Equal(1))
-			actualBindingId, actualBoshVms, actualManifest, actualRequestParams, actualSecrets := fakeBinder.DeleteBindingArgsForCall(0)
+			params := fakeBinder.DeleteBindingArgsForCall(0)
 
-			Expect(actualBindingId).To(Equal(bindingId))
-			Expect(actualBoshVms).To(Equal(boshVMs))
-			Expect(actualManifest).To(Equal(manifest))
-			Expect(actualRequestParams).To(Equal(requestParams))
-			Expect(actualSecrets).To(Equal(secrets))
+			Expect(params.BindingID).To(Equal(bindingId))
+			Expect(params.DeploymentTopology).To(Equal(boshVMs))
+			Expect(params.Manifest).To(Equal(manifest))
+			Expect(params.RequestParams).To(Equal(requestParams))
+			Expect(params.Secrets).To(Equal(secrets))
+			Expect(params.DNSAddresses).To(Equal(dnsAddresses))
 		})
 
 		Context("error handling", func() {
@@ -153,6 +158,12 @@ var _ = Describe("DeleteBinding", func() {
 				expectedInputParams.DeleteBinding.Secrets = "not-json"
 				err := action.Execute(expectedInputParams, outputBuffer)
 				Expect(err).To(MatchError(ContainSubstring("unmarshalling secrets")))
+			})
+
+			It("returns an error when DNS addresses cannot be unmarshalled", func() {
+				expectedInputParams.DeleteBinding.DNSAddresses = "not-json"
+				err := action.Execute(expectedInputParams, outputBuffer)
+				Expect(err).To(MatchError(ContainSubstring("unmarshalling DNS addresses")))
 			})
 
 			It("returns an error when binder returns an error", func() {
