@@ -65,9 +65,9 @@ cp -f ${TMP_DIR}/**/mongodb-mms-automation-agent /var/vcap/packages/mongod-node/
 %>
 
 <% if conn.p('mongo_ops.bosh_dns_disable') %>
-hostname <%= spec.address %>
+hostnamectl set-hostname <%= spec.address %>
 <% else %>
-hostname '<%= spec.id %>.mongodb.internal'
+hostnamectl set-hostname '<%= spec.id %>.mongodb.internal'
 <% end %>
 
 # Install libsnmp30
