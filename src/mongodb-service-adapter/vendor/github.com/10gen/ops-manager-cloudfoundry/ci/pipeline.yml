@@ -1,0 +1,375 @@
+---
+groups:
+  - name: mongodb-on-demand
+    jobs:
+      - build-tile
+      - deploy-tile
+      - delete-tile
+      - smoke-tests
+      - shipit
+  - name: versioning
+    jobs:
+      - patch
+      - major
+      - minor
+
+resources:
+- name: ops-manager-cloudfoundry
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:10gen/ops-manager-cloudfoundry.git
+    private_key: ((git-private-key))
+
+- name: stemcell
+  type: pivnet
+  source:
+    api_token: ((pivnet-token))
+    product_slug: stemcells-ubuntu-xenial
+    product_version: '170.69'
+
+- name: version
+  type: semver
+  source:
+    driver: s3
+    bucket: ((aws-bucket))
+    key: versionRelease
+    region_name: eu-west-1
+    access_key_id: ((aws-access-key))
+    secret_access_key: ((aws-secret-access-key))
+    initial_version: 1.1.0
+
+- name: on-demand-service-broker-release
+  type: s3
+  source:
+    bucket: ((aws-bucket))
+    region_name: eu-west-1
+    regexp: on-demand-service-broker-(.*).tgz
+    access_key_id: ((aws-access-key))
+    secret_access_key: ((aws-secret-access-key))
+
+- name: mongodb
+  type: s3
+  source:
+    bucket: ((aws-bucket))
+    region_name: eu-west-1
+    regexp: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
+
+    access_key_id: ((aws-access-key))
+    secret_access_key: ((aws-secret-access-key))
+
+- name: pcf-mongodb-helpers
+  type: s3
+  source:
+    bucket: ((aws-bucket))
+    region_name: eu-west-1
+    regexp: pcf-mongodb-helpers-(.*).tgz
+    access_key_id: ((aws-access-key))
+    secret_access_key: ((aws-secret-access-key))
+
+- name: syslog-migration-release
+  type: s3
+  source:
+    bucket: ((aws-bucket))
+    region_name: eu-west-1
+    regexp: syslog-migration-(.*).tgz
+    access_key_id: ((aws-access-key))
+    secret_access_key: ((aws-secret-access-key))
+
+- name: bpm-release
+  type: s3
+  source:
+    bucket: ((aws-bucket))
+    region_name: eu-west-1
+    regexp: bpm-release-(.*).tgz
+    access_key_id: ((aws-access-key))
+    secret_access_key: ((aws-secret-access-key))
+
+- name: artifacts
+  type: s3
+  source:
+    bucket: ((aws-bucket))
+    region_name: eu-west-1
+    regexp: mongodb-on-demand-(.*).pivotal
+    access_key_id: ((aws-access-key))
+    secret_access_key: ((aws-secret-access-key))
+
+- name: release
+  type: s3
+  source:
+    bucket: ((release-bucket))
+    regexp: mongodb-on-demand-(.*).pivotal
+    region_name: eu-west-1
+    access_key_id: ((aws-access-key))
+    secret_access_key: ((aws-secret-access-key))
+
+- name: "build-status"
+  type: "github-status"
+  source:
+    repository: 10gen/ops-manager-cloudfoundry
+    access_token: ((repo-github-token))
+    context: build-tile
+
+- name: "deploy-status"
+  type: "github-status"
+  source:
+    repository: 10gen/ops-manager-cloudfoundry
+    access_token: ((repo-github-token))
+    context: deploy-tile
+
+- name: "test-status"
+  type: "github-status"
+  source:
+    repository: 10gen/ops-manager-cloudfoundry
+    access_token: ((repo-github-token))
+    context: smoke-tests
+
+resource_types:
+- name: pivnet
+  type: docker-image
+  source:
+    repository: pivotalcf/pivnet-resource
+    tag: latest-final
+- name: slack
+  type: docker-image
+  source:
+    repository: cfcommunity/slack-notification-resource
+- name: "github-status"
+  type: "docker-image"
+  source:
+    repository: "dpb587/github-status-resource"
+    tag: "master"
+
+jobs:
+- name: build-tile
+  serial: true
+  build_logs_to_retain: 50
+  plan:
+  - aggregate:
+    - get: ops-manager-cloudfoundry
+      trigger: true
+    - get: on-demand-service-broker-release
+      params:
+        filename: on-demand-service-broker-(.*).tgz
+    - get: syslog-migration-release
+      params:
+        filename: syslog-migration-(.*).tgz
+    - get: pcf-mongodb-helpers
+      params:
+        filename: pcf-mongodb-helpers-(.*).tgz
+    - get: bpm-release
+      params:
+        filename: bpm-release-(.*).tgz
+    - get: mongodb
+      params:
+        filename: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
+    - get: version
+      params:
+        pre: rc
+  - put: "build-status"
+    params:
+      state: "pending"
+      commit: "ops-manager-cloudfoundry"
+  - task: build-tile
+    file: ops-manager-cloudfoundry/ci/tasks/build-tile/task.yml
+    on_failure:
+      put: "build-status"
+      params:
+        state: "failure"
+        commit: "ops-manager-cloudfoundry"
+    on_error:
+      put: "build-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+    on_abort:
+      put: "build-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+        description: aborted
+    params:
+      AWS_KEY: ((aws-access-key))
+      AWS_SECRET_KEY: ((aws-secret-access-key))
+  - put: artifacts
+    params:
+      file: artifacts/mongodb-on-demand-*.pivotal
+  - put: version
+    params:
+      pre: rc
+  - put: "build-status"
+    params:
+      state: "success"
+      commit: "ops-manager-cloudfoundry"
+
+- name: deploy-tile
+  serial: true
+  build_logs_to_retain: 50
+  plan:
+  - aggregate:
+    - get: ops-manager-cloudfoundry
+      trigger: true
+      passed: [ build-tile ]
+    - get: artifacts
+      params:
+        file: artifacts/mongodb-on-demand-*.pivotal
+    - get: version
+    - get: stemcell
+      params:
+        globs: ["*azure*"]
+  - put: "deploy-status"
+    params:
+      state: "pending"
+      commit: "ops-manager-cloudfoundry"
+  - task: deploy-tile
+    file: ops-manager-cloudfoundry/ci/tasks/deploy-tile/task.yml
+    params:
+      PCF_URL: ((pcf-url))
+      PCF_USERNAME: ((pcf-username))
+      PCF_PASSWORD: ((pcf-password))
+      OM_API_KEY: ((om-api-key))
+      PRODUCT_PROPERTIES: ((product_properties))
+      PRODUCT_NETWORK_AZS: ((product_network_azs))
+      CONFIG: config
+    on_failure:
+      put: "deploy-status"
+      params:
+        state: "failure"
+        commit: "ops-manager-cloudfoundry"
+    on_error:
+      put: "deploy-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+    on_abort:
+      put: "deploy-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+        description: aborted
+  - put: "deploy-status"
+    params:
+      state: "success"
+      commit: "ops-manager-cloudfoundry"
+
+- name: smoke-tests
+  serial: true
+  build_logs_to_retain: 50
+  plan:
+  - aggregate:
+    - get: ops-manager-cloudfoundry
+      trigger: true
+      passed: [ deploy-tile ]
+  - put: "test-status"
+    params:
+      state: "pending"
+      commit: "ops-manager-cloudfoundry"
+  - task: smoke-tests
+    file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
+    params:
+      PCF_URL: ((pcf-url))
+      PCF_USERNAME: ((pcf-username))
+      PCF_PASSWORD: ((pcf-password))
+    on_failure:
+      put: "test-status"
+      params:
+        state: "failure"
+        commit: "ops-manager-cloudfoundry"
+    on_error:
+      put: "test-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+    on_abort:
+      put: "test-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+        description: aborted
+  - put: "test-status"
+    params:
+      state: "success"
+      commit: "ops-manager-cloudfoundry"
+
+- name: shipit
+  serial: true
+  build_logs_to_retain: 50
+  plan:
+  - aggregate:
+    - get: ops-manager-cloudfoundry
+      passed: [ smoke-tests ]
+    - get: on-demand-service-broker-release
+      params:
+        filename: on-demand-service-broker-(.*).tgz
+    - get: syslog-migration-release
+      params:
+        filename: syslog-migration-(.*).tgz
+    - get: pcf-mongodb-helpers
+      params:
+        filename: pcf-mongodb-helpers-(.*).tgz
+    - get: bpm-release
+      params:
+        filename: bpm-release-(.*).tgz
+    - get: mongodb
+      params:
+        filename: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
+    - get: version
+      params:
+        bump: final
+
+  - task: shipit
+    file: ops-manager-cloudfoundry/ci/tasks/shipit/task.yml
+    params:
+      RELEASE_BUCKET_NAME: ((release-bucket))
+      AWS_KEY: ((aws-access-key))
+      AWS_SECRET_KEY: ((aws-secret-access-key))
+  - put: release
+    params:
+      file: release/mongodb-on-demand-*.pivotal
+      acl: public-read
+
+- name: delete-tile
+  serial: true
+  build_logs_to_retain: 50
+  plan:
+  - aggregate:
+    - get: ops-manager-cloudfoundry
+  - task: delete-tile
+    file: ops-manager-cloudfoundry/ci/tasks/delete-tile/task.yml
+    params:
+      PCF_URL: ((pcf-url))
+      PCF_USERNAME: ((pcf-username))
+      PCF_PASSWORD: ((pcf-password))
+
+- name: minor
+  plan:
+  - do:
+    - get: version
+      trigger: false
+      params:
+        bump: minor
+    - put: version
+      params:
+        file: version/number
+
+- name: patch
+  plan:
+  - do:
+    - get: version
+      trigger: false
+      params:
+        bump: patch
+    - put: version
+      params:
+        file: version/number
+
+- name: major
+  plan:
+  - do:
+    - get: version
+      trigger: false
+      params:
+        bump: major
+    - put: version
+      params:
+        file: version/number

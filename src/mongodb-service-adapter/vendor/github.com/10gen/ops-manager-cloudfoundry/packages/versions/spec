@@ -1,0 +1,5 @@
+---
+name: versions
+
+files:
+  - mongodb_versions/*

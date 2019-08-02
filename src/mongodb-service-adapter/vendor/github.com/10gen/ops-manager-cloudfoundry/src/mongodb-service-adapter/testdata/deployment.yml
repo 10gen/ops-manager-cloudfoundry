@@ -1,0 +1,36 @@
+---
+name: service-instance_8412adaf-4360-47a4-8407-fedae7163ccb
+releases:
+- name: mongodb
+  version: 0+dev.52
+stemcells:
+- alias: mongodb-stemcell
+  os: ubuntu-xenial
+  version: '170'
+instance_groups:
+- name: mongod_node
+  instances: 3
+  jobs:
+  - name: mongod_node
+    release: mongodb
+    provides:
+      mongod_node:
+        as: mongod_node
+    consumes:
+      mongod_node:
+        from: mongod_node
+  vm_type: default
+  stemcell: mongodb-stemcell
+  networks:
+  - name: default
+update:
+  canaries: 1
+  canary_watch_time: 3000-180000
+  update_watch_time: 3000-180000
+  max_in_flight: 4
+properties:
+  mongo_ops:
+    admin_password: password
+    api_key: 9016843466172acc2288fd8f1fcc9e38
+    group_id: 573cb890e4b00c8c02d57cd7
+    url: http://ec2-54-175-81-192.compute-1.amazonaws.com:8080

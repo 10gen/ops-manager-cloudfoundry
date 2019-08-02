@@ -13,6 +13,17 @@
   revision = "54c4f2530ddeb742ce9c9ee26f5fa758d6c1b3b6"
 
 [[projects]]
+  branch = "master"
+  digest = "1:1d0e1db63bbddd5f64c512238f701eb48ba75acc0372a0998c5c560eb2db1501"
+  name = "github.com/10gen/ops-manager-cloudfoundry"
+  packages = [
+    "src/mongodb-service-adapter/adapter",
+    "src/mongodb-service-adapter/digest",
+  ]
+  pruneopts = ""
+  revision = "984acdf00a53d0066920e4a63af3e0af00899277"
+
+[[projects]]
   digest = "1:883e2fdbdd0e577187bd8106fec775b1176059af267a7f40eba5308955c67d52"
   name = "github.com/gorilla/mux"
   packages = ["."]
@@ -113,6 +124,8 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/adapter",
+    "github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/digest",
     "github.com/pivotal-cf/on-demand-services-sdk/bosh",
     "github.com/pivotal-cf/on-demand-services-sdk/serviceadapter",
     "github.com/tidwall/gjson",

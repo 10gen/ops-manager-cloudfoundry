@@ -1,0 +1,22 @@
+
+---
+name: mongodb-on-demand
+product_version: 0.6.9
+metadata_version: '1.8'
+stemcell_criteria:
+  os: ubuntu-xenial
+  version: '170.25'
+releases:
+- name: on-demand-service-broker
+  file: on-demand-service-broker-0.5.0.tgz
+  version: 0.5.0
+  md5: 291d1a63fe29d983a0c39b2e49abf621
+
+- name: mongodb
+  file: mongodb-0+dev.87.tgz
+  version: 0+dev.87
+  md5: 20711b1f7f2406c5baa1e31385a69229
+
+provides_product_versions:
+- name: mongodb-on-demand
+  version: 0.6.9

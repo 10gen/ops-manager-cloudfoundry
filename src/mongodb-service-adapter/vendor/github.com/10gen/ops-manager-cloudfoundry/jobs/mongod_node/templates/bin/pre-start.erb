@@ -1,0 +1,104 @@
+#!/bin/bash
+# vim: set ft=sh
+
+set -e
+
+<% if p("bpm.enabled") %>
+sysctl -e -w net.ipv4.tcp_fin_timeout=10
+sysctl -e -w net.ipv4.tcp_tw_reuse=1
+<% end %>
+
+# Set readahead setting
+mount_point=$(df | grep -w /var/vcap/store | awk {'print $1'})
+blockdev --setra 0 $mount_point
+
+# Use noatime for the dbPath mount point
+if mountpoint -q /var/vcap/store; then
+  mount -o remount,noatime /var/vcap/store
+fi
+
+# Disable Linux transparent huge pages
+if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
+   echo never > /sys/kernel/mm/transparent_hugepage/enabled
+fi
+if test -f /sys/kernel/mm/transparent_hugepage/defrag; then
+   echo never > /sys/kernel/mm/transparent_hugepage/defrag
+fi
+
+# Configure sufficient file handles, kernel pid limit and maximum threads per process
+echo 98000 > /proc/sys/fs/file-max
+echo 64000 > /proc/sys/kernel/pid_max
+echo 64000 > /proc/sys/kernel/threads-max
+
+# Set system default TCP keepalive
+echo 300 > /proc/sys/net/ipv4/tcp_keepalive_time
+
+# Set Resource Limits
+ulimit -f unlimited
+ulimit -t unlimited
+ulimit -v unlimited
+ulimit -n 64000
+ulimit -m unlimited
+ulimit -u 64000
+
+<% conn = link('mongodb_config_agent') %>
+
+TMP_DIR=/var/vcap/sys/tmp/mongod_agent
+if [ -d "$TMP_DIR" ]; then
+  rm -r $TMP_DIR
+fi
+mkdir -p ${TMP_DIR}
+
+DOWNLOAD="<%= conn.p('mongo_ops.url').chomp("/") %>/download/agent/automation/mongodb-mms-automation-agent-latest.linux_x86_64.tar.gz"
+
+echo "*** Downloading MongoDB agent from <%= conn.p('mongo_ops.url') %>"
+wget --quiet --no-check-certificate -O ${TMP_DIR}/mongodb.agent.tgz "${DOWNLOAD}"
+
+tar xvzf ${TMP_DIR}/mongodb.agent.tgz -C ${TMP_DIR}
+
+mkdir -p  /var/vcap/packages/mongod-node/bin
+cp -f ${TMP_DIR}/**/mongodb-mms-automation-agent /var/vcap/packages/mongod-node/bin
+
+<%
+  this_host = "#{spec.name.gsub('_', '-')}-#{spec.index}"
+  hosts = link('mongod_node').instances.collect{ |x| "#{x.address} #{x.name.gsub('_', '-')}-#{x.index}" }.join("\\n")
+%>
+
+<% if conn.p('mongo_ops.bosh_dns_disable') %>
+hostname <%= spec.address %>
+<% else %>
+hostname '<%= spec.id %>.mongodb.internal'
+<% end %>
+
+# Install libsnmp30
+
+dpkg -i /var/vcap/packages/mongod-node/libpci3_3.3.1*.deb
+dpkg -i /var/vcap/packages/mongod-node/perl-base_5*.deb
+dpkg -i /var/vcap/packages/mongod-node/libperl5*.deb
+dpkg -i /var/vcap/packages/mongod-node/libsnmp-base_5*.deb
+dpkg -i /var/vcap/packages/mongod-node/libsnmp30*.deb
+
+RUN_DIR=/var/vcap/sys/run/mongod_node
+LOG_DIR=/var/vcap/sys/log/mongod_node
+TMP_DIR=/var/vcap/sys/tmp/mongod_node
+STORE_DIR=/var/vcap/store/mongod_node
+AGENT_LOG_DIR=/var/log/mongodb-mms-automation
+DOWNLOAD_DIR=/var/lib/mongodb-mms-automation
+MONGODB_DATA_DIR=/var/vcap/store/mongodb-data
+for dir in $AGENT_LOG_DIR $DOWNLOAD_DIR $RUN_DIR $LOG_DIR $TMP_DIR $STORE_DIR $MONGODB_DATA_DIR
+do
+  mkdir -p ${dir}
+  chown -R vcap:vcap ${dir}
+  chmod 775 ${dir}
+done
+
+keyfile=/var/vcap/store/mongod_node/mongo_om.key
+cp /var/vcap/jobs/mongod_node/config/mongo_om.key ${STORE_DIR}/
+chown vcap:vcap ${keyfile}
+chmod 600 ${keyfile}
+
+# verions 0.8.4 of the tile leaves mongod and mongos running after stop, so we tries to stop the process here
+source /var/vcap/packages/mongod-node/utils.sh
+MONGOD_PIDFILE=/var/vcap/store/mongodb-data/mongod.lock
+kill_and_wait ${MONGOD_PIDFILE}
+ensure_no_more_mongos

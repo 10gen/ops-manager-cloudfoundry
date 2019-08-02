@@ -1,0 +1,18 @@
+{
+  "service_name": "mongodb-odb",
+  "plan_names": [
+    "standalone_small"
+  ],
+  "retry": {
+    "max_attempts": 10,
+    "backoff": "linear",
+    "baseline_interval_milliseconds": 1000
+  },
+  "apps_domain": "bosh-lite.com",
+  "system_domain": "bosh-lite.com",
+  "api": "api.bosh-lite.com",
+  "admin_user": "admin",
+  "admin_password": "admin",
+  "skip_ssl_validation": true,
+  "create_permissive_security_group": false
+}

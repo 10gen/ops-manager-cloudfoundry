@@ -1,0 +1,63 @@
+---
+name: mongodb
+director_uuid: 510ac165-ee99-4c45-8274-1b989e5d5697
+
+releases:
+  - name: mongodb
+    version: latest
+
+stemcells:
+  - alias: default
+    name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+    version: latest
+
+update:
+  canaries: 1
+  max_in_flight: 32
+  canary_watch_time: 1000-100000
+  update_watch_time: 1000-100000
+  serial: false
+
+instance_groups:
+  - name: mongod_node
+    instances: 15
+    jobs:
+      - name: mongod_node
+        release: mongodb
+        consumes:
+          mongod_node: {from: mongod_node}
+        provides:
+          mongod_node: {as: mongod_node}
+    properties:
+      mongo_ops:
+        url: http://ec2-54-88-23-164.compute-1.amazonaws.com:8080
+        api_key: ebd5e5aa-cdb4-4431-91a2-ebbb5530cfc7
+        group_id: 57bdaa64e4b0344ee0bcbcba
+
+    vm_type: default
+    stemcell: default
+    persistent_disk_type: default
+    networks:
+      - name: default
+
+  - name: mongodb_config_agent
+    instances: 1
+    jobs:
+      - name: mongodb_config_agent
+        release: mongodb
+        consumes:
+          mongod_node: {from: mongod_node}
+
+    properties:
+      mongo_ops:
+        url: http://ec2-54-88-23-164.compute-1.amazonaws.com:8080
+        api_key: ebd5e5aa-cdb4-4431-91a2-ebbb5530cfc7
+        group_id: 57bdaa64e4b0344ee0bcbcba
+        username: imallika@gmail.com
+        plan_id: sharded_cluster
+
+    vm_type: default
+    stemcell: default
+    persistent_disk_type: default
+    networks:
+      - name: default

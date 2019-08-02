@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# vim: set ft=sh
+
+set -ex
+echo "Starting post_setup script"
+<% conn = link('mongodb_config_agent') %>
+
+source /var/vcap/packages/mongodb-config-agent/mongo_utils.sh
+export PATH=/var/vcap/packages/jq/bin:/var/vcap/packages/mongodb/bin:$PATH
+export JOB_DIR=/var/vcap/jobs/mongodb_config_agent
+
+export MONGO_OM_URL='<%= conn.p('mongo_ops.url').chomp("/") %>'
+export MONGO_OM_USER='<%= conn.p('mongo_ops.username') %>'
+export MONGO_OM_API_KEY='<%= conn.p('mongo_ops.api_key') %>'
+export MONGO_OM_GROUP_ID='<%= conn.p('mongo_ops.group_id') %>'
+
+<% if conn.p("mongo_ops.backup_enabled") %>
+while true
+do
+<% if conn.p("mongo_ops.plan_id") == 'replica_set' %>
+  clusters=($(om_api_call "GET" "clusters" | jq -r ".results[].id"))
+<% elsif conn.p("mongo_ops.plan_id") == 'sharded_cluster' %>
+  clusters=($(om_api_call "GET" "clusters" | jq -r '.results[] | select(.typeName == "SHARDED_REPLICA_SET").id'))
+<% end %>
+
+  if [ ${#clusters[@]} -eq 0 ]; then
+    sleep 5
+    continue
+  fi
+
+  for cluster in "${clusters[@]}"
+  do
+   stat=$(om_api_call "GET" "backupConfigs/${cluster}" | jq -r ".statusName")
+   if [ $stat != "STARTED" ]; then
+     om_api_call "PATCH" "backupConfigs/${cluster}" '{"statusName": "STARTED", "storageEngineName": "WIRED_TIGER", "syncSource": "SECONDARY"}'
+   fi
+  done
+
+  break
+done
+<% end %>
+
+<%
+def node_name(instance)
+  "#{instance.id}"
+end
+
+aliases = []
+
+link('mongod_node').instances.each do |instance|
+  mongod_alias = "#{node_name(instance)}.mongodb.internal"
+  aliases.push(mongod_alias)
+end
+%>
+echo "building connection options"
+<% if conn.p("mongo_ops.require_ssl") %>
+connection_opts="--host <%= aliases.join(',') %> --port 28000 --ssl --sslPEMKeyFile $JOB_DIR/config/server.pem --sslCAFile $JOB_DIR/config/cacert.pem"
+<% else %>
+connection_opts="--host <%= link("mongod_node").instances.map {|e| e.address}.join(',') %> --port 28000 -p <%= conn.p("mongo_ops.admin_password") %> -u admin"
+<% end %>
+
+echo "Waiting 600s for MongoDB to accept connections..."
+wait_for_service "$connection_opts"

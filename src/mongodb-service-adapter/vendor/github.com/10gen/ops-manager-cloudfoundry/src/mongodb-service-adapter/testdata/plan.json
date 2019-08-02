@@ -1,0 +1,21 @@
+{
+  "instance_groups": [
+    {
+      "name": "mongod_node",
+      "instances": 3,
+      "vm_type": "default",
+      "networks": [
+        "default"
+      ],
+      "azs": ["az1"]
+    }
+  ],
+  "properties": {
+    "id": "single-replica-set",
+    "mongo_ops": {
+      "url": "http://ec2-54-88-23-164.compute-1.amazonaws.com:8080",
+      "username": "imallika@gmail.com",
+      "api_key": "ebd5e5aa-cdb4-4431-91a2-ebbb5530cfc7"
+    }
+  }
+}

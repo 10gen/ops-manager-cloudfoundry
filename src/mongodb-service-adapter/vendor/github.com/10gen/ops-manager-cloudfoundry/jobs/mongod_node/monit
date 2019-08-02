@@ -1,0 +1,18 @@
+<% if p("bpm.enabled") %>
+check process mongod_node
+  with pidfile /var/vcap/sys/run/bpm/mongod_node/mongod_node.pid
+  start program "/var/vcap/jobs/bpm/bin/bpm start mongod_node"
+  stop program "/var/vcap/jobs/bpm/bin/bpm stop mongod_node"
+  group vcap
+<% else %>
+check process mongod_node
+  with pidfile /var/vcap/sys/run/mongod_node/mongo_agent.pid
+  start program "/var/vcap/jobs/mongod_node/bin/mongod_agent_ctl start"
+  stop program "/var/vcap/jobs/mongod_node/bin/mongod_agent_ctl stop"
+  group vcap
+<% end %>
+
+check process mongod
+  with pidfile /var/vcap/store/mongodb-data/mongod.lock
+  start program = "/bin/true"
+  stop program = "/bin/true"

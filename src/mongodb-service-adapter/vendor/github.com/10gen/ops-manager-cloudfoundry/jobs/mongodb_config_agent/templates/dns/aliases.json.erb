@@ -1,0 +1,15 @@
+<%=
+def node_name(instance)
+  "#{instance.id}"
+end
+
+conn = link('mongodb_config_agent')
+aliases = { "#{node_name(conn.instances.first)}.mongodb.internal" => [ conn.instances.first.address ] }
+
+link('mongod_node').instances.each do |instance|
+  mongod_alias = "#{node_name(instance)}.mongodb.internal"
+  aliases.merge!({ mongod_alias => [instance.address] })
+end
+
+JSON.pretty_generate(aliases)
+%>

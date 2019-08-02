@@ -1,0 +1,13 @@
+<% if p("bpm.enabled") %>
+check process mongodb_config_agent
+  with pidfile /var/vcap/sys/run/bpm/mongodb_config_agent/mongodb_config_agent.pid
+  start program "/var/vcap/jobs/bpm/bin/bpm start mongodb_config_agent"
+  stop program "/var/vcap/jobs/bpm/bin/bpm stop mongodb_config_agent"
+  group vcap
+<% else %>
+check process mongodb_config_agent
+  with pidfile /var/vcap/sys/run/mongodb_config_agent/mongodb_config_agent.pid
+  start program "/var/vcap/jobs/mongodb_config_agent/bin/mongodb_config_agent_ctl start"
+  stop program "/var/vcap/jobs/mongodb_config_agent/bin/mongodb_config_agent_ctl stop"
+  group vcap
+<% end %>

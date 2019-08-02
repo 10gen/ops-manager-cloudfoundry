@@ -1,6 +1,7 @@
 package adapter_test
 
 import (
+	"fmt"
 	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/adapter"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -34,7 +35,7 @@ var _ = Describe("Manifest", func() {
 				serviceadapter.ServiceRelease{
 					Name:    "standalone",
 					Version: "4.0.7",
-					Jobs: []string{adapter.MongodJobName, adapter.BPMJobName,
+					Jobs: []string{adapter.MongodJobName,
 						adapter.SyslogJobName, adapter.ConfigAgentJobName,
 						adapter.CleanupErrandJobName, adapter.PostSetupErrandJobName,
 						adapter.BoshDNSEnableJobName},
@@ -61,7 +62,7 @@ var _ = Describe("Manifest", func() {
 					"tags":             nil,
 				},
 				"syslog": map[string]interface{}{
-					"address":        10.0.8.4,
+					"address":        "10.0.8.4",
 					"port":           554,
 					"transport":      "tls",
 					"tls_enabled":    false,

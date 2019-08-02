@@ -1,0 +1,8 @@
+---
+name: mongodb-service-adapter
+
+dependencies:
+  - golang-1.12-linux
+
+files:
+  - mongodb-service-adapter/**/*

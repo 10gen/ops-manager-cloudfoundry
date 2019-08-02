@@ -19,3 +19,7 @@ required = ["github.com/onsi/ginkgo/ginkgo"]
 [prune]
   go-tests = true
   unused-packages = true
+
+[[constraint]]
+  name = "github.com/pivotal-cf/on-demand-services-sdk"
+  version = "=0.31.0"

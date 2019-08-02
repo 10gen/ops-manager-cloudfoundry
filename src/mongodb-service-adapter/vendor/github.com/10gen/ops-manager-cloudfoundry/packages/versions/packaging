@@ -1,0 +1,3 @@
+set -e -u -x
+
+cp mongodb_versions/versions.json $BOSH_INSTALL_TARGET/versions.json
