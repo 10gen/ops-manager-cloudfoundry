@@ -2,7 +2,7 @@
 
 set -e
 
-export GOROOT=$(readlink -nf /var/vcap/packages/golang-1.11-linux)
+export GOROOT=$(readlink -nf /var/vcap/packages/golang-1.12-linux)
 export GOPATH=/var/vcap/packages/mongodb-smoke-tests
 export PACKAGE_NAME=github.com/10gen/ops-manager-cloudfoundry
 export PATH=${GOROOT}/bin:${GOPATH}/bin:/var/vcap/packages/cf-cli-6-linux/bin:${PATH}

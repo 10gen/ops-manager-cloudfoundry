@@ -45,13 +45,7 @@ func main() {
 
 type manifestGenerator struct{}
 
-func (m *manifestGenerator) GenerateManifest(
-	serviceDeployment serviceadapter.ServiceDeployment,
-	plan serviceadapter.Plan,
-	requestParams serviceadapter.RequestParameters,
-	previousManifest *bosh.BoshManifest,
-	previousPlan *serviceadapter.Plan,
-	previousSecrets serviceadapter.ManifestSecrets) (serviceadapter.GenerateManifestOutput, error) {
+func (m *manifestGenerator) GenerateManifest(params serviceadapter.GenerateManifestParams) (serviceadapter.GenerateManifestOutput, error) {
 
 	if os.Getenv(testvariables.OperationFailsKey) == OperationShouldFail {
 		fmt.Fprintf(os.Stderr, "not valid")
@@ -88,7 +82,7 @@ func (m *manifestGenerator) GenerateManifest(
 
 type binder struct{}
 
-func (b *binder) CreateBinding(bindingID string, deploymentTopology bosh.BoshVMs, manifest bosh.BoshManifest, requestParams serviceadapter.RequestParameters, secrets serviceadapter.ManifestSecrets, dnsAddresses serviceadapter.DNSAddresses) (serviceadapter.Binding, error) {
+func (b *binder) CreateBinding(params serviceadapter.CreateBindingParams) (serviceadapter.Binding, error) {
 	errs := func(err error) (serviceadapter.Binding, error) {
 		return serviceadapter.Binding{}, err
 	}
@@ -105,7 +99,7 @@ func (b *binder) CreateBinding(bindingID string, deploymentTopology bosh.BoshVMs
 	return testvariables.SuccessfulBinding, nil
 }
 
-func (b *binder) DeleteBinding(bindingID string, deploymentTopology bosh.BoshVMs, manifest bosh.BoshManifest, requestParams serviceadapter.RequestParameters, secrets serviceadapter.ManifestSecrets) error {
+func (b *binder) DeleteBinding(params serviceadapter.DeleteBindingParams) error {
 	switch os.Getenv(testvariables.OperationFailsKey) {
 	case testvariables.ErrBindingNotFound:
 		return serviceadapter.NewBindingNotFoundError(errors.New("not found"))
@@ -118,7 +112,7 @@ func (b *binder) DeleteBinding(bindingID string, deploymentTopology bosh.BoshVMs
 
 type dashboard struct{}
 
-func (d *dashboard) DashboardUrl(instanceID string, plan serviceadapter.Plan, manifest bosh.BoshManifest) (serviceadapter.DashboardUrl, error) {
+func (d *dashboard) DashboardUrl(params serviceadapter.DashboardUrlParams) (serviceadapter.DashboardUrl, error) {
 	if os.Getenv(testvariables.OperationFailsKey) == OperationShouldFail {
 		return serviceadapter.DashboardUrl{}, errors.New("An error occurred")
 	}
@@ -128,7 +122,7 @@ func (d *dashboard) DashboardUrl(instanceID string, plan serviceadapter.Plan, ma
 
 type schemaGenerator struct{}
 
-func (s *schemaGenerator) GeneratePlanSchema(plan serviceadapter.Plan) (serviceadapter.PlanSchema, error) {
+func (s *schemaGenerator) GeneratePlanSchema(params serviceadapter.GeneratePlanSchemaParams) (serviceadapter.PlanSchema, error) {
 	errs := func(err error) (serviceadapter.PlanSchema, error) {
 		return serviceadapter.PlanSchema{}, err
 	}

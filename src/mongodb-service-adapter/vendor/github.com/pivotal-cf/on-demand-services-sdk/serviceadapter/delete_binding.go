@@ -34,7 +34,7 @@ func (d *DeleteBindingAction) ParseArgs(reader io.Reader, args []string) (InputP
 		}
 
 		inputParams = InputParams{
-			DeleteBinding: DeleteBindingParams{
+			DeleteBinding: DeleteBindingJSONParams{
 				BindingId:         args[0],
 				BoshVms:           args[1],
 				Manifest:          args[2],
@@ -84,7 +84,22 @@ func (d *DeleteBindingAction) Execute(inputParams InputParams, outputWriter io.W
 		}
 	}
 
-	err := d.unbinder.DeleteBinding(inputParams.DeleteBinding.BindingId, boshVMs, manifest, reqParams, secrets)
+	var dnsAddresses DNSAddresses
+	if inputParams.DeleteBinding.DNSAddresses != "" {
+		if err := json.Unmarshal([]byte(inputParams.DeleteBinding.DNSAddresses), &dnsAddresses); err != nil {
+			return errors.Wrap(err, "unmarshalling DNS addresses")
+		}
+	}
+
+	params := DeleteBindingParams{
+		BindingID:          inputParams.DeleteBinding.BindingId,
+		DeploymentTopology: boshVMs,
+		Manifest:           manifest,
+		RequestParams:      reqParams,
+		Secrets:            secrets,
+		DNSAddresses:       dnsAddresses,
+	}
+	err := d.unbinder.DeleteBinding(params)
 	if err != nil {
 		fmt.Fprintf(outputWriter, err.Error())
 		switch err.(type) {

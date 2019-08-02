@@ -336,7 +336,13 @@ runtime_configs:
     releases:
     - name: mongodb
       version: 1.0.33
+    - name: bpm
+      version: 1.1.0
     addons:
+    - name: bpm
+      jobs:
+      - name: bpm
+        release: bpm
     - name: mongodb-dns-aliases
       include:
         jobs:
@@ -366,13 +372,13 @@ runtime_configs:
 packages:
 - name: bpm
   type: bosh-release
-  path: resources/bpm-release-1.0.0.tgz
+  path: resources/bpm-release-1.1.0.tgz
 - name: pcf-mongodb-helpers
   type: bosh-release
   path: resources/pcf-mongodb-helpers-0.0.1.tgz
 - name: on-demand-service-broker
   type: bosh-release
-  path: resources/on-demand-service-broker-0.24.0.tgz
+  path: resources/on-demand-service-broker-0.31.0.tgz
 - name: syslog
   type: bosh-release
   path: resources/syslog-migration-11.1.1.tgz
@@ -479,7 +485,7 @@ packages:
           jobs:
           - syslog_forwarder
         - name: bpm
-          version: 1.0.0
+          version: 1.1.0
           jobs:
           - bpm
         stemcell:

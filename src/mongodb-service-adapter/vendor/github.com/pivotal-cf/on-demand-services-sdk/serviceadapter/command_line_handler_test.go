@@ -41,12 +41,13 @@ var _ = Describe("CommandLineHandler", func() {
 		fakeSchemaGenerator       *fakes.FakeSchemaGenerator
 		handler                   serviceadapter.CommandLineHandler
 
-		serviceDeployment serviceadapter.ServiceDeployment
-		args              serviceadapter.RequestParameters
-		plan              serviceadapter.Plan
-		previousPlan      serviceadapter.Plan
-		previousManifest  bosh.BoshManifest
-		secretsMap        serviceadapter.ManifestSecrets
+		serviceDeployment   serviceadapter.ServiceDeployment
+		args                serviceadapter.RequestParameters
+		plan                serviceadapter.Plan
+		previousPlan        serviceadapter.Plan
+		previousManifest    bosh.BoshManifest
+		secretsMap          serviceadapter.ManifestSecrets
+		previousBoshConfigs serviceadapter.BOSHConfigs
 
 		serviceDeploymentJSON string
 		argsJSON              string
@@ -88,6 +89,7 @@ var _ = Describe("CommandLineHandler", func() {
 		previousPlan = defaultPreviousPlan()
 		previousManifest = defaultPreviousManifest()
 		secretsMap = serviceadapter.ManifestSecrets{"foo": "baa"}
+		previousBoshConfigs = defaultPreviousBoshConfigs()
 
 		requestParams = defaultRequestParams()
 		requestParamsJSON = toJson(requestParams)
@@ -128,50 +130,57 @@ var _ = Describe("CommandLineHandler", func() {
 	Describe("generate-manifest action", func() {
 		It("succeeds with positional arguments", func() {
 			manifest := bosh.BoshManifest{Name: "bill"}
-			fakeManifestGenerator.GenerateManifestReturns(serviceadapter.GenerateManifestOutput{Manifest: manifest, ODBManagedSecrets: serviceadapter.ODBManagedSecrets{}}, nil)
+			fakeManifestGenerator.GenerateManifestReturns(serviceadapter.GenerateManifestOutput{
+				Manifest:          manifest,
+				ODBManagedSecrets: serviceadapter.ODBManagedSecrets{},
+				Configs:           serviceadapter.BOSHConfigs{},
+			}, nil)
 
 			err := handler.Handle([]string{
-				commandName, "generate-manifest", serviceDeploymentJSON, planJSON, argsJSON, previousManifestYAML, previousPlanJSON,
+				commandName, "generate-manifest", serviceDeploymentJSON, planJSON, argsJSON,
+				previousManifestYAML, previousPlanJSON,
 			}, outputBuffer, errorBuffer, bytes.NewBufferString(""))
 
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(fakeManifestGenerator.GenerateManifestCallCount()).To(Equal(1))
-			actualServiceDeployment, actualPlan, actualRequestParams, actualPreviousManifest, actualPreviousPlan, actualSecrets :=
-				fakeManifestGenerator.GenerateManifestArgsForCall(0)
+			actualParams := fakeManifestGenerator.GenerateManifestArgsForCall(0)
 
-			Expect(actualServiceDeployment).To(Equal(serviceDeployment))
-			Expect(actualPlan).To(Equal(plan))
-			Expect(actualRequestParams).To(Equal(args))
-			Expect(actualPreviousManifest).To(Equal(&previousManifest))
-			Expect(actualPreviousPlan).To(Equal(&previousPlan))
-			Expect(actualSecrets).To(Equal(serviceadapter.ManifestSecrets{}))
+			Expect(actualParams.ServiceDeployment).To(Equal(serviceDeployment))
+			Expect(actualParams.Plan).To(Equal(plan))
+			Expect(actualParams.RequestParams).To(Equal(args))
+			Expect(actualParams.PreviousManifest).To(Equal(&previousManifest))
+			Expect(actualParams.PreviousPlan).To(Equal(&previousPlan))
+			Expect(actualParams.PreviousSecrets).To(Equal(serviceadapter.ManifestSecrets{}))
+			Expect(actualParams.PreviousConfigs).To(BeNil())
 
 			Expect(outputBuffer).To(gbytes.Say("bill"))
 		})
 
 		It("succeeds with arguments from stdin", func() {
 			rawInputParams := serviceadapter.InputParams{
-				GenerateManifest: serviceadapter.GenerateManifestParams{
+				GenerateManifest: serviceadapter.GenerateManifestJSONParams{
 					ServiceDeployment: toJson(serviceDeployment),
 					Plan:              toJson(plan),
 					PreviousPlan:      toJson(previousPlan),
 					RequestParameters: toJson(requestParams),
 					PreviousManifest:  previousManifestYAML,
 					PreviousSecrets:   toJson(secretsMap),
+					PreviousConfigs:   toJson(previousBoshConfigs),
 				},
 			}
 			fakeStdin := bytes.NewBuffer([]byte(toJson(rawInputParams)))
 			err := handler.Handle([]string{commandName, "generate-manifest"}, outputBuffer, errorBuffer, fakeStdin)
 			Expect(err).ToNot(HaveOccurred())
 
-			actualServiceDeployment, actualPlan, actualRequestParams, actualPreviousManifest, actualPreviousPlan, actualSecrets := fakeManifestGenerator.GenerateManifestArgsForCall(0)
-			Expect(actualServiceDeployment).To(Equal(serviceDeployment))
-			Expect(actualPlan).To(Equal(plan))
-			Expect(actualRequestParams).To(Equal(requestParams))
-			Expect(actualPreviousManifest).To(Equal(&previousManifest))
-			Expect(actualPreviousPlan).To(Equal(&previousPlan))
-			Expect(actualSecrets).To(Equal(secretsMap))
+			actualParams := fakeManifestGenerator.GenerateManifestArgsForCall(0)
+			Expect(actualParams.ServiceDeployment).To(Equal(serviceDeployment))
+			Expect(actualParams.Plan).To(Equal(plan))
+			Expect(actualParams.RequestParams).To(Equal(requestParams))
+			Expect(actualParams.PreviousManifest).To(Equal(&previousManifest))
+			Expect(actualParams.PreviousPlan).To(Equal(&previousPlan))
+			Expect(actualParams.PreviousSecrets).To(Equal(secretsMap))
+			Expect(actualParams.PreviousConfigs).To(Equal(previousBoshConfigs))
 		})
 
 		It("returns a not-implemented error when there is no generate-manifest handler", func() {
@@ -210,15 +219,15 @@ var _ = Describe("CommandLineHandler", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(fakeBinder.CreateBindingCallCount()).To(Equal(1))
-			actualBindingId, actualBoshVMs, actualManifest, actualRequestParams, actualSecrets, actualDNSAddresses :=
-				fakeBinder.CreateBindingArgsForCall(0)
 
-			Expect(actualBindingId).To(Equal(bindingID))
-			Expect(actualBoshVMs).To(Equal(boshVMs))
-			Expect(actualManifest).To(Equal(previousManifest))
-			Expect(actualRequestParams).To(Equal(requestParams))
-			Expect(actualSecrets).To(BeNil())
-			Expect(actualDNSAddresses).To(BeNil())
+			params := fakeBinder.CreateBindingArgsForCall(0)
+
+			Expect(params.BindingID).To(Equal(bindingID))
+			Expect(params.DeploymentTopology).To(Equal(boshVMs))
+			Expect(params.Manifest).To(Equal(previousManifest))
+			Expect(params.RequestParams).To(Equal(requestParams))
+			Expect(params.Secrets).To(BeNil())
+			Expect(params.DNSAddresses).To(BeNil())
 
 			Expect(outputBuffer).To(gbytes.Say(toJson(expectedBinding)))
 		})
@@ -228,7 +237,7 @@ var _ = Describe("CommandLineHandler", func() {
 				"some-config": "a.dns.address.for.bosh",
 			}
 			rawInputParams := serviceadapter.InputParams{
-				CreateBinding: serviceadapter.CreateBindingParams{
+				CreateBinding: serviceadapter.CreateBindingJSONParams{
 					RequestParameters: toJson(requestParams),
 					BindingId:         bindingID,
 					BoshVms:           toJson(boshVMs),
@@ -245,15 +254,14 @@ var _ = Describe("CommandLineHandler", func() {
 
 			Expect(fakeBinder.CreateBindingCallCount()).To(Equal(1))
 
-			actualBindingId, actualBoshVMs, actualManifest, actualRequestParams, actualSecrets, actualDNSAddresses :=
-				fakeBinder.CreateBindingArgsForCall(0)
+			params := fakeBinder.CreateBindingArgsForCall(0)
 
-			Expect(actualBindingId).To(Equal(bindingID))
-			Expect(actualBoshVMs).To(Equal(boshVMs))
-			Expect(actualManifest).To(Equal(previousManifest))
-			Expect(actualRequestParams).To(Equal(requestParams))
-			Expect(actualSecrets).To(BeNil())
-			Expect(actualDNSAddresses).To(Equal(dnsAddresses))
+			Expect(params.BindingID).To(Equal(bindingID))
+			Expect(params.DeploymentTopology).To(Equal(boshVMs))
+			Expect(params.Manifest).To(Equal(previousManifest))
+			Expect(params.RequestParams).To(Equal(requestParams))
+			Expect(params.Secrets).To(BeNil())
+			Expect(params.DNSAddresses).To(Equal(dnsAddresses))
 
 			Expect(outputBuffer).To(gbytes.Say(toJson(expectedBinding)))
 		})
@@ -306,17 +314,17 @@ var _ = Describe("CommandLineHandler", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(fakeDashboardUrlGenerator.DashboardUrlCallCount()).To(Equal(1))
-			actualInstanceID, actualPlanJSON, actualManifestYAML := fakeDashboardUrlGenerator.DashboardUrlArgsForCall(0)
+			actualParams := fakeDashboardUrlGenerator.DashboardUrlArgsForCall(0)
 
-			Expect(actualInstanceID).To(Equal(instanceID))
-			Expect(actualPlanJSON).To(Equal(plan))
-			Expect(actualManifestYAML).To(Equal(previousManifest))
+			Expect(actualParams.InstanceID).To(Equal(instanceID))
+			Expect(actualParams.Plan).To(Equal(plan))
+			Expect(actualParams.Manifest).To(Equal(previousManifest))
 			Expect(outputBuffer).To(gbytes.Say(`{"dashboard_url":"http://url.example.com"}`))
 		})
 
 		It("succeeds with arguments from stdin", func() {
 			rawInputParams := serviceadapter.InputParams{
-				DashboardUrl: serviceadapter.DashboardUrlParams{
+				DashboardUrl: serviceadapter.DashboardUrlJSONParams{
 					InstanceId: instanceID,
 					Plan:       toJson(plan),
 					Manifest:   previousManifestYAML,
@@ -330,11 +338,11 @@ var _ = Describe("CommandLineHandler", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(fakeDashboardUrlGenerator.DashboardUrlCallCount()).To(Equal(1))
-			actualInstanceID, actualPlanJSON, actualManifestYAML := fakeDashboardUrlGenerator.DashboardUrlArgsForCall(0)
+			actualParams := fakeDashboardUrlGenerator.DashboardUrlArgsForCall(0)
 
-			Expect(actualInstanceID).To(Equal(instanceID))
-			Expect(actualPlanJSON).To(Equal(plan))
-			Expect(actualManifestYAML).To(Equal(previousManifest))
+			Expect(actualParams.InstanceID).To(Equal(instanceID))
+			Expect(actualParams.Plan).To(Equal(plan))
+			Expect(actualParams.Manifest).To(Equal(previousManifest))
 			Expect(outputBuffer).To(gbytes.Say(`{"dashboard_url":"http://url.example.com"}`))
 		})
 
@@ -373,18 +381,17 @@ var _ = Describe("CommandLineHandler", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(fakeBinder.DeleteBindingCallCount()).To(Equal(1))
-			actualBindingId, actualBoshVMs, actualManifest, actualRequestParams, _ :=
-				fakeBinder.DeleteBindingArgsForCall(0)
+			params := fakeBinder.DeleteBindingArgsForCall(0)
 
-			Expect(actualBindingId).To(Equal(bindingID))
-			Expect(actualBoshVMs).To(Equal(boshVMs))
-			Expect(actualManifest).To(Equal(previousManifest))
-			Expect(actualRequestParams).To(Equal(requestParams))
+			Expect(params.BindingID).To(Equal(bindingID))
+			Expect(params.DeploymentTopology).To(Equal(boshVMs))
+			Expect(params.Manifest).To(Equal(previousManifest))
+			Expect(params.RequestParams).To(Equal(requestParams))
 		})
 
 		It("succeeds with arguments from stdin", func() {
 			rawInputParams := serviceadapter.InputParams{
-				DeleteBinding: serviceadapter.DeleteBindingParams{
+				DeleteBinding: serviceadapter.DeleteBindingJSONParams{
 					RequestParameters: toJson(requestParams),
 					BindingId:         bindingID,
 					BoshVms:           toJson(boshVMs),
@@ -400,14 +407,13 @@ var _ = Describe("CommandLineHandler", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(fakeBinder.DeleteBindingCallCount()).To(Equal(1))
-			actualBindingId, actualBoshVMs, actualManifest, actualRequestParams, actualSecrets :=
-				fakeBinder.DeleteBindingArgsForCall(0)
+			params := fakeBinder.DeleteBindingArgsForCall(0)
 
-			Expect(actualBindingId).To(Equal(bindingID))
-			Expect(actualBoshVMs).To(Equal(boshVMs))
-			Expect(actualManifest).To(Equal(previousManifest))
-			Expect(actualRequestParams).To(Equal(requestParams))
-			Expect(actualSecrets).To(Equal(secrets))
+			Expect(params.BindingID).To(Equal(bindingID))
+			Expect(params.DeploymentTopology).To(Equal(boshVMs))
+			Expect(params.Manifest).To(Equal(previousManifest))
+			Expect(params.RequestParams).To(Equal(requestParams))
+			Expect(params.Secrets).To(Equal(secrets))
 		})
 
 		It("returns a not-implemented error where there is no binder handler", func() {
@@ -478,7 +484,7 @@ var _ = Describe("CommandLineHandler", func() {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(fakeSchemaGenerator.GeneratePlanSchemaCallCount()).To(Equal(1))
 
-			Expect(fakeSchemaGenerator.GeneratePlanSchemaArgsForCall(0)).To(Equal(plan))
+			Expect(fakeSchemaGenerator.GeneratePlanSchemaArgsForCall(0).Plan).To(Equal(plan))
 
 			contents, err := ioutil.ReadAll(outputBuffer)
 			Expect(err).NotTo(HaveOccurred())
@@ -487,7 +493,7 @@ var _ = Describe("CommandLineHandler", func() {
 
 		It("succeeds with arguments from stdin", func() {
 			rawInputParams := serviceadapter.InputParams{
-				GeneratePlanSchemas: serviceadapter.GeneratePlanSchemasParams{
+				GeneratePlanSchemas: serviceadapter.GeneratePlanSchemasJSONParams{
 					Plan: planJSON,
 				},
 			}
@@ -520,7 +526,7 @@ var _ = Describe("CommandLineHandler", func() {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(fakeSchemaGenerator.GeneratePlanSchemaCallCount()).To(Equal(1))
 
-			Expect(fakeSchemaGenerator.GeneratePlanSchemaArgsForCall(0)).To(Equal(plan))
+			Expect(fakeSchemaGenerator.GeneratePlanSchemaArgsForCall(0).Plan).To(Equal(plan))
 
 			contents, err := ioutil.ReadAll(outputBuffer)
 			Expect(err).NotTo(HaveOccurred())

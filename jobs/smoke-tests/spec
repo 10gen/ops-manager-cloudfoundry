@@ -7,7 +7,7 @@ templates:
 
 packages:
   - cf-cli-6-linux
-  - golang-1.11-linux
+  - golang-1.12-linux
   - mongodb-smoke-tests
 
 properties:

@@ -9,7 +9,6 @@ import (
 	"net"
 	"strings"
 
-	"github.com/pivotal-cf/on-demand-services-sdk/bosh"
 	"github.com/pivotal-cf/on-demand-services-sdk/serviceadapter"
 	mgo "gopkg.in/mgo.v2"
 )
@@ -33,17 +32,16 @@ var (
 	serverCertPath = "/var/vcap/jobs/mongodb_service_adapter/config/server.crt"
 )
 
-func (b Binder) CreateBinding(bindingID string, deploymentTopology bosh.BoshVMs, manifest bosh.BoshManifest, requestParams serviceadapter.RequestParameters,
-	secrets serviceadapter.ManifestSecrets, dnsAddresses serviceadapter.DNSAddresses) (serviceadapter.Binding, error) {
+func (b Binder) CreateBinding(params serviceadapter.CreateBindingParams) (serviceadapter.Binding, error) {
 
 	// create an admin level user
-	username := mkUsername(bindingID)
+	username := mkUsername(params.BindingID)
 	password, err := GenerateString(32)
 	if err != nil {
 		return serviceadapter.Binding{}, err
 	}
 
-	properties := manifest.Properties["mongo_ops"].(map[interface{}]interface{})
+	properties := params.Manifest.Properties["mongo_ops"].(map[interface{}]interface{})
 	adminPassword := properties["admin_password"].(string)
 	URL := properties["url"].(string)
 	adminUsername := properties["username"].(string)
@@ -53,8 +51,8 @@ func (b Binder) CreateBinding(bindingID string, deploymentTopology bosh.BoshVMs,
 
 	b.logf("properties: %v", properties)
 
-	servers := make([]string, len(deploymentTopology["mongod_node"]))
-	for i, node := range deploymentTopology["mongod_node"] {
+	servers := make([]string, len(params.DeploymentTopology["mongod_node"]))
+	for i, node := range params.DeploymentTopology["mongod_node"] {
 		servers[i] = fmt.Sprintf("%s:28000", node)
 	}
 
@@ -125,10 +123,6 @@ func (b Binder) CreateBinding(bindingID string, deploymentTopology bosh.BoshVMs,
 		strings.Join(connectionOptions, ""),
 	)
 
-	b.logf("url: %s", url)
-	b.logf("username: %s", username)
-	b.logf("password: %s", password)
-
 	return serviceadapter.Binding{
 		Credentials: map[string]interface{}{
 			"username": username,
@@ -141,12 +135,11 @@ func (b Binder) CreateBinding(bindingID string, deploymentTopology bosh.BoshVMs,
 	}, nil
 }
 
-func (Binder) DeleteBinding(bindingID string, deploymentTopology bosh.BoshVMs, manifest bosh.BoshManifest, requestParams serviceadapter.RequestParameters,
-	secrets serviceadapter.ManifestSecrets) error {
+func (Binder) DeleteBinding(params serviceadapter.DeleteBindingParams) error {
 
 	// create an admin level user
-	username := mkUsername(bindingID)
-	properties := manifest.Properties["mongo_ops"].(map[interface{}]interface{})
+	username := mkUsername(params.BindingID)
+	properties := params.Manifest.Properties["mongo_ops"].(map[interface{}]interface{})
 	adminPassword := properties["admin_password"].(string)
 	ssl := properties["require_ssl"].(bool)
 	URL := properties["url"].(string)
@@ -155,8 +148,8 @@ func (Binder) DeleteBinding(bindingID string, deploymentTopology bosh.BoshVMs, m
 	groupID := properties["group_id"].(string)
 	plan := properties["plan_id"].(string)
 
-	servers := make([]string, len(deploymentTopology["mongod_node"]))
-	for i, node := range deploymentTopology["mongod_node"] {
+	servers := make([]string, len(params.DeploymentTopology["mongod_node"]))
+	for i, node := range params.DeploymentTopology["mongod_node"] {
 		servers[i] = fmt.Sprintf("%s:28000", node)
 	}
 

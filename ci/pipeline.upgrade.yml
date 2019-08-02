@@ -1,0 +1,143 @@
+---
+groups:
+  - name: mongodb-on-demand
+    jobs:
+      - deploy-tile-old
+      - delete-tile
+      - smoke-tests
+
+resources:
+- name: ops-manager-cloudfoundry
+  type: git
+  source:
+    branch: 1.0.34
+    uri: git@github.com:10gen/ops-manager-cloudfoundry.git
+    private_key: ((git-private-key))
+
+- name: stemcell
+  type: pivnet
+  source:
+    api_token: ((pivnet-token))
+    product_slug: stemcells-ubuntu-xenial
+    product_version: '170.*'
+
+- name: tileold
+  type: pivnet
+  source:
+    api_token: ((pivnet-token))
+    product_slug: mongodb-on-demand
+    product_version: '1.0.33'
+
+- name: tile-publish
+  type: pivnet
+  source:
+    api_token: ((pivnet-token))
+    product_slug: mongodb-on-demand
+    
+
+- name: version
+  type: semver
+  source:
+    driver: s3
+    bucket: ((aws-bucket))
+    key: version
+    region_name: eu-west-1
+    access_key_id: ((aws-access-key))
+    secret_access_key: ((aws-secret-access-key))
+    initial_version: 1.0.33
+
+- name: versionold
+  type: semver
+  source:
+    driver: s3
+    bucket: ((aws-bucket))
+    key: versionold
+    region_name: eu-west-1
+    access_key_id: ((aws-access-key))
+    secret_access_key: ((aws-secret-access-key))
+    initial_version: 1.0.33
+
+- name: artifacts
+  type: s3
+  source:
+    bucket: ((aws-bucket))
+    region_name: eu-west-1
+    regexp: mongodb-on-demand-(.*).pivotal
+    access_key_id: ((aws-access-key))
+    secret_access_key: ((aws-secret-access-key))
+
+
+resource_types:
+- name: pivnet
+  type: docker-image
+  source:
+    repository: pivotalcf/pivnet-resource
+    tag: latest-final
+- name: slack
+  type: docker-image
+  source:
+    repository: cfcommunity/slack-notification-resource
+
+jobs:
+
+- name: deploy-tile-old
+  serial: true
+  build_logs_to_retain: 50
+  plan:
+  - in_parallel:
+    - get: ops-manager-cloudfoundry
+    - get: artifacts
+      params:
+        file: artifacts/mongodb-on-demand-*.pivotal
+    - get: version
+    - get: versionold
+    - get: stemcell
+      params:
+        globs: ["*azure*"]
+    - get: tileold
+  - task: deploy-tile-old
+    file: ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/task.yml
+    params:
+      PCF_URL: ((pcf-url))
+      PCF_USERNAME: ((pcf-username))
+      PCF_PASSWORD: ((pcf-password))
+      OM_API_KEY: ((om-api-key))
+      PRODUCT_PROPERTIES: ((product_properties))
+      PRODUCT_NETWORK_AZS: ((product_network_azs))
+      CONFIG: config
+
+
+- name: smoke-tests
+  serial: true
+  build_logs_to_retain: 50
+  plan:
+  - in_parallel:
+    - get: ops-manager-cloudfoundry
+      trigger: true
+      passed: [ deploy-tile-old ]
+  - task: smoke-tests
+    file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
+    params:
+      PCF_URL: ((pcf-url))
+      PCF_USERNAME: ((pcf-username))
+      PCF_PASSWORD: ((pcf-password))
+
+- name: delete-tile
+  serial: true
+  build_logs_to_retain: 50
+  plan:
+  - in_parallel:
+    - get: ops-manager-cloudfoundry
+  - task: delete-tile
+    file: ops-manager-cloudfoundry/ci/tasks/delete-tile/task.yml
+    params:
+      PCF_URL: ((pcf-url))
+      PCF_USERNAME: ((pcf-username))
+      PCF_PASSWORD: ((pcf-password))
+
+- name: delete-tile
+  serial: true
+  build_logs_to_retain: 50
+  plan:
+  - in_parallel:
+    - out: 
