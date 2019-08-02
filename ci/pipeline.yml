@@ -231,22 +231,22 @@ jobs:
       PRODUCT_PROPERTIES: ((product_properties))
       PRODUCT_NETWORK_AZS: ((product_network_azs))
       CONFIG: config
-      on_failure:
-        put: "deploy-status"
-        params:
-          state: "failure"
-          commit: "ops-manager-cloudfoundry"
-      on_error:
-        put: "deploy-status"
-        params:
-          state: "error"
-          commit: "ops-manager-cloudfoundry"
-      on_abort:
-        put: "deploy-status"
-        params:
-          state: "error"
-          commit: "ops-manager-cloudfoundry"
-          description: aborted
+    on_failure:
+      put: "deploy-status"
+      params:
+        state: "failure"
+        commit: "ops-manager-cloudfoundry"
+    on_error:
+      put: "deploy-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+    on_abort:
+      put: "deploy-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+        description: aborted
   - put: "deploy-status"
     params:
       state: "success"
