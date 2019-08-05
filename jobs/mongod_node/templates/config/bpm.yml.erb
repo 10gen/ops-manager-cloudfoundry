@@ -1,7 +1,7 @@
 ---
 processes:
 - name: mongod_node
-  executable: /var/lib/mongodb-mms-automation/bin/mongodb-mms-automation-agent
+  executable: /var/vcap/jobs/mongod_node/bin/start_latest_agent
   args:
     - --config=/var/vcap/jobs/mongod_node/config/local.conf
   persistent_disk: true
