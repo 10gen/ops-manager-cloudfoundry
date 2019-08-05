@@ -12,10 +12,12 @@ import (
 var _ = Describe("Url", func() {
 
 	var (
-		err      error
-		exp      adapter.DashboardURLGenerator
-		plan     serviceadapter.Plan
-		manifest bosh.BoshManifest
+		err                error
+		exp                adapter.DashboardURLGenerator
+		plan               serviceadapter.Plan
+		manifest           bosh.BoshManifest
+		dashboardUrlParams serviceadapter.DashboardUrlParams
+		instanceID         string
 	)
 
 	BeforeEach(func() {
@@ -37,7 +39,12 @@ var _ = Describe("Url", func() {
 
 		exp = adapter.DashboardURLGenerator{}
 		plan = serviceadapter.Plan{}
-
+		instanceID = "id1"
+		dashboardUrlParams = serviceadapter.DashboardUrlParams{
+			InstanceID: instanceID,
+			Plan:       plan,
+			Manifest:   manifest,
+		}
 	})
 
 	Describe("DashboardUrl", func() {
@@ -45,7 +52,7 @@ var _ = Describe("Url", func() {
 		When("When nothing is missing", func() {
 
 			It("calls DashboardUrl without error", func() {
-				_, err = exp.DashboardUrl("id1", plan, manifest)
+				_, err = exp.DashboardUrl(dashboardUrlParams)
 				Expect(err).ToNot(HaveOccurred())
 			})
 		})
