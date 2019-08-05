@@ -27,6 +27,8 @@ var _ = Describe("Binding", func() {
 		err                    error
 		adminPassword          string
 		addrs                  []string
+		createBindingParams    serviceadapter.CreateBindingParams
+		deleteBindingParams    serviceadapter.DeleteBindingParams
 	)
 
 	BeforeEach(func() {
@@ -67,9 +69,24 @@ var _ = Describe("Binding", func() {
 		secrets = serviceadapter.ManifestSecrets{}
 		dnsAddresses = serviceadapter.DNSAddresses{}
 		binder = &adapter.Binder{}
-
-		createBindingAction, createBindingError = binder.CreateBinding(bindingId, deploymentTopology, manifest, requestParams, secrets, dnsAddresses)
-		deleteBindingError = binder.DeleteBinding(bindingId, deploymentTopology, manifest, requestParams, secrets)
+		createBindingParams = serviceadapter.CreateBindingParams{
+			BindingID:          bindingId,
+			DeploymentTopology: deploymentTopology,
+			Manifest:           manifest,
+			RequestParams:      requestParams,
+			Secrets:            secrets,
+			DNSAddresses:       dnsAddresses,
+		}
+		deleteBindingParams = serviceadapter.DeleteBindingParams{
+			BindingID:          bindingId,
+			DeploymentTopology: deploymentTopology,
+			Manifest:           manifest,
+			RequestParams:      requestParams,
+			Secrets:            secrets,
+			DNSAddresses:       dnsAddresses,
+		}
+		createBindingAction, createBindingError = binder.CreateBinding(createBindingParams)
+		deleteBindingError = binder.DeleteBinding(deleteBindingParams)
 		_, getWithCredentialError = adapter.GetWithCredentials(addrs, adminPassword, false)
 	})
 
@@ -90,31 +107,31 @@ var _ = Describe("Binding", func() {
 			})
 
 			It("returns no error", func() {
-				_, err = binder.CreateBinding(bindingId, deploymentTopology, manifest, requestParams, secrets, dnsAddresses)
+				_, err = binder.CreateBinding(createBindingParams)
 				Expect(err).ToNot(HaveOccurred())
 			})
 		})
 
 		Context("when deploymentTopology is missing", func() {
 			BeforeEach(func() {
-				deploymentTopology = nil
+				createBindingParams.DeploymentTopology = nil
 			})
 
 			It("returns error", func() {
-				_, err = binder.CreateBinding(bindingId, deploymentTopology, manifest, requestParams, secrets, dnsAddresses)
+				_, err = binder.CreateBinding(createBindingParams)
 				Expect(err).To(HaveOccurred())
 			})
 		})
 
 		Context("when optional parameters : requestParams, secrets and dnsAddresses are missing", func() {
 			BeforeEach(func() {
-				requestParams = nil
-				secrets = nil
-				dnsAddresses = nil
+				createBindingParams.RequestParams = nil
+				createBindingParams.Secrets = nil
+				createBindingParams.DNSAddresses = nil
 			})
 
 			It("returns no error", func() {
-				_, err = binder.CreateBinding(bindingId, deploymentTopology, manifest, requestParams, secrets, dnsAddresses)
+				_, err = binder.CreateBinding(createBindingParams)
 				Expect(err).ToNot(HaveOccurred())
 			})
 		})
@@ -137,10 +154,11 @@ var _ = Describe("Binding", func() {
 						},
 					},
 				}
+				createBindingParams.Manifest = manifest
 			})
 
 			It("contains replicaSet=pcf_repl", func() {
-				createBindingAction, err = binder.CreateBinding(bindingId, deploymentTopology, manifest, requestParams, secrets, dnsAddresses)
+				createBindingAction, err = binder.CreateBinding(createBindingParams)
 				Expect(createBindingAction.Credentials["uri"]).To(ContainSubstring("replicaSet=pcf_repl"))
 			})
 		})
@@ -163,10 +181,11 @@ var _ = Describe("Binding", func() {
 						},
 					},
 				}
+				createBindingParams.Manifest = manifest
 			})
 
 			It("returns no error ", func() {
-				_, err = binder.CreateBinding(bindingId, deploymentTopology, manifest, requestParams, secrets, dnsAddresses)
+				_, err = binder.CreateBinding(createBindingParams)
 				Expect(err).ToNot(HaveOccurred())
 			})
 		})
@@ -181,22 +200,22 @@ var _ = Describe("Binding", func() {
 
 		Context("when bindingId is different ", func() {
 			BeforeEach(func() {
-				bindingId = "qwerty"
+				deleteBindingParams.BindingID = "qwerty"
 			})
 
 			It("returns error", func() {
-				err = binder.DeleteBinding(bindingId, deploymentTopology, manifest, requestParams, secrets)
+				err = binder.DeleteBinding(deleteBindingParams)
 				Expect(err).To(HaveOccurred())
 			})
 		})
 
 		Context("when deploymentTopology is missing", func() {
 			BeforeEach(func() {
-				deploymentTopology = nil
+				deleteBindingParams.DeploymentTopology = nil
 			})
 
 			It("returns error", func() {
-				err = binder.DeleteBinding(bindingId, deploymentTopology, manifest, requestParams, secrets)
+				err = binder.DeleteBinding(deleteBindingParams)
 				Expect(err).To(HaveOccurred())
 			})
 		})
