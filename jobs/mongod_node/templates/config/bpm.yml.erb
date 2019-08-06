@@ -10,7 +10,6 @@ processes:
     - path: /var/vcap/store/mongodb-data
       writable: true
   unsafe:
-    privileged: true
     unrestricted_volumes:
       - path: /var/lib/mongodb-mms-automation
         writable: true
