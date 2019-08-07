@@ -302,6 +302,8 @@ var _ = Describe("Client", func() {
 
 		It("returns no error ", func() {
 
+			kfw, err := c.GetKeyfileWindows(config.GroupID)
+
 			ctx := &adapter.DocContext{
 				ID:                      "id1",
 				Key:                     GetConfig().AuthKey,
@@ -310,6 +312,7 @@ var _ = Describe("Client", func() {
 				Nodes:                   []string{GetConfig().NodeAddresses},
 				Version:                 latestVersion,
 				RequireSSL:              false,
+				KeyfileWindows:          kfw,
 			}
 
 			doc, err := c.LoadDoc(adapter.PlanStandalone, ctx)
@@ -331,7 +334,7 @@ var _ = Describe("Client", func() {
 				Key:                     GetConfig().AuthKey,
 				AdminPassword:           "admin",
 				AutomationAgentPassword: "admin",
-	                        Nodes:                   []string{GetConfig().NodeAddresses},
+				Nodes:                   []string{GetConfig().NodeAddresses},
 				Version:                 latestVersion,
 				RequireSSL:              false,
 			}
