@@ -90,7 +90,7 @@ resources:
   source:
     bucket: ((aws-bucket))
     region_name: eu-west-1
-    regexp: mongodb-on-demand-(1.*).pivotal
+    regexp: mongodb-on-demand-(1\.0.*).pivotal
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
 
@@ -98,31 +98,10 @@ resources:
   type: s3
   source:
     bucket: ((release-bucket))
-    regexp: mongodb-on-demand-(1.*).pivotal
+    regexp: mongodb-on-demand-(.*).pivotal
     region_name: eu-west-1
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
-
-- name: "build-status"
-  type: "github-status"
-  source:
-    repository: 10gen/ops-manager-cloudfoundry
-    access_token: ((repo-github-token))
-    context: build-tile
-
-- name: "deploy-status"
-  type: "github-status"
-  source:
-    repository: 10gen/ops-manager-cloudfoundry
-    access_token: ((repo-github-token))
-    context: deploy-tile
-
-- name: "test-status"
-  type: "github-status"
-  source:
-    repository: 10gen/ops-manager-cloudfoundry
-    access_token: ((repo-github-token))
-    context: smoke-tests
 
 resource_types:
 - name: pivnet
@@ -134,11 +113,6 @@ resource_types:
   type: docker-image
   source:
     repository: cfcommunity/slack-notification-resource
-- name: "github-status"
-  type: "docker-image"
-  source:
-    repository: "dpb587/github-status-resource"
-    tag: "master"
 
 jobs:
 - name: build-tile
@@ -166,28 +140,8 @@ jobs:
     - get: version
       params:
         pre: rc
-  - put: "build-status"
-    params:
-      state: "pending"
-      commit: "ops-manager-cloudfoundry"
   - task: build-tile
     file: ops-manager-cloudfoundry/ci/tasks/build-tile/task.yml
-    on_failure:
-      put: "build-status"
-      params:
-        state: "failure"
-        commit: "ops-manager-cloudfoundry"
-    on_error:
-      put: "build-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-    on_abort:
-      put: "build-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-        description: aborted
     params:
       AWS_KEY: ((aws-access-key))
       AWS_SECRET_KEY: ((aws-secret-access-key))
@@ -197,10 +151,6 @@ jobs:
   - put: version
     params:
       pre: rc
-  - put: "build-status"
-    params:
-      state: "success"
-      commit: "ops-manager-cloudfoundry"
 
 - name: deploy-tile
   serial: true
@@ -216,11 +166,7 @@ jobs:
     - get: version
     - get: stemcell
       params:
-        globs: ["*azure*"]
-  - put: "deploy-status"
-    params:
-      state: "pending"
-      commit: "ops-manager-cloudfoundry"
+        globs: ["*google*"]
   - task: deploy-tile
     file: ops-manager-cloudfoundry/ci/tasks/deploy-tile/task.yml
     params:
@@ -230,27 +176,7 @@ jobs:
       OM_API_KEY: ((om-api-key))
       PRODUCT_PROPERTIES: ((product_properties))
       PRODUCT_NETWORK_AZS: ((product_network_azs))
-      CONFIG: config
-    on_failure:
-      put: "deploy-status"
-      params:
-        state: "failure"
-        commit: "ops-manager-cloudfoundry"
-    on_error:
-      put: "deploy-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-    on_abort:
-      put: "deploy-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-        description: aborted
-  - put: "deploy-status"
-    params:
-      state: "success"
-      commit: "ops-manager-cloudfoundry"
+      CONFIG: config.albany
 
 - name: smoke-tests
   serial: true
@@ -260,36 +186,12 @@ jobs:
     - get: ops-manager-cloudfoundry
       trigger: true
       passed: [ deploy-tile ]
-  - put: "test-status"
-    params:
-      state: "pending"
-      commit: "ops-manager-cloudfoundry"
   - task: smoke-tests
     file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
     params:
       PCF_URL: ((pcf-url))
       PCF_USERNAME: ((pcf-username))
       PCF_PASSWORD: ((pcf-password))
-    on_failure:
-      put: "test-status"
-      params:
-        state: "failure"
-        commit: "ops-manager-cloudfoundry"
-    on_error:
-      put: "test-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-    on_abort:
-      put: "test-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-        description: aborted
-  - put: "test-status"
-    params:
-      state: "success"
-      commit: "ops-manager-cloudfoundry"
 
 - name: shipit
   serial: true

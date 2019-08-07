@@ -2,7 +2,7 @@ product-name: mongodb-on-demand
 product-properties:
   .properties.az_multi_select:
     value:
-    - "null"
+    - us-central1-f
   .properties.backup_enabled:
     value: false
   .properties.bosh_dns_disable:
@@ -18,21 +18,21 @@ product-properties:
   .properties.syslog_transport_protocol:
     value: tcp
   .properties.url:
-    value: http://ec2-3-223-45-28.compute-1.amazonaws.com:9080
+    value: http://ec2-54-88-70-89.compute-1.amazonaws.com:9080
   .properties.username:
-    value: pcf.test@mongodb.com
+    value: andrey.belik@mongodb.com
   .properties.api_key:
     value:
       secret:  ((OM_API_KEY))
 network-properties:
   network:
-    name: test-pas-subnet
+    name: albany-pas-subnet
   other_availability_zones:
-  - name: "null"
+  - name: "us-central1-f"
   service_network:
-    name: test-services-subnet
+    name: albany-services-subnet
   singleton_availability_zone:
-    name: "null"
+    name: "us-central1-f"
 resource-config:
   broker:
     instances: automatic
@@ -49,4 +49,4 @@ errand-config:
   register-broker:
     post-deploy-state: true
   upgrade-all-service-instances:
-    post-deploy-state: true
+    post-deploy-state: false

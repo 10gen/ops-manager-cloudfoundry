@@ -5,6 +5,7 @@ templates:
   bin/drain.erb: bin/drain
   bin/mongod_agent_ctl.erb: bin/mongod_agent_ctl
   bin/pre-start.erb: bin/pre-start
+  bin/start_latest_agent.erb: bin/start_latest_agent
   config/bpm.yml.erb: config/bpm.yml
   config/cacert.pem.erb: config/cacert.pem
   config/local.conf.erb: config/local.conf
