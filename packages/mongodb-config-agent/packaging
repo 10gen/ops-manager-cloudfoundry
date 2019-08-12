@@ -4,13 +4,9 @@ cp common/* ${BOSH_INSTALL_TARGET}
 
 source /var/vcap/packages/golang-*-linux/bosh/compile.env
 
-PACKAGE_NAME=github.com/10gen/ops-manager-cloudfoundry
+mkdir -p "${BOSH_INSTALL_TARGET}/bin"
 
-mkdir -p "${GOPATH}/src/${PACKAGE_NAME}/src" "${BOSH_INSTALL_TARGET}/bin"
-mv "${BOSH_COMPILE_TARGET}/mongodb-config-agent" "${GOPATH}/src/${PACKAGE_NAME}/src"
-
-go build -o "${BOSH_INSTALL_TARGET}/bin/mongodb-config-agent" "${PACKAGE_NAME}/src/mongodb-config-agent"
-
+cd "${BOSH_COMPILE_TARGET}/mongodb-config-agent"
+go build -o "${BOSH_INSTALL_TARGET}/bin/mongodb-config-agent"
 chmod +x "${BOSH_INSTALL_TARGET}/bin/mongodb-config-agent"
 
-rm -rf ${GOPATH}/{src,pkg}
