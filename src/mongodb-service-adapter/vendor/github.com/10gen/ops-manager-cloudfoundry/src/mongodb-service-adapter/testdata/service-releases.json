@@ -1,9 +1,0 @@
-[
-   {
-      "name":"mongodb",
-      "version":"latest",
-      "jobs":[
-         "mongod_node"
-      ]
-   }
-]

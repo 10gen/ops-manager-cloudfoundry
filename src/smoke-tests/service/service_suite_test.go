@@ -11,8 +11,8 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf-experimental/cf-test-helpers/services"
 
-	"github.com/10gen/ops-manager-cloudfoundry/src/smoke-tests/retry"
-	"github.com/10gen/ops-manager-cloudfoundry/src/smoke-tests/service/reporter"
+	"smoke-tests/retry"
+	"smoke-tests/service/reporter"
 )
 
 type retryConfig struct {

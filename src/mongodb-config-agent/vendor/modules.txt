@@ -1,0 +1,36 @@
+# code.cloudfoundry.org/lager v2.0.0+incompatible
+code.cloudfoundry.org/lager
+# github.com/gorilla/mux v1.7.3
+github.com/gorilla/mux
+# github.com/pivotal-cf/brokerapi v6.0.0+incompatible
+github.com/pivotal-cf/brokerapi
+github.com/pivotal-cf/brokerapi/auth
+github.com/pivotal-cf/brokerapi/domain
+github.com/pivotal-cf/brokerapi/domain/apiresponses
+github.com/pivotal-cf/brokerapi/handlers
+github.com/pivotal-cf/brokerapi/middlewares
+github.com/pivotal-cf/brokerapi/utils
+# github.com/pivotal-cf/on-demand-services-sdk v0.31.1
+github.com/pivotal-cf/on-demand-services-sdk/bosh
+github.com/pivotal-cf/on-demand-services-sdk/serviceadapter
+# github.com/pkg/errors v0.8.1
+github.com/pkg/errors
+# github.com/tidwall/gjson v1.3.2
+github.com/tidwall/gjson
+# github.com/tidwall/match v1.0.1
+github.com/tidwall/match
+# github.com/tidwall/pretty v1.0.0
+github.com/tidwall/pretty
+# gopkg.in/go-playground/validator.v8 v8.18.2
+gopkg.in/go-playground/validator.v8
+# gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce
+gopkg.in/mgo.v2
+gopkg.in/mgo.v2/bson
+gopkg.in/mgo.v2/internal/sasl
+gopkg.in/mgo.v2/internal/scram
+gopkg.in/mgo.v2/internal/json
+# gopkg.in/yaml.v2 v2.2.2
+gopkg.in/yaml.v2
+# mongodb-service-adapter v0.0.0-00010101000000-000000000000 => ../mongodb-service-adapter
+mongodb-service-adapter/adapter
+mongodb-service-adapter/digest

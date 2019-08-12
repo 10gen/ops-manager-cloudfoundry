@@ -1,9 +1,0 @@
-{
-    "url": "http://ec2-3-223-45-28.compute-1.amazonaws.com:9080",
-    "group": "5d35d9f26a9405081cad3417",
-    "username": "pcf.test@mongodb.com",
-    "api_key": "95253bf4-37af-4964-b5ac-bdc39b517214",
-    "auth_key": "5d36de0b6a9405081cae12eb17dd022f9e21150c128d8e09b4f60e79",
-    "nodes": "localhost",
-    "org": "5d35d9f26a9405081cad3417"
-}

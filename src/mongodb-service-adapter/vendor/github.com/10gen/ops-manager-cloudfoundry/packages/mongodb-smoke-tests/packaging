@@ -1,8 +1,0 @@
-set -e
-
-PACKAGE_NAME=github.com/10gen/ops-manager-cloudfoundry
-PACKAGE_DIR=${BOSH_INSTALL_TARGET}/src/${PACKAGE_NAME}/src/smoke-tests
-
-mkdir -p $PACKAGE_DIR
-
-cp -a smoke-tests/* $PACKAGE_DIR
