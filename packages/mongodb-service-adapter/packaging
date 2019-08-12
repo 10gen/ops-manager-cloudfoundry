@@ -4,5 +4,5 @@ source /var/vcap/packages/golang-*-linux/bosh/compile.env
 mkdir -p "${BOSH_INSTALL_TARGET}/bin"
 
 cd "${BOSH_COMPILE_TARGET}/mongodb-service-adapter"
-go build -o "${BOSH_INSTALL_TARGET}/bin/mongodb-service-adapter"
+go build -o "${BOSH_INSTALL_TARGET}/bin/mongodb-service-adapter" -mod=vendor
 chmod +x "${BOSH_INSTALL_TARGET}/bin/mongodb-service-adapter"
