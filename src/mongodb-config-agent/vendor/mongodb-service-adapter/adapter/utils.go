@@ -7,6 +7,8 @@ import (
 	"net"
 	"sort"
 	"strings"
+
+	"mongodb-service-adapter/adapter/config"
 )
 
 // GenerateString generates a random string or panics
@@ -30,14 +32,14 @@ func GenerateString(l int) (string, error) {
 
 // TODO: validate input
 // NodesToCluster transforms a nodes list into cluster configuration object.
-func NodesToCluster(nodes []string, routers, configServers, replicas int) (*Cluster, error) {
+func NodesToCluster(nodes []string, routers, configServers, replicas int) (*config.Cluster, error) {
 	// nodes have to be ordered because
 	// bosh provides them in random order
 	sort.Slice(nodes, func(i, j int) bool {
 		return addrn(nodes[i]) < addrn(nodes[j])
 	})
 
-	c := &Cluster{
+	c := &config.Cluster{
 		Routers:       nodes[:routers],
 		ConfigServers: nodes[routers : routers+configServers],
 	}

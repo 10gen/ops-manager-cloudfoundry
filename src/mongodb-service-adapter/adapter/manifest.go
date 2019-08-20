@@ -5,6 +5,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/mongodb-labs/pcgc/pkg/opsmanager"
 	"github.com/pivotal-cf/on-demand-services-sdk/bosh"
 	"github.com/pivotal-cf/on-demand-services-sdk/serviceadapter"
 )
@@ -223,21 +224,24 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 		}
 	}
 
+	// TODO: what is this? there's no 'autoPwd' field in ProjectResponse!
+	agentPassword := ""
 	if params.PreviousManifest == nil {
 		var err error
-		group.AuthAgentPassword, err = GenerateString(32)
+		agentPassword, err = GenerateString(32)
 		if err != nil {
 			panic(err)
 		}
 	}
 
 	// if manifest updates we should use password from previous manifest
-	if group.AuthAgentPassword == "" && params.PreviousManifest != nil {
-		var err error
-		group.AuthAgentPassword, err = oc.GetGroupAuthAgentPassword(group.ID)
+	if agentPassword == "" && params.PreviousManifest != nil {
+		cfg, err := oc.Client().GetAutomationConfig(group.ID)
 		if err != nil {
 			panic(err)
 		}
+
+		agentPassword = cfg.Auth.AutoPwd
 	}
 
 	caCert := ""
@@ -314,7 +318,7 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 						"api_key":          apiKey,
 						"auth_key":         authKey,
 						"username":         username,
-						"auth_pwd":         group.AuthAgentPassword,
+						"auth_pwd":         agentPassword,
 						"group_id":         group.ID,
 						"plan_id":          planID,
 						"admin_password":   adminPassword,
@@ -430,7 +434,7 @@ func authKeyForMongoServer(previousManifestProperties map[interface{}]interface{
 func groupForMongoServer(mongoID string, oc *OMClient,
 	planProperties map[string]interface{},
 	previousMongoProperties map[interface{}]interface{},
-	arbitraryParams map[string]interface{}) (Group, error) {
+	arbitraryParams map[string]interface{}) (opsmanager.ProjectResponse, error) {
 
 	req := GroupCreateRequest{}
 	if name, found := arbitraryParams["projectName"]; found {
@@ -448,9 +452,9 @@ func groupForMongoServer(mongoID string, oc *OMClient,
 	}
 
 	if previousMongoProperties != nil {
-		group, err := oc.UpdateGroup(previousMongoProperties["group_id"].(string), GroupUpdateRequest{req.Tags})
+		group, err := oc.Client().SetProjectTags(previousMongoProperties["group_id"].(string), req.Tags)
 		if err != nil {
-			return Group{}, err
+			return opsmanager.ProjectResponse{}, err
 		}
 		// AgentAPIKey is empty for PATCH and GET requests in OM 3.6, taking the value from previous manifest instead
 		group.AgentAPIKey = previousMongoProperties["agent_api_key"].(string)

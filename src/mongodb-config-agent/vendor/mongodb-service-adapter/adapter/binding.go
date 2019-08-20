@@ -26,8 +26,6 @@ func (b *Binder) logf(msg string, v ...interface{}) {
 var (
 	adminDB        = "admin"
 	defaultDB      = "default"
-	caCertPath     = "/var/vcap/jobs/mongodb_service_adapter/config/cacert.pem"
-	serverPEMPath  = "/var/vcap/jobs/mongodb_service_adapter/config/server.pem"
 	serverKeyPath  = "/var/vcap/jobs/mongodb_service_adapter/config/server.key"
 	serverCertPath = "/var/vcap/jobs/mongodb_service_adapter/config/server.crt"
 )
