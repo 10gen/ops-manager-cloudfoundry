@@ -6,4 +6,17 @@ set -x
 go install -v github.com/10gen/ops-manager-cloudfoundry/src/smoke-tests/vendor/github.com/onsi/ginkgo/ginkgo
 
 export GOPATH=$GOPATH:$(pwd)
+
+sudo service mongodb start
+SERVICE=mongo
+if P=$(pgrep $SERVICE)
+then
+    echo "$SERVICE is running, PID is $P"
+else
+    echo "$SERVICE is not running, installing mongodb"
+    sudo apt-get install -y mongodb-org
+    echo yes | sudo apt install mongodb-clients
+    sudo service mongodb start
+fi
+
 CF_COLOR=false CF_VERBOSE_OUTPUT=true ginkgo -r -v -noColor=true -keepGoing=true -trace=true -slowSpecThreshold=300 service adapter digest
