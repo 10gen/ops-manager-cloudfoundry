@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"mongodb-service-adapter/adapter/config"
 	"strings"
 
 	"github.com/mongodb-labs/pcgc/pkg/httpclient"
@@ -47,21 +46,6 @@ func (oc *OMClient) Client() opsmanager.Client {
 	return opsmanager.NewClientWithDigestAuth(httpclient.NewURLResolver(oc.Url), oc.Username, oc.ApiKey)
 }
 
-func PrepareContext(p string, ctx *config.DocContext) config.AutomationConfig {
-
-	result := config.AutomationConfig{}
-	switch p {
-	case PlanStandalone:
-		result.ToStandalone(ctx)
-	case PlanShardedCluster:
-		result.ToShardedCluster(ctx)
-	case PlanReplicaSet:
-		result.ToReplicaSet(ctx)
-	}
-
-	return result
-}
-
 func (oc *OMClient) CreateGroup(id string, request GroupCreateRequest) (opsmanager.ProjectResponse, error) {
 	log.Println(fmt.Sprintf("CreateGroup in id : %s ,request : %+v", id, request))
 
@@ -93,31 +77,6 @@ func (oc *OMClient) CreateGroup(id string, request GroupCreateRequest) (opsmanag
 	}
 
 	return resp, nil
-}
-
-// TODO: implement in client
-func (oc *OMClient) GetGroupHostnames(groupID string, planID string) ([]string, error) {
-	resp, err := oc.Client().GetHosts(groupID)
-	if err != nil {
-		return nil, err
-	}
-
-	servers := make([]string, 0, len(resp.Results))
-	for _, v := range resp.Results {
-		servers = append(servers, fmt.Sprintf("%s:28000", v.Hostname))
-	}
-
-	return servers, nil
-}
-
-// TODO: refactor the client to avoid this call
-func (oc *OMClient) GetKeyfileWindows(groupID string) (string, error) {
-	config, err := oc.Client().GetAutomationConfig(groupID)
-	if err != nil {
-		return "", err
-	}
-
-	return config.Auth.KeyfileWindows, nil
 }
 
 func (oc *OMClient) GetLatestVersion(groupID string) (string, error) {

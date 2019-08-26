@@ -69,10 +69,12 @@ func (b Binder) CreateBinding(params serviceadapter.CreateBindingParams) (servic
 
 	if ssl {
 		omClient := OMClient{Url: URL, Username: adminUsername, ApiKey: adminAPIKey}
-		servers, err = omClient.GetGroupHostnames(groupID, plan)
+		hosts, err := omClient.Client().GetHosts(groupID)
 		if err != nil {
 			return serviceadapter.Binding{}, err
 		}
+
+		servers = ToEndpointList(hosts)
 	}
 
 	sslOption := ""
@@ -144,7 +146,6 @@ func (Binder) DeleteBinding(params serviceadapter.DeleteBindingParams) error {
 	adminUsername := properties["username"].(string)
 	adminAPIKey := properties["admin_api_key"].(string)
 	groupID := properties["group_id"].(string)
-	plan := properties["plan_id"].(string)
 
 	servers := make([]string, len(params.DeploymentTopology["mongod_node"]))
 	for i, node := range params.DeploymentTopology["mongod_node"] {
@@ -154,10 +155,12 @@ func (Binder) DeleteBinding(params serviceadapter.DeleteBindingParams) error {
 	if ssl {
 		var err error
 		omClient := OMClient{Url: URL, Username: adminUsername, ApiKey: adminAPIKey}
-		servers, err = omClient.GetGroupHostnames(groupID, plan)
+		hosts, err := omClient.Client().GetHosts(groupID)
 		if err != nil {
 			return err
 		}
+
+		servers = ToEndpointList(hosts)
 	}
 
 	session, err := GetWithCredentials(servers, adminPassword, ssl)

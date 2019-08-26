@@ -8,6 +8,8 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/mongodb-labs/pcgc/pkg/opsmanager"
+
 	"mongodb-service-adapter/adapter/config"
 )
 
@@ -70,4 +72,13 @@ func addrn(addr string) int {
 		n += int(b)
 	}
 	return n
+}
+
+func ToEndpointList(hosts opsmanager.HostsResponse) []string {
+	servers := make([]string, 0, len(hosts.Results))
+	for _, v := range hosts.Results {
+		servers = append(servers, fmt.Sprintf("%s:28000", v.Hostname))
+	}
+
+	return servers
 }
