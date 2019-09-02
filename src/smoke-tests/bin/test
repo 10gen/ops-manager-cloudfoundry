@@ -5,6 +5,7 @@ set -x
 
 export GOPATH=$GOPATH:$(pwd)
 
+sudo apt-get install sudo
 sudo mkdir -p /data/db
 sudo service mongodb start
 SERVICE=mongo
