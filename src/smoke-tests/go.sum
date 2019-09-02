@@ -4,6 +4,8 @@ github.com/10gen/ops-manager-cloudfoundry v0.0.0-20190802141135-984acdf00a53 h1:
 github.com/10gen/ops-manager-cloudfoundry v0.0.0-20190802141135-984acdf00a53/go.mod h1:UEg4LgoorNshm+N+8o6ldV3N/IVPzUg4BjGbCpGNnp8=
 github.com/10gen/ops-manager-cloudfoundry v0.0.0-20190827134617-d3bda43b69ca h1:1V1CeHq+s2otLZ+Nqoj+buSUueG7ATixpVD5qxhPzuk=
 github.com/10gen/ops-manager-cloudfoundry v0.0.0-20190827134617-d3bda43b69ca/go.mod h1:UEg4LgoorNshm+N+8o6ldV3N/IVPzUg4BjGbCpGNnp8=
+github.com/10gen/ops-manager-cloudfoundry v0.0.0-20190830123523-9fbf69f1ed6f h1:aggiX6ox3KSHP2YKXYay1qXcICSWXnu5I0pmivNcqlI=
+github.com/10gen/ops-manager-cloudfoundry/src/smoke-tests v0.0.0-20190830123523-9fbf69f1ed6f h1:9iaS9ycK7qC7zAFfqBiCwAixfFRhtFgeZjydhPkIunw=
 github.com/gorilla/context v0.0.0-20160226214623-1ea25387ff6f/go.mod h1:kBGZzfjB9CEq2AlWe17Uuf7NDRt0dE0s8S51q0aT7Yg=
 github.com/gorilla/mux v1.6.2/go.mod h1:1lud6UwP+6orDFRuTfBEV8e9/aOM/c4fVVCaMa2zaAs=
 github.com/gorilla/mux v1.7.3 h1:gnP5JzjVOuiZD07fKKToCAOjS0yOpj/qPETTXCCS6hw=

@@ -3,8 +3,6 @@
 set -e
 set -x
 
-go install -v github.com/10gen/ops-manager-cloudfoundry/src/smoke-tests/vendor/github.com/onsi/ginkgo/ginkgo
-
 export GOPATH=$GOPATH:$(pwd)
 
 sudo mkdir -p /data/db
