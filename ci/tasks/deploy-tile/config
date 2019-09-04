@@ -25,6 +25,7 @@ product-properties:
     value:
       secret:  ((OM_API_KEY))
   .properties.vm_extensions:
+    value:
     - name: public_ip
 network-properties:
   network:
