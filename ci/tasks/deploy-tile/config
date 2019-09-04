@@ -26,7 +26,7 @@ product-properties:
       secret:  ((OM_API_KEY))
   .properties.vm_extensions:
     value:
-    - name: public_ip
+    - public_ip
 network-properties:
   network:
     name: test-pas-subnet
