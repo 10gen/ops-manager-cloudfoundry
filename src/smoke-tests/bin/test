@@ -7,6 +7,7 @@ mkdir -p /data/db
 wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | apt-key add -
 echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.2 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.2.list
 apt-get update
+apt-get install gnupg
 apt-get install -y mongodb-org
 echo "mongodb-org hold" | dpkg --set-selections
 echo "mongodb-org-server hold" | dpkg --set-selections
