@@ -2,6 +2,7 @@ set -e
 set -x
 
 export GOPATH=$GOPATH:$(pwd)
+go install -v github.com/onsi/ginkgo/ginkgo
 mkdir -p /data/db
 
 install_mongodb_packages() {
@@ -23,7 +24,7 @@ if P=$(pgrep $SERVICE)
 then
    echo "$SERVICE is running, PID is $P" #yes "" &
 else
-   install_mongodb_packages
+   echo "Y" | install_mongodb_packages
    echo "$SERVICE is not running, starting mongodb"
    mongod --port 28000 --dbpath /data/db &
    mongo --port 28000 admin --eval 'db.createUser({
