@@ -20,6 +20,18 @@ install_mongodb_packages() {
 }
 
 SERVICE=mongo
-
+if P=$(pgrep $SERVICE)
+then
+   echo "$SERVICE is running, PID is $P" #yes "" &
+else
+   echo "Y" | install_mongodb_packages
+   echo "$SERVICE is not running, starting mongodb"
+   mongod --port 28000 --dbpath /data/db &
+   mongo --port 28000 admin --eval 'db.createUser({
+        user:"admin",
+        pwd: "admin",
+        roles: [ "userAdminAnyDatabase" ]
+    });' &
+fi
 
 CF_COLOR=false CF_VERBOSE_OUTPUT=true ginkgo -r -v -noColor=true -keepGoing=true -trace=true -slowSpecThreshold=300 service adapter digest
