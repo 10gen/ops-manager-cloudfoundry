@@ -2,7 +2,7 @@
 groups:
   - name: mongodb-on-demand
     jobs:
-      - deploy-tile-old
+      - deploy-tile
       - delete-tile
       - smoke-tests
 
