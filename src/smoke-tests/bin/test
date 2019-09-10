@@ -3,36 +3,5 @@ set -x
 
 export GOPATH=$GOPATH:$(pwd)
 go install -v github.com/onsi/ginkgo/ginkgo
-mkdir -p /data/db
-
-install_mongodb_packages() {
-   apt-get update
-   apt-get install gnupg2
-   wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | apt-key add -
-   echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.2 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.2.list
-   apt-get update
-   apt-get install -y mongodb-org curl
-   echo "mongodb-org hold" | dpkg --set-selections
-   echo "mongodb-org-server hold" | dpkg --set-selections
-   echo "mongodb-org-shell hold" | dpkg --set-selections
-   echo "mongodb-org-mongos hold" | dpkg --set-selections
-   echo "mongodb-org-tools hold" | dpkg --set-selections
-}
-
-SERVICE=mongo
-if P=$(pgrep $SERVICE)
-then
-   echo "$SERVICE is running, PID is $P" #yes "" &
-else
-   echo "Y" | install_mongodb_packages
-   echo "$SERVICE is not running, starting mongodb"
-   mongod --port 28000 --dbpath /data/db --fork --logpath /data/log.log &
-   sleep 5 &
-   mongo --port 28000 admin --eval 'db.createUser({
-        user:"admin",
-        pwd: "admin",
-        roles: [ "userAdminAnyDatabase" ]
-    });' &
-fi
 
 CF_COLOR=false CF_VERBOSE_OUTPUT=true ginkgo -r -v -noColor=true -keepGoing=true -trace=true -slowSpecThreshold=300 service
