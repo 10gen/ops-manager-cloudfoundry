@@ -26,7 +26,7 @@ then
 else
    echo "Y" | install_mongodb_packages
    echo "$SERVICE is not running, starting mongodb"
-   mongod --port 28000 --dbpath /data/db &
+   mongod --port 28000 --dbpath /data/db --fork --logPath /data &
    mongo --port 28000 admin --eval 'db.createUser({
         user:"admin",
         pwd: "admin",
