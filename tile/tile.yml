@@ -336,13 +336,7 @@ runtime_configs:
     releases:
     - name: mongodb
       version: 1.0.33
-    - name: bpm
-      version: 1.1.1
     addons:
-    - name: bpm
-      jobs:
-      - name: bpm
-        release: bpm
     - name: mongodb-dns-aliases
       include:
         jobs:
