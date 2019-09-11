@@ -336,7 +336,13 @@ runtime_configs:
     releases:
     - name: mongodb
       version: 1.0.33
+    - name: bpm
+      version: 1.1.1
     addons:
+    - name: bpm
+      jobs:
+      - name: bpm
+        release: bpm
     - name: mongodb-dns-aliases
       include:
         jobs:
@@ -478,10 +484,6 @@ packages:
           version: 11.1.1
           jobs:
           - syslog_forwarder
-        - name: bpm
-          version: 1.1.1
-          jobs:
-          - bpm
         stemcell:
           os: ubuntu-xenial
           version: (( $self.stemcell_version ))
