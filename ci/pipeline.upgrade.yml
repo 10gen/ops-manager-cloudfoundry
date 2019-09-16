@@ -28,13 +28,6 @@ resources:
     product_slug: mongodb-on-demand
     product_version: '1.0.33'
 
-- name: tile-publish
-  type: pivnet
-  source:
-    api_token: ((pivnet-token))
-    product_slug: mongodb-on-demand
-    
-
 - name: version
   type: semver
   source:
