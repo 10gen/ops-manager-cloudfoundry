@@ -7,7 +7,6 @@ PCF_URL="$PCF_URL"
 PCF_USERNAME="$PCF_USERNAME"
 PCF_PASSWORD="$PCF_PASSWORD"
 
-
 VERSION=$(cat "$base"/versionold/number)
 if [ -z "${VERSION:-}" ]; then
   echo "missing version number"
@@ -28,11 +27,9 @@ if [ -z "${STEMCELL_FILE}" ]; then
 	exit 1
 fi
 
-PRODUCT="$(cat $base/ops-manager-cloudfoundry/tile/tile.yml | grep '^name' | cut -d' ' -f 2)"
-echo "Product " $PRODUCT
-# if [ -z "${PRODUCT}" ]; then
-# 	PRODUCT=mongodb-on-demand
-# fi
+PRODUCT="$(yq r $base/ops-manager-cloudfoundry/tiles/mongodb-on-demand-old/tile-mongodb-on-demand-old.yml name)"
+echo "Product: " $PRODUCT
+
 om="om -t $PCF_URL -u $PCF_USERNAME -p $PCF_PASSWORD -k"
 echo ${om} $TILE_FILE
 ${om} upload-product --product "tileold/$TILE_FILE"
@@ -50,7 +47,7 @@ ${om} stage-product --product-name "$PRODUCT" --product-version "$VERSION"
 	# echo ${om} configure-product --product-name "$PRODUCT" --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config"
 	# ${om} configure-product  --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config"
 cd ops-manager-cloudfoundry
-cat > "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/vars.yml" << EOF
+cat > "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/vars.yml" << EOF
 
 OM_API_KEY: "$OM_API_KEY"
 OM_API_USER: "$OM_API_USER"
