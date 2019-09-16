@@ -2,7 +2,7 @@
 groups:
   - name: mongodb-on-demand
     jobs:
-      - deploy-tile
+      - deploy-tile-old
       - delete-tile
       - smoke-tests
 
@@ -10,7 +10,7 @@ resources:
 - name: ops-manager-cloudfoundry
   type: git
   source:
-    branch: 1.0.34
+    branch: tile-upgrade-playgroud
     uri: git@github.com:10gen/ops-manager-cloudfoundry.git
     private_key: ((git-private-key))
 
@@ -79,7 +79,6 @@ resource_types:
     repository: cfcommunity/slack-notification-resource
 
 jobs:
-
 - name: deploy-tile-old
   serial: true
   build_logs_to_retain: 50
@@ -135,10 +134,3 @@ jobs:
       PCF_URL: ((pcf-url))
       PCF_USERNAME: ((pcf-username))
       PCF_PASSWORD: ((pcf-password))
-
-- name: delete-tile
-  serial: true
-  build_logs_to_retain: 50
-  plan:
-  - in_parallel:
-    - out: 
