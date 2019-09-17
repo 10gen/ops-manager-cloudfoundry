@@ -336,6 +336,7 @@ runtime_configs:
     releases:
     - name: mongodb
       version: 1.0.33
+    addons:
     - name: mongodb-dns-aliases
       include:
         jobs:
