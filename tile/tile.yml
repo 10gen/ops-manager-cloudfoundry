@@ -336,13 +336,6 @@ runtime_configs:
     releases:
     - name: mongodb
       version: 1.0.33
-    - name: bpm
-      version: 1.1.1
-    addons:
-    - name: bpm
-      jobs:
-      - name: bpm
-        release: bpm
     - name: mongodb-dns-aliases
       include:
         jobs:
@@ -370,9 +363,6 @@ runtime_configs:
               network: (( $self.service_network ))
               query: _
 packages:
-- name: bpm
-  type: bosh-release
-  path: resources/bpm-release-1.1.1.tgz
 - name: pcf-mongodb-helpers
   type: bosh-release
   path: resources/pcf-mongodb-helpers-0.0.1.tgz
