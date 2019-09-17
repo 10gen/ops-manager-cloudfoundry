@@ -13,6 +13,7 @@ if [ -z "${VERSION:-}" ]; then
   exit 1
 fi
 ls "$base"
+
 TILE_FILE=`cd tileold; ls *-${VERSION}.pivotal`
 if [ -z "${TILE_FILE}" ]; then
 	echo "No files matching tileold/*.pivotal"
@@ -27,7 +28,7 @@ if [ -z "${STEMCELL_FILE}" ]; then
 	exit 1
 fi
 
-PRODUCT="$(yq r $base/ops-manager-cloudfoundry/tiles/mongodb-on-demand-old/tile-mongodb-on-demand-old.yml name)"
+PRODUCT="$(yq r $base/ops-manager-cloudfoundry/tile/tile.yml name)"
 echo "Product: " $PRODUCT
 
 om="om -t $PCF_URL -u $PCF_USERNAME -p $PCF_PASSWORD -k"

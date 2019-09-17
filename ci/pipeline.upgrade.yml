@@ -2,15 +2,17 @@
 groups:
   - name: mongodb-on-demand
     jobs:
-      - deploy-tile-old
       - delete-tile
+      - deploy-tile-old
+      - deploy-mongodb-service    
       - smoke-tests
+      - deploy-tile
 
 resources:
 - name: ops-manager-cloudfoundry
   type: git
   source:
-    branch: tile-upgrade-playgroud
+    branch: tile-upgrade-playground
     uri: git@github.com:10gen/ops-manager-cloudfoundry.git
     private_key: ((git-private-key))
 
@@ -59,7 +61,6 @@ resources:
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
 
-
 resource_types:
 - name: pivnet
   type: docker-image
@@ -78,6 +79,7 @@ jobs:
   plan:
   - in_parallel:
     - get: ops-manager-cloudfoundry
+        passed: [ delete-tile ]
     - get: artifacts
       params:
         file: artifacts/mongodb-on-demand-*.pivotal
@@ -123,6 +125,20 @@ jobs:
     - get: ops-manager-cloudfoundry
   - task: delete-tile
     file: ops-manager-cloudfoundry/ci/tasks/delete-tile/task.yml
+    params:
+      PCF_URL: ((pcf-url))
+      PCF_USERNAME: ((pcf-username))
+      PCF_PASSWORD: ((pcf-password))
+
+- name: deploy-mongodb-service
+  serial: true
+  build_logs_to_retain: 50
+  plan:
+  - in_parallel:
+    - get: ops-manager-cloudfoundry
+      passed: [ deploy-tile-old ]
+  - task: deploy-mongodb-service
+    file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task.yml
     params:
       PCF_URL: ((pcf-url))
       PCF_USERNAME: ((pcf-username))
