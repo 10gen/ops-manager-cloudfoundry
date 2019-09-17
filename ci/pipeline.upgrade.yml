@@ -79,7 +79,7 @@ jobs:
   plan:
   - in_parallel:
     - get: ops-manager-cloudfoundry
-        passed: [ delete-tile ]
+      passed: [ delete-tile ]
     - get: artifacts
       params:
         file: artifacts/mongodb-on-demand-*.pivotal
