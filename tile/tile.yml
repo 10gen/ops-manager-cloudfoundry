@@ -340,6 +340,8 @@ runtime_configs:
     - name: mongodb-dns-aliases
       include:
         jobs:
+        - name: bpm
+          release: bpm
         - name: rep
           release: diego
         - name: rep_windows
