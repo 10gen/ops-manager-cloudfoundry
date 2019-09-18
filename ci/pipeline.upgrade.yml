@@ -6,7 +6,6 @@ groups:
       - deploy-tile-old
       - deploy-mongodb-service    
       - smoke-tests
-      - deploy-tile
 
 resources:
 - name: ops-manager-cloudfoundry
@@ -87,7 +86,7 @@ jobs:
     - get: versionold
     - get: stemcell
       params:
-        globs: ["*azure*"]
+        globs: ["*google*"]
     - get: tileold
   - task: deploy-tile-old
     file: ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/task.yml
@@ -99,7 +98,7 @@ jobs:
       OM_API_KEY: ((om-api-key))
       PRODUCT_PROPERTIES: ((product_properties))
       PRODUCT_NETWORK_AZS: ((product_network_azs))
-      CONFIG: config
+      CONFIG: config.pie24
 
 
 - name: smoke-tests
