@@ -12,7 +12,7 @@ echo "Retrieving current staged version of ${PRODUCT}"
 
 product_version=$(${om} deployed-products -f json | jq -r --arg product_name $PRODUCT '.[] | select(.name == $product_name) | .version')
 
-if [ -z "${product_version}" ]; then
+if [ ! -z "${product_version}" ]; then
     echo "Deleting product [${PRODUCT}], version [${product_version}] , from ${PCF_URL}"
     ${om} unstage-product --product-name "$PRODUCT"
     ${om} apply-changes --product-name "$PRODUCT" --ignore-warnings true
