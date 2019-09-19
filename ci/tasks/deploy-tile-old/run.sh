@@ -59,7 +59,9 @@ ${om} configure-product  --config "$base/ops-manager-cloudfoundry/ci/tasks/deplo
 
 STAGED=$(${om} curl --path /api/v0/staged/products)
 RESULT=$(echo "$STAGED" | jq --arg product_name "$PRODUCT" 'map(select(.type == $product_name)) | .[].guid')
+echo RESULT
 DATA=$(echo '{"deploy_products": []}' | jq ".deploy_products += [$RESULT]")
+echo DATA
 
 ${om} curl --path /api/v0/installations --request POST --data "$DATA"
 ${om} apply-changes --skip-deploy-products="true"
