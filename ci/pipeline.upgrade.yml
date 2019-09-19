@@ -3,8 +3,7 @@ groups:
   - name: mongodb-on-demand
     jobs:
       - delete-tile
-      - deploy-tile-old
-      - deploy-mongodb-service    
+      - deploy-tile-old  
       - smoke-tests
 
 resources:
@@ -83,6 +82,7 @@ jobs:
       params:
         file: artifacts/mongodb-on-demand-*.pivotal
     - get: version
+      trigger: true
     - get: versionold
     - get: stemcell
       params:
@@ -99,7 +99,12 @@ jobs:
       PRODUCT_PROPERTIES: ((product_properties))
       PRODUCT_NETWORK_AZS: ((product_network_azs))
       CONFIG: config.pie22
-
+  - task: deploy-mongodb-service
+    file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task.yml
+    params:
+      PCF_URL: ((pcf-url))
+      PCF_USERNAME: ((pcf-username))
+      PCF_PASSWORD: ((pcf-password))
 
 - name: smoke-tests
   serial: true
@@ -121,23 +126,11 @@ jobs:
   build_logs_to_retain: 50
   plan:
   - in_parallel:
+    - get: version
+      trigger: true
     - get: ops-manager-cloudfoundry
   - task: delete-tile
     file: ops-manager-cloudfoundry/ci/tasks/delete-tile/task.yml
-    params:
-      PCF_URL: ((pcf-url))
-      PCF_USERNAME: ((pcf-username))
-      PCF_PASSWORD: ((pcf-password))
-
-- name: deploy-mongodb-service
-  serial: true
-  build_logs_to_retain: 50
-  plan:
-  - in_parallel:
-    - get: ops-manager-cloudfoundry
-      passed: [ deploy-tile-old ]
-  - task: deploy-mongodb-service
-    file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task.yml
     params:
       PCF_URL: ((pcf-url))
       PCF_USERNAME: ((pcf-username))
