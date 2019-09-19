@@ -336,18 +336,48 @@ runtime_configs:
     releases:
     - name: mongodb
       version: 1.0.33
+    - name: bpm
+      version: 1.1.1
+    addons:
+    - name: bpm
+      jobs:
+      - name: bpm
+        release: bpm
+    - name: mongodb-dns-aliases
+      include:
+        jobs:
+        - name: mongodb_service_adapter
+          release: mongodb
+      jobs:
+      - name: mongodb-dns-aliases
+        release: mongodb
+        properties:
+          aliases:
+          - domain: _.mongodb.internal
+            targets:
+            - deployment: service-instance_*
+              domain: bosh
+              instance_group: mongod_node
+              network: (( $self.service_network ))
+              query: _
+            - deployment: service-instance_*
+              domain: bosh
+              instance_group: mongodb-config-agent
+              network: (( $self.service_network ))
+              query: _
+- name: mongodb-dns-aliases-diego
+  runtime_config:
+    releases:
+    - name: mongodb
+      version: 1.0.33
     addons:
     - name: mongodb-dns-aliases
       include:
         jobs:
-        - name: bpm
-          release: bpm
         - name: rep
           release: diego
         - name: rep_windows
           release: diego
-        - name: mongodb_service_adapter
-          release: mongodb
       jobs:
       - name: mongodb-dns-aliases
         release: mongodb
