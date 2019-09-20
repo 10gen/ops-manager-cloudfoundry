@@ -4,7 +4,6 @@ set -euo pipefail
 
 base=$PWD
 
-
 VERSION=$(cat "$base"/version/number)
 
 if [ -z "${VERSION:-}" ]; then
@@ -25,30 +24,31 @@ cp "$base"/bpm-release/bpm-release-*.tgz "$base"/ops-manager-cloudfoundry/tile/r
 cp "$base"/mongodb/mongodb-linux-x86_64-ubuntu1604-*.tgz "$base"/ops-manager-cloudfoundry/src/mongodb
 ls "$base"/ops-manager-cloudfoundry/tile/resources
 (
-cd ops-manager-cloudfoundry
-cat > config/private.yml << EOF
+  cd ops-manager-cloudfoundry
+  cat >config/private.yml <<EOF
 ---
 blobstore:
   options:
     access_key_id: "$AWS_KEY"
     secret_access_key: "$AWS_SECRET_KEY"
 EOF
-rm -r -f dev_releases
-rm -r -f tile/product/*
-rm -r -f tile/resources/mongodb-*
+  rm -r -f dev_releases
+  rm -r -f tile/product/*
+  rm -r -f tile/resources/mongodb-*
 
-tarball_path="$base/ops-manager-cloudfoundry/tile/resources/mongodb-${VERSION}.tgz"
-mkdir -p "$(dirname "$tarball_path")"
-bosh -n create-release --sha2 --tarball="$tarball_path" --version="${VERSION}" --force
+  tarball_path="$base/ops-manager-cloudfoundry/tile/resources/mongodb-${VERSION}.tgz"
+  mkdir -p "$(dirname "$tarball_path")"
+  bosh -n create-release --sha2 --tarball="$tarball_path" --version="${VERSION}" --force
 )
 
 (
-cd ops-manager-cloudfoundry/tile
+  cd ops-manager-cloudfoundry/tile
 
-yq w -i tile.yml packages.[4].path "$(ls resources/mongodb-*.tgz)"
-yq w -i tile.yml packages.[4].jobs[0].properties.service_deployment.releases[0].version "${VERSION}"
-yq w -i tile.yml runtime_configs[0].runtime_config.releases[0].version "${VERSION}"
-tile build "${VERSION}"
+  yq w -i tile.yml packages.[4].path "$(ls resources/mongodb-*.tgz)"
+  yq w -i tile.yml packages.[4].jobs[0].properties.service_deployment.releases[0].version "${VERSION}"
+  yq w -i tile.yml runtime_configs[0].runtime_config.releases[0].version "${VERSION}"
+  yq w -i tile.yml runtime_configs[1].runtime_config.releases[0].version "${VERSION}"
+  tile build "${VERSION}"
 )
 mkdir -p "$base"/artifacts
 cp "$base"/ops-manager-cloudfoundry/tile/product/mongodb-on-demand-*.pivotal "$base"/artifacts/
