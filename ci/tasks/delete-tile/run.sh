@@ -5,7 +5,7 @@ set -euo pipefail
 base=$PWD
 
 PRODUCT="$(yq r $base/ops-manager-cloudfoundry/tile/tile.yml name)"
-
+om --version
 om="om -t $PCF_URL -u $PCF_USERNAME -p $PCF_PASSWORD -k"
 
 echo "Retrieving current staged version of ${PRODUCT}"

@@ -32,7 +32,6 @@ PRODUCT="$(yq r $base/ops-manager-cloudfoundry/tile/tile.yml name)"
 echo "Product: " $PRODUCT
 
 om="om -t $PCF_URL -u $PCF_USERNAME -p $PCF_PASSWORD -k"
-echo "om version:" om --version
 echo ${om} $TILE_FILE
 ${om} upload-product --product "tileold/$TILE_FILE"
 ${om} upload-stemcell --stemcell "stemcell/$STEMCELL_FILE"
