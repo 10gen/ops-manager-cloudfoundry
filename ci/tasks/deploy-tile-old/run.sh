@@ -32,6 +32,7 @@ PRODUCT="$(yq r $base/ops-manager-cloudfoundry/tile/tile.yml name)"
 echo "Product: " $PRODUCT
 
 om="om -t $PCF_URL -u $PCF_USERNAME -p $PCF_PASSWORD -k"
+echo "om version:" om --version
 echo ${om} $TILE_FILE
 ${om} upload-product --product "tileold/$TILE_FILE"
 ${om} upload-stemcell --stemcell "stemcell/$STEMCELL_FILE"
@@ -59,9 +60,9 @@ ${om} configure-product  --config "$base/ops-manager-cloudfoundry/ci/tasks/deplo
 
 STAGED=$(${om} curl --path /api/v0/staged/products)
 RESULT=$(echo "$STAGED" | jq --arg product_name "$PRODUCT" 'map(select(.type == $product_name)) | .[].guid')
-echo RESULT
+echo $RESULT
 DATA=$(echo '{"deploy_products": []}' | jq ".deploy_products += [$RESULT]")
-echo DATA
+echo $DATA
 
 ${om} curl --path /api/v0/installations --request POST --data "$DATA"
 ${om} apply-changes --skip-deploy-products="true"
