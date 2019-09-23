@@ -64,5 +64,5 @@ DATA=$(echo '{"deploy_products": []}' | jq ".deploy_products += [$RESULT]")
 echo $DATA
 
 ${om} curl --path /api/v0/installations --request POST --data "$DATA"
-${om} apply-changes --skip-deploy-products="true"
+${om} apply-changes --skip-deploy-products="true" --reattach
 ${om} delete-unused-products
