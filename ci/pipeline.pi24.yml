@@ -75,6 +75,7 @@ jobs:
       PCF_URL: ((pcf-url))
       PCF_USERNAME: ((pcf-username))
       PCF_PASSWORD: ((pcf-password))
+      OM_API_USER: ((om-api-user))
       OM_API_KEY: ((om-api-key))
       PRODUCT_PROPERTIES: ((product_properties))
       PRODUCT_NETWORK_AZS: ((product_network_azs))

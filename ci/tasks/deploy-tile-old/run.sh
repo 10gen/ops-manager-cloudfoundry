@@ -53,6 +53,7 @@ cd ops-manager-cloudfoundry
 cat > "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/vars.yml" << EOF
 
 OM_API_KEY: "$OM_API_KEY"
+OM_API_USER: "$OM_API_USER"
 
 EOF
 # ${om} configure-product --product-name "$PRODUCT" --product-network "$network_config" --product-properties "$properties_config"

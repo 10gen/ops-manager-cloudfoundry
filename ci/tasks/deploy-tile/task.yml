@@ -18,6 +18,8 @@ params:
   PCF_PASSWORD:
   PRODUCT_PROPERTIES:
   PRODUCT_NETWORK_AZS:
+  OM_API_KEY:
+  OM_API_USER:
 
 run:
   path: ops-manager-cloudfoundry/ci/tasks/deploy-tile/run.sh

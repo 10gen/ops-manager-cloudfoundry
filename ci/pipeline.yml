@@ -17,7 +17,7 @@ resources:
 - name: ops-manager-cloudfoundry
   type: git
   source:
-    branch: feature/tests
+    branch: master
     uri: git@github.com:10gen/ops-manager-cloudfoundry.git
     private_key: ((git-private-key))
 
@@ -145,7 +145,7 @@ jobs:
   serial: true
   build_logs_to_retain: 50
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ops-manager-cloudfoundry
       trigger: true
     - get: on-demand-service-broker-release
@@ -206,7 +206,7 @@ jobs:
   serial: true
   build_logs_to_retain: 50
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ops-manager-cloudfoundry
       trigger: true
       passed: [ build-tile ]
@@ -228,6 +228,7 @@ jobs:
       PCF_USERNAME: ((pcf-username))
       PCF_PASSWORD: ((pcf-password))
       OM_API_KEY: ((om-api-key))
+      OM_API_USER: ((om-api-user))
       PRODUCT_PROPERTIES: ((product_properties))
       PRODUCT_NETWORK_AZS: ((product_network_azs))
       CONFIG: config
@@ -256,7 +257,7 @@ jobs:
   serial: true
   build_logs_to_retain: 50
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ops-manager-cloudfoundry
       trigger: true
       passed: [ deploy-tile ]
@@ -295,7 +296,7 @@ jobs:
   serial: true
   build_logs_to_retain: 50
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ops-manager-cloudfoundry
       passed: [ smoke-tests ]
     - get: on-demand-service-broker-release
@@ -332,7 +333,7 @@ jobs:
   serial: true
   build_logs_to_retain: 50
   plan:
-  - aggregate:
+  - in_parallel:
     - get: ops-manager-cloudfoundry
   - task: delete-tile
     file: ops-manager-cloudfoundry/ci/tasks/delete-tile/task.yml

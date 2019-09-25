@@ -20,10 +20,13 @@ product-properties:
   .properties.url:
     value: http://ec2-3-223-45-28.compute-1.amazonaws.com:9080
   .properties.username:
-    value: pcf.test@mongodb.com
+    value: ((OM_API_USER))
   .properties.api_key:
     value:
       secret:  ((OM_API_KEY))
+  .properties.vm_extensions:
+    value:
+    - public_ip
 network-properties:
   network:
     name: test-pas-subnet

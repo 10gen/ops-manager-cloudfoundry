@@ -1,10 +1,7 @@
-#!/bin/bash
-
 set -e
 set -x
 
-go install -v github.com/onsi/ginkgo
-go mod vendor
+export GOPATH=$GOPATH:$(pwd)
+go install -v github.com/onsi/ginkgo/ginkgo
 
-export GOPATH=$GOPATH:$(pwd)/../..
-CF_COLOR=false CF_VERBOSE_OUTPUT=true ginkgo -r -v -noColor=true -keepGoing=true -trace=true -slowSpecThreshold=300 service adapter digest
+CF_COLOR=false CF_VERBOSE_OUTPUT=true ginkgo -r -v -noColor=true -keepGoing=true -trace=true -slowSpecThreshold=300 service
