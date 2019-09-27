@@ -40,12 +40,12 @@ resource-config:
       size_mb: automatic
     instance_type:
       id: automatic
-    internet_connected: false
+    internet_connected: true
 errand-config:
   delete-all-service-instances:
-    pre-delete-state: true
+    pre-delete-state: false
   deregister-broker:
-    pre-delete-state: true
+    pre-delete-state: false
   register-broker:
     post-deploy-state: true
   upgrade-all-service-instances:
