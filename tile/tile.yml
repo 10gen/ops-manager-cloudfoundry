@@ -331,7 +331,7 @@ requires_product_versions:
 - name: cf
   version: '>= 1.10'
 runtime_configs:
-- name: mongodb-dns-aliases
+- name: mongodb-dns-aliases-tile
   runtime_config:
     releases:
     - name: mongodb
