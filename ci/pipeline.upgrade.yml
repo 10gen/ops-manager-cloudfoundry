@@ -4,6 +4,7 @@ groups:
     jobs:
       - delete-tile
       - deploy-tile-old
+      - deploy-mongodb-service
       - smoke-tests
 
 resources:
@@ -99,14 +100,23 @@ jobs:
       PRODUCT_PROPERTIES: ((product_properties))
       PRODUCT_NETWORK_AZS: ((product_network_azs))
       CONFIG: config.pie22
-  - task: deploy-mongodb-service
-    file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task.yml
-    params:
-      CF_APP_URL: ((cf-app-url))
-      CF_APP_USER: ((cf-app-username))
-      CF_APP_PASSWORD: ((cf-app-password))
-      REPLICA_SET_PLAN: replica_set_small
-      BACKUP_ENABLED: true
+
+- name: deploy-mongodb-service
+  serial: true
+  build_logs_to_retain: 50
+  plan:
+    - in_parallel:
+        - get: ops-manager-cloudfoundry
+          trigger: true
+          passed: [ deploy-tile-old ]
+    - task: deploy-mongodb-service
+      file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task.yml
+      params:
+        CF_APP_URL: ((cf-app-url))
+        CF_APP_USER: ((cf-app-username))
+        CF_APP_PASSWORD: ((cf-app-password))
+        REPLICA_SET_PLAN: replica_set_small
+        BACKUP_ENABLED: true
 
 - name: smoke-tests
   serial: true
@@ -115,7 +125,7 @@ jobs:
   - in_parallel:
     - get: ops-manager-cloudfoundry
       trigger: true
-      passed: [ deploy-tile-old ]
+      passed: [ deploy-mongodb-service ]
   - task: smoke-tests
     file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
     params:
