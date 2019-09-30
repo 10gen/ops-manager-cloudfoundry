@@ -3,7 +3,7 @@ groups:
   - name: mongodb-on-demand
     jobs:
       - delete-tile
-      - deploy-tile-old  
+      - deploy-tile-old
       - smoke-tests
 
 resources:
@@ -102,9 +102,11 @@ jobs:
   - task: deploy-mongodb-service
     file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task.yml
     params:
-      PCF_URL: ((pcf-url))
-      PCF_USERNAME: ((pcf-username))
-      PCF_PASSWORD: ((pcf-password))
+      CF_APP_URL: ((cf-app-url))
+      CF_APP_USER: ((cf-app-username))
+      CF_APP_PASSWORD: ((cf-app-password))
+      REPLICA_SET_PLAN: replica_set_small
+      BACKUP_ENABLED: true
 
 - name: smoke-tests
   serial: true
