@@ -18,7 +18,7 @@ product-properties:
   .properties.syslog_transport_protocol:
     value: tcp
   .properties.url:
-    value: http://ec2-54-88-70-89.compute-1.amazonaws.com:9080
+    value: http://ec2-3-223-45-28.compute-1.amazonaws.com:9080
   .properties.username:
     value: ((OM_API_USER))
   .properties.api_key:
