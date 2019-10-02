@@ -108,7 +108,7 @@ jobs:
   plan:
   - in_parallel:
     - get: ops-manager-cloudfoundry
-      trigger: true
+      trigger: false
       passed: [ deploy-mongodb-service ]
     - get: artifacts
       params:
