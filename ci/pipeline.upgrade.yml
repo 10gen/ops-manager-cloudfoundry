@@ -5,6 +5,7 @@ groups:
       - delete-tile
       - deploy-tile-old
       - deploy-mongodb-service
+      - update-tile-version
       - smoke-tests
 
 resources:
@@ -78,16 +79,16 @@ jobs:
   plan:
   - in_parallel:
     - get: ops-manager-cloudfoundry
+      trigger: true
       passed: [ delete-tile ]
     - get: artifacts
       params:
         file: artifacts/mongodb-on-demand-*.pivotal
     - get: version
-      trigger: true
     - get: versionold
     - get: stemcell
       params:
-        globs: ["*google*"]
+        globs: [((globs_param))]
     - get: tileold
   - task: deploy-tile-old
     file: ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/task.yml
@@ -99,7 +100,34 @@ jobs:
       OM_API_KEY: ((om-api-key))
       PRODUCT_PROPERTIES: ((product_properties))
       PRODUCT_NETWORK_AZS: ((product_network_azs))
-      CONFIG: config.pie22
+      CONFIG: ((env_config))
+
+- name: update-tile-version
+  serial: true
+  build_logs_to_retain: 50
+  plan:
+  - in_parallel:
+    - get: ops-manager-cloudfoundry
+      trigger: true
+      passed: [ deploy-mongodb-service ]
+    - get: artifacts
+      params:
+        file: artifacts/mongodb-on-demand-*.pivotal
+    - get: version
+    - get: stemcell
+      params:
+        globs: [((globs_param))]
+  - task: deploy-tile
+    file: ops-manager-cloudfoundry/ci/tasks/deploy-tile/task.yml
+    params:
+      PCF_URL: ((pcf-url))
+      PCF_USERNAME: ((pcf-username))
+      PCF_PASSWORD: ((pcf-password))
+      OM_API_KEY: ((om-api-key))
+      OM_API_USER: ((om-api-user))
+      PRODUCT_PROPERTIES: ((product_properties))
+      PRODUCT_NETWORK_AZS: ((product_network_azs))
+      CONFIG: ((env_config))
 
 - name: deploy-mongodb-service
   serial: true
@@ -139,8 +167,8 @@ jobs:
   plan:
   - in_parallel:
     - get: version
-      trigger: true
     - get: ops-manager-cloudfoundry
+      trigger: true
   - task: delete-tile
     file: ops-manager-cloudfoundry/ci/tasks/delete-tile/task.yml
     params:

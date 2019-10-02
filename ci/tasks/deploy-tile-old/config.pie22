@@ -24,6 +24,9 @@ product-properties:
   .properties.api_key:
     value:
       secret:  ((OM_API_KEY))
+  .properties.vm_extensions:
+    value:
+    - public_ip
 network-properties:
   network:
     name: vallejo-pas-subnet
@@ -49,4 +52,4 @@ errand-config:
   register-broker:
     post-deploy-state: true
   upgrade-all-service-instances:
-    post-deploy-state: false
+    post-deploy-state: true
