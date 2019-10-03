@@ -1,5 +1,5 @@
 #!/usr/local/bin/dumb-init /bin/bash
-set -euo pipefail
+set -eo pipefail
 [ 'true' = "${DEBUG:-}" ] && set -x
 base=$PWD
 
