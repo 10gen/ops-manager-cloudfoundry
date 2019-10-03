@@ -88,7 +88,7 @@ jobs:
     - get: versionold
     - get: stemcell
       params:
-        globs: [((globs_param))]
+        globs: [((globs-param))]
     - get: tileold
   - task: deploy-tile-old
     file: ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/task.yml
@@ -100,7 +100,7 @@ jobs:
       OM_API_KEY: ((om-api-key))
       PRODUCT_PROPERTIES: ((product_properties))
       PRODUCT_NETWORK_AZS: ((product_network_azs))
-      CONFIG: ((env_config))
+      CONFIG: ((env-config))
 
 - name: update-tile-version
   serial: true
@@ -116,7 +116,9 @@ jobs:
     - get: version
     - get: stemcell
       params:
-        globs: [((globs_param))]
+        globs: [((globs-param))]
+  - task: use application
+    file: ops-manager-cloudfoundry/ci/tasks/application-check/task-put.yml
   - task: deploy-tile
     file: ops-manager-cloudfoundry/ci/tasks/deploy-tile/task.yml
     params:
@@ -127,7 +129,9 @@ jobs:
       OM_API_USER: ((om-api-user))
       PRODUCT_PROPERTIES: ((product_properties))
       PRODUCT_NETWORK_AZS: ((product_network_azs))
-      CONFIG: ((env_config))
+      CONFIG: ((env-config))
+  - task: check application
+    file: ops-manager-cloudfoundry/ci/tasks/application-check/task-get.yml
 
 - name: deploy-mongodb-service
   serial: true
