@@ -8,13 +8,9 @@ PCF_USERNAME="$PCF_USERNAME"
 PCF_PASSWORD="$PCF_PASSWORD"
 
 
-VERSION=$(cat "$base"/versionold/number)
-if [ -z "${VERSION:-}" ]; then
-  echo "missing version number"
-  exit 1
-fi
+VERSION=1.1.1
 ls "$base"
-TILE_FILE=`cd tileold; ls *-${VERSION}.pivotal`
+TILE_FILE=`cd tileold; ls *.pivotal`
 if [ -z "${TILE_FILE}" ]; then
 	echo "No files matching tileold/*.pivotal"
 	ls -lR artifacts
