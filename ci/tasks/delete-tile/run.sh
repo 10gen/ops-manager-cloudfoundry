@@ -16,4 +16,4 @@ echo "Deleting product [${PRODUCT}], version [${product_version}] , from ${PCF_U
 
 ${om} unstage-product --product-name "$PRODUCT"
 
-${om} apply-changes --ignore-warnings true
+${om} apply-changes --ignore-warnings true --skip-unchanged-products true
