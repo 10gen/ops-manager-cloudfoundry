@@ -24,6 +24,9 @@ product-properties:
   .properties.api_key:
     value:
       secret:  ((OM_API_KEY))
+  .properties.vm_extensions:
+    value:
+    - public_ip
 network-properties:
   network:
     name: sandimas-pas-subnet
@@ -40,13 +43,13 @@ resource-config:
       size_mb: automatic
     instance_type:
       id: automatic
-    internet_connected: false
+    internet_connected: true
 errand-config:
   delete-all-service-instances:
     pre-delete-state: true
   deregister-broker:
     pre-delete-state: true
   register-broker:
-    post-deploy-state: true
+    post-deploy-state: false
   upgrade-all-service-instances:
     post-deploy-state: false
