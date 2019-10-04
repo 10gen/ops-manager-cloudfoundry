@@ -15,4 +15,4 @@ params:
   PCF_PASSWORD:
 
 run:
-  path: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/run.sh
+  path: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/run-create-service.sh
