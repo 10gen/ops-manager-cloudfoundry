@@ -12,7 +12,7 @@ resources:
 - name: ops-manager-cloudfoundry
   type: git
   source:
-    branch: master
+    branch: feature/CFTILE-35
     uri: git@github.com:10gen/ops-manager-cloudfoundry.git
     private_key: ((git-private-key))
 
@@ -114,6 +114,7 @@ jobs:
   - in_parallel:
     - get: ops-manager-cloudfoundry
       trigger: true
+      passed: [ delete-tile ]
     - get: on-demand-service-broker-release
       params:
         filename: on-demand-service-broker-(.*).tgz
@@ -170,7 +171,7 @@ jobs:
       OM_API_KEY: ((om-api-key))
       PRODUCT_PROPERTIES: ((product_properties))
       PRODUCT_NETWORK_AZS: ((product_network_azs))
-      CONFIG: config
+      CONFIG: config.pie22
 
 - name: deploy-tile
   serial: true
@@ -220,6 +221,7 @@ jobs:
   plan:
   - aggregate:
     - get: ops-manager-cloudfoundry
+      trigger: true
   - task: delete-tile
     file: ops-manager-cloudfoundry/ci/tasks/delete-tile/task.yml
     params:

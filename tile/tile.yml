@@ -331,23 +331,27 @@ requires_product_versions:
 - name: cf
   version: '>= 1.10'
 runtime_configs:
+- name: bpm
+  runtime_config:
+    releases:
+    - name: bpm
+      version: 1.1.1
+    addons:
+    - name: bpm
+      include:
+        jobs:
+        - name: bpm
+          release: bpm
+      jobs:
+      - name: bpm
+        release: bpm
+
 - name: mongodb-dns-aliases
   runtime_config:
     releases:
     - name: mongodb
       version: 1.0.33
-    - name: bpm
-      version: 1.1.1
     addons:
-    - name: bpm      
-      include:
-        jobs:
-        - name: bpm
-          release: mongodb
-      jobs:
-      - name: bpm
-        release: bpm
-
     - name: mongodb-dns-aliases
       include:
         jobs:
