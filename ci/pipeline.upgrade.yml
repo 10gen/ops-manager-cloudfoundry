@@ -5,6 +5,7 @@ groups:
       - delete-tile
       - deploy-tile-old
       - deploy-mongodb-service
+      - build-tile
       - update-tile-version
       - smoke-tests
 
@@ -102,6 +103,67 @@ jobs:
       PRODUCT_NETWORK_AZS: ((product_network_azs))
       CONFIG: ((env-config))
 
+- name: build-tile
+  serial: true
+  build_logs_to_retain: 50
+  plan:
+  - in_parallel:
+    - get: ops-manager-cloudfoundry
+      trigger: true
+    - get: on-demand-service-broker-release
+      params:
+        filename: on-demand-service-broker-(.*).tgz
+    - get: syslog-migration-release
+      params:
+        filename: syslog-migration-(.*).tgz
+    - get: pcf-mongodb-helpers
+      params:
+        filename: pcf-mongodb-helpers-(.*).tgz
+    - get: bpm-release
+      params:
+        filename: bpm-release-(.*).tgz
+    - get: mongodb
+      params:
+        filename: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
+    - get: version
+      params:
+        pre: rc
+  - put: "build-status"
+    params:
+      state: "pending"
+      commit: "ops-manager-cloudfoundry"
+  - task: build-tile
+    file: ops-manager-cloudfoundry/ci/tasks/build-tile/task.yml
+    on_failure:
+      put: "build-status"
+      params:
+        state: "failure"
+        commit: "ops-manager-cloudfoundry"
+    on_error:
+      put: "build-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+    on_abort:
+      put: "build-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+        description: aborted
+      params:
+        AWS_KEY: ((aws-access-key))
+        AWS_SECRET_KEY: ((aws-secret-access-key))
+  - put: artifacts
+    params:
+      file: artifacts/mongodb-on-demand-*.pivotal
+  - put: version
+    params:
+      pre: rc
+  - put: "build-status"
+    params:
+      state: "success"
+      commit: "ops-manager-cloudfoundry"
+
 - name: update-tile-version
   serial: true
   build_logs_to_retain: 50
@@ -157,7 +219,7 @@ jobs:
   - in_parallel:
     - get: ops-manager-cloudfoundry
       trigger: true
-      passed: [ deploy-mongodb-service ]
+      passed: [ update-tile-version ]
   - task: smoke-tests
     file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
     params:
