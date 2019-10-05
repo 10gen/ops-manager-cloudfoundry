@@ -341,7 +341,7 @@ runtime_configs:
       include:
         jobs:
         - name: bpm
-          release: bpm
+          release: mongodb
       jobs:
       - name: bpm
         release: bpm
