@@ -114,7 +114,6 @@ jobs:
   - in_parallel:
     - get: ops-manager-cloudfoundry
       trigger: true
-      passed: [ delete-tile ]
     - get: on-demand-service-broker-release
       params:
         filename: on-demand-service-broker-(.*).tgz
@@ -153,7 +152,7 @@ jobs:
   - in_parallel:
     - get: ops-manager-cloudfoundry
       trigger: true
-      passed: [ build-tile ]
+      passed: [ build-tile, delete-tile ]
     - get: artifacts
       params:
         file: artifacts/mongodb-on-demand-1.1.1.pivotal
