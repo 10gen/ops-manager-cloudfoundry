@@ -331,7 +331,7 @@ requires_product_versions:
 - name: cf
   version: '>= 1.10'
 runtime_configs:
-- name: bpm
+- name: mongodb_bpm_runtime_config
   runtime_config:
     releases:
     - name: bpm
@@ -340,7 +340,7 @@ runtime_configs:
     - name: bpm
       include:
         jobs:
-        - name: bpm
+        - name: mongodb_service_adapter
           release: mongodb
       jobs:
       - name: bpm
@@ -428,6 +428,8 @@ packages:
       release: on-demand-service-broker
     - name: mongodb_service_adapter
       release: mongodb
+    - name: bpm
+      release: bpm
     - name: register-broker
       release: on-demand-service-broker
       colocated: true
