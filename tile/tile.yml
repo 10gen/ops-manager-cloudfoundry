@@ -405,6 +405,9 @@ runtime_configs:
               network: (( $self.service_network ))
               query: _
 packages:
+- name: bpm
+  type: bosh-release
+  path: resources/bpm-release-1.1.1.tgz
 - name: pcf-mongodb-helpers
   type: bosh-release
   path: resources/pcf-mongodb-helpers-0.0.1.tgz
@@ -425,8 +428,6 @@ packages:
       release: on-demand-service-broker
     - name: mongodb_service_adapter
       release: mongodb
-    - name: bpm
-      release: bpm
     - name: register-broker
       release: on-demand-service-broker
       colocated: true
