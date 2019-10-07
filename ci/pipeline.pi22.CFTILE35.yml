@@ -152,7 +152,7 @@ jobs:
   - in_parallel:
     - get: ops-manager-cloudfoundry
       trigger: true
-      passed: [ build-tile, delete-tile ]
+      passed: [ build-tile ]
     - get: artifacts
       params:
         file: artifacts/mongodb-on-demand-1.1.1.pivotal
@@ -220,7 +220,6 @@ jobs:
   plan:
   - aggregate:
     - get: ops-manager-cloudfoundry
-      trigger: true
   - task: delete-tile
     file: ops-manager-cloudfoundry/ci/tasks/delete-tile/task.yml
     params:
