@@ -27,6 +27,7 @@ type BoshManifest struct {
 	Stemcells      []Stemcell             `yaml:"stemcells" json:"stemcells"`
 	InstanceGroups []InstanceGroup        `yaml:"instance_groups" json:"instance_groups"`
 	Update         *Update                `yaml:"update" json:"update"`
+	// DEPRECATED: BOSH deprecated deployment level "properties". Use Job properties instead.
 	Properties     map[string]interface{} `yaml:"properties,omitempty" json:"properties,omitempty"`
 	Variables      []Variable             `yaml:"variables,omitempty" json:"variables,omitempty"`
 	Tags           map[string]interface{} `yaml:"tags,omitempty" json:"tags,omitempty"`
@@ -49,26 +50,27 @@ type PlacementRuleStemcell struct {
 }
 
 type PlacementRule struct {
-    Stemcell       []PlacementRuleStemcell `yaml:"stemcell,omitempty"`
-    Deployments    []string                `yaml:"deployments,omitempty"`
-    Jobs           []Job                   `yaml:"jobs,omitempty"`
-    InstanceGroups []string                `yaml:"instance_groups,omitempty"`
-    Networks       []string                `yaml:"networks,omitempty"`
-    Teams          []string                `yaml:"teams,omitempty"`
+	Stemcell       []PlacementRuleStemcell `yaml:"stemcell,omitempty"`
+	Deployments    []string                `yaml:"deployments,omitempty"`
+	Jobs           []Job                   `yaml:"jobs,omitempty"`
+	InstanceGroups []string                `yaml:"instance_groups,omitempty"`
+	Networks       []string                `yaml:"networks,omitempty"`
+	Teams          []string                `yaml:"teams,omitempty"`
 }
 
 type Addon struct {
-    Name    string        `yaml:"name"`
-    Jobs    []Job         `yaml:"jobs"`
-    Include PlacementRule `yaml:"include,omitempty"`
-    Exclude PlacementRule `yaml:"exclude,omitempty"`
+	Name    string        `yaml:"name"`
+	Jobs    []Job         `yaml:"jobs"`
+	Include PlacementRule `yaml:"include,omitempty"`
+	Exclude PlacementRule `yaml:"exclude,omitempty"`
 }
 
 // Variable represents a variable in the `variables` block of a BOSH manifest
 type Variable struct {
-	Name    string                 `yaml:"name"`
-	Type    string                 `yaml:"type"`
-	Options map[string]interface{} `yaml:"options,omitempty"`
+	Name       string                 `yaml:"name"`
+	Type       string                 `yaml:"type"`
+	UpdateMode string                 `yaml:"update_mode,omitempty"`
+	Options    map[string]interface{} `yaml:"options,omitempty"`
 
 	// Variables of type `certificate` can optionally be configured with a
 	// `consumes` block, so generated certificates can be created with automatic
@@ -113,6 +115,7 @@ type InstanceGroup struct {
 	PersistentDiskType string                 `yaml:"persistent_disk_type,omitempty"`
 	AZs                []string               `yaml:"azs,omitempty"`
 	Networks           []Network              `yaml:"networks"`
+	// DEPRECATED: BOSH deprecated instance_group level "properties". Use Job properties instead.
 	Properties         map[string]interface{} `yaml:"properties,omitempty"`
 	MigratedFrom       []Migration            `yaml:"migrated_from,omitempty"`
 	Env                map[string]interface{} `yaml:"env,omitempty"`
