@@ -25,6 +25,7 @@ type AutomationConfig struct {
 	UIBaseURL          string                   `json:"uiBaseUrl,omitempty"`
 }
 
+// AgentVersion agent versions struct
 type AgentVersion struct {
 	Name      string     `json:"name,omitempty"`
 	Hostname  string     `json:"hostname"`
@@ -32,12 +33,14 @@ type AgentVersion struct {
 	LogRotate *LogRotate `json:"logRotate,omitempty"`
 }
 
+// SSL ssl config properties
 type SSL struct {
 	AutoPEMKeyFilePath    string `json:"autoPEMKeyFilePath"`
 	CAFilePath            string `json:"CAFilePath"`
 	ClientCertificateMode string `json:"clientCertificateMode"`
 }
 
+// Auth authentication config
 type Auth struct {
 	AutoUser                 string        `json:"autoUser"`
 	AutoPwd                  string        `json:"autoPwd"`
@@ -51,6 +54,7 @@ type Auth struct {
 	AutoAuthMechanism        string        `json:"autoAuthMechanism"`
 }
 
+// UserWanted :shrug:
 type UserWanted struct {
 	DB      string `json:"db"`
 	Roles   []Role `json:"roles"`
@@ -58,11 +62,13 @@ type UserWanted struct {
 	InitPwd string `json:"initPwd"`
 }
 
+// Role user role
 type Role struct {
 	DB   string `json:"db"`
 	Role string `json:"role"`
 }
 
+// Member configs
 type Member struct {
 	ID          int    `json:"_id"`
 	ArbiterOnly bool   `json:"arbiterOnly"`
@@ -73,16 +79,19 @@ type Member struct {
 	Votes       int    `json:"votes"`
 }
 
+// ReplicaSet configs
 type ReplicaSet struct {
 	ID              string   `json:"_id"`
 	ProtocolVersion int      `json:"protocolVersion,omitempty"`
 	Members         []Member `json:"members"`
 }
 
+// Options configs
 type Options struct {
 	DownloadBase string `json:"downloadBase"`
 }
 
+// Sharding configs
 type Sharding struct {
 	Shards              []Shard       `json:"shards"`
 	Name                string        `json:"name"`
@@ -91,6 +100,7 @@ type Sharding struct {
 	Collections         []interface{} `json:"collections"`
 }
 
+// Shard configs
 type Shard struct {
 	Tags []interface{} `json:"tags"`
 	ID   string        `json:"_id"`

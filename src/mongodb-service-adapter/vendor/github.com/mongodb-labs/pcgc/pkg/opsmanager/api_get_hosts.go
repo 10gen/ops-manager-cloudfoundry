@@ -7,6 +7,7 @@ import (
 	"github.com/mongodb-labs/pcgc/pkg/useful"
 )
 
+// HostResponse represents a host information
 type HostResponse struct {
 	ID                 string        `json:"id"`
 	Aliases            []string      `json:"aliases,omitempty"`
@@ -44,6 +45,7 @@ type HostResponse struct {
 	Version            string        `json:"version,omitempty"`
 }
 
+// HostsResponse an array of hosts
 type HostsResponse struct {
 	Results    []HostResponse `json:"results,omitempty"`
 	Links      []interface{}  `json:"links,omitempty"`

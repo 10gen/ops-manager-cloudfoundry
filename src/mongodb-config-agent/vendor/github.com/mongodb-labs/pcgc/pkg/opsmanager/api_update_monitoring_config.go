@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 )
 
+// AgentAttributes represent an agent properties
 type AgentAttributes struct {
 	LogPath                 string     `json:"logPath,omitempty"`
 	LogPathWindows          string     `json:"logPathWindows,omitempty"`
