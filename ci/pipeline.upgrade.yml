@@ -153,6 +153,7 @@ jobs:
         CF_APP_URL: ((cf-app-url))
         CF_APP_USER: ((cf-app-username))
         CF_APP_PASSWORD: ((cf-app-password))
+        INSTALL_TIMEOUT: 120
         REPLICA_SET_PLAN: replica_set_small
         BACKUP_ENABLED: true
 
