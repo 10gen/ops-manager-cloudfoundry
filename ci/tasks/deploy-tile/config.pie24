@@ -29,11 +29,11 @@ product-properties:
     - public_ip
 network-properties:
   network:
-    name: sandimas-pas-subnet
+    name: brussels-pas-subnet
   other_availability_zones:
   - name: "us-central1-f"
   service_network:
-    name: sandimas-services-subnet
+    name: brussels-services-subnet
   singleton_availability_zone:
     name: "us-central1-f"
 resource-config:
@@ -46,9 +46,9 @@ resource-config:
     internet_connected: true
 errand-config:
   delete-all-service-instances:
-    pre-delete-state: true
+    pre-delete-state: false
   deregister-broker:
-    pre-delete-state: true
+    pre-delete-state: false
   register-broker:
     post-deploy-state: false
   upgrade-all-service-instances:
