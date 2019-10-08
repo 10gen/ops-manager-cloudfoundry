@@ -5,7 +5,10 @@ groups:
       - delete-tile
       - deploy-tile-old
       - deploy-mongodb-service
-      - check-update-tile-version
+      - use-application
+      - update-tile-version
+      - check-application
+      - cleanup
       - smoke-tests
 
 resources:
@@ -102,7 +105,7 @@ jobs:
       PRODUCT_NETWORK_AZS: ((product_network_azs))
       CONFIG: ((env-config))
 
-- name: check-update-tile-version
+- name: use-application
   serial: true
   build_logs_to_retain: 50
   plan:
@@ -110,6 +113,17 @@ jobs:
     - get: ops-manager-cloudfoundry
       trigger: true
       passed: [ deploy-mongodb-service ]
+  - task: use application
+    file: ops-manager-cloudfoundry/ci/tasks/application-check/task-put.yml
+  
+- name: update-tile-version
+  serial: true
+  build_logs_to_retain: 50
+  plan:
+  - in_parallel:
+    - get: ops-manager-cloudfoundry
+      trigger: true
+      passed: [ use-application ]
     - get: artifacts
       params:
         file: artifacts/mongodb-on-demand-*.pivotal
@@ -117,8 +131,6 @@ jobs:
     - get: stemcell
       params:
         globs: [((globs-param))]
-  - task: use application
-    file: ops-manager-cloudfoundry/ci/tasks/application-check/task-put.yml
   - task: deploy-tile
     file: ops-manager-cloudfoundry/ci/tasks/deploy-tile/task.yml
     params:
@@ -130,15 +142,33 @@ jobs:
       PRODUCT_PROPERTIES: ((product_properties))
       PRODUCT_NETWORK_AZS: ((product_network_azs))
       CONFIG: ((env-config))
+
+- name: check-application
+  serial: true
+  build_logs_to_retain: 50
+  plan:
+  - in_parallel:
+    - get: ops-manager-cloudfoundry
+      trigger: true
+      passed: [ update-tile-version ]
   - task: check application
     file: ops-manager-cloudfoundry/ci/tasks/application-check/task-get.yml
+
+- name: cleanup
+  serial: true
+  build_logs_to_retain: 50
+  plan:
+  - in_parallel:
+    - get: ops-manager-cloudfoundry
+      trigger: true
+      passed: [ check-application ]
   - task: cleaning - delete service\application
     file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/run-delete-service.sh
     params:
       CF_APP_URL: ((cf-app-url))
       CF_APP_USER: ((cf-app-username))
       CF_APP_PASSWORD: ((cf-app-password))
-
+  
 - name: deploy-mongodb-service
   serial: true
   build_logs_to_retain: 50
@@ -164,7 +194,7 @@ jobs:
   - in_parallel:
     - get: ops-manager-cloudfoundry
       trigger: true
-      passed: [ check-update-tile-version ]
+      passed: [ check-application ]
   - task: smoke-tests
     file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
     params:
