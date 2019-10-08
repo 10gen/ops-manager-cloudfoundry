@@ -115,6 +115,10 @@ jobs:
       passed: [ deploy-mongodb-service ]
   - task: use application
     file: ops-manager-cloudfoundry/ci/tasks/application-check/task-put.yml
+    params:
+      CF_APP_URL: ((cf-app-url))
+      CF_APP_USER: ((cf-app-username))
+      CF_APP_PASSWORD: ((cf-app-password))
   
 - name: update-tile-version
   serial: true
@@ -153,6 +157,10 @@ jobs:
       passed: [ update-tile-version ]
   - task: check application
     file: ops-manager-cloudfoundry/ci/tasks/application-check/task-get.yml
+    params:
+      CF_APP_URL: ((cf-app-url))
+      CF_APP_USER: ((cf-app-username))
+      CF_APP_PASSWORD: ((cf-app-password))
 
 - name: cleanup
   serial: true
