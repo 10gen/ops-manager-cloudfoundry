@@ -29,11 +29,11 @@ product-properties:
     - public_ip
 network-properties:
   network:
-    name: vallejo-pas-subnet
+    name: rome-pas-subnet
   other_availability_zones:
   - name: "us-central1-f"
   service_network:
-    name: vallejo-services-subnet
+    name: rome-services-subnet
   singleton_availability_zone:
     name: "us-central1-f"
 resource-config:
