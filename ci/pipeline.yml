@@ -17,7 +17,7 @@ resources:
 - name: ops-manager-cloudfoundry
   type: git
   source:
-    branch: master
+    branch: feature/CFTILE-35
     uri: git@github.com:10gen/ops-manager-cloudfoundry.git
     private_key: ((git-private-key))
 
@@ -26,7 +26,7 @@ resources:
   source:
     api_token: ((pivnet-token))
     product_slug: stemcells-ubuntu-xenial
-    product_version: '170.69'
+    product_version: 170.*
 
 - name: version
   type: semver
@@ -216,7 +216,7 @@ jobs:
     - get: version
     - get: stemcell
       params:
-        globs: ["*azure*"]
+        globs: ["*google*"]
   - put: "deploy-status"
     params:
       state: "pending"
@@ -231,7 +231,7 @@ jobs:
       OM_API_USER: ((om-api-user))
       PRODUCT_PROPERTIES: ((product_properties))
       PRODUCT_NETWORK_AZS: ((product_network_azs))
-      CONFIG: config
+      CONFIG: config.pie22
     on_failure:
       put: "deploy-status"
       params:
