@@ -8,6 +8,7 @@ url="http://${host}/service/mongo/test3"
 result=$(echo $(curl -X GET ${url}))
 if [ "${result}" = '{"data":"sometest130"}' ]; then
         echo "Application is working"
+        echo "Cleaning data.."
         curl -X DELETE ${url}
     else
         echo "GET ${url} finished with result: ${result}"
