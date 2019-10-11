@@ -31,7 +31,7 @@ resources:
   source:
     api_token: ((pivnet-token))
     product_slug: mongodb-on-demand
-    product_version: '1.1.0'
+    product_version: '1.1.1'
 
 - name: version
   type: semver
@@ -53,7 +53,7 @@ resources:
     region_name: eu-west-1
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
-    initial_version: 1.1.0
+    initial_version: 1.1.1
 
 - name: artifacts
   type: s3
@@ -64,6 +64,61 @@ resources:
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
 
+- name: "check-service-status"
+  type: "github-status"
+  source:
+    repository: 10gen/ops-manager-cloudfoundry
+    access_token: ((repo-github-token))
+    context: check-application
+
+- name: "update-tile-status"
+  type: "github-status"
+  source:
+    repository: 10gen/ops-manager-cloudfoundry
+    access_token: ((repo-github-token))
+    context: update-tile
+
+- name: "deploy-status"
+  type: "github-status"
+  source:
+    repository: 10gen/ops-manager-cloudfoundry
+    access_token: ((repo-github-token))
+    context: deploy-tile
+
+- name: "check-app-status"
+  type: "github-status"
+  source:
+    repository: 10gen/ops-manager-cloudfoundry
+    access_token: ((repo-github-token))
+    context: application-check
+
+- name: "cleanup-status"
+  type: "github-status"
+  source:
+    repository: 10gen/ops-manager-cloudfoundry
+    access_token: ((repo-github-token))
+    context: cleanup
+
+- name: "deploy-service-status"
+  type: "github-status"
+  source:
+    repository: 10gen/ops-manager-cloudfoundry
+    access_token: ((repo-github-token))
+    context: deploy-service
+
+- name: "delete-tile-status"
+  type: "github-status"
+  source:
+    repository: 10gen/ops-manager-cloudfoundry
+    access_token: ((repo-github-token))
+    context: delete-tile
+
+- name: "test-status"
+  type: "github-status"
+  source:
+    repository: 10gen/ops-manager-cloudfoundry
+    access_token: ((repo-github-token))
+    context: smoke-tests
 resource_types:
 - name: pivnet
   type: docker-image
@@ -74,6 +129,11 @@ resource_types:
   type: docker-image
   source:
     repository: cfcommunity/slack-notification-resource
+- name: "github-status"
+  type: "docker-image"
+  source:
+    repository: "dpb587/github-status-resource"
+    tag: "master"
 
 jobs:
 - name: deploy-tile-old
@@ -104,6 +164,26 @@ jobs:
       PRODUCT_PROPERTIES: ((product_properties))
       PRODUCT_NETWORK_AZS: ((product_network_azs))
       CONFIG: ((env-config))
+    on_failure:
+      put: "deploy-status"
+      params:
+        state: "failure"
+        commit: "ops-manager-cloudfoundry"
+    on_error:
+      put: "deploy-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+    on_abort:
+      put: "deploy-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+        description: aborted
+  - put: "deploy-status"
+    params:
+      state: "success"
+      commit: "ops-manager-cloudfoundry"
 
 - name: use-application
   serial: true
@@ -119,6 +199,26 @@ jobs:
       CF_APP_URL: ((cf-app-url))
       CF_APP_USER: ((cf-app-username))
       CF_APP_PASSWORD: ((cf-app-password))
+    on_failure:
+      put: "check-service-status"
+      params:
+        state: "failure"
+        commit: "ops-manager-cloudfoundry"
+    on_error:
+      put: "check-service-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+    on_abort:
+      put: "check-service-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+        description: aborted
+  - put: "check-service-status"
+    params:
+      state: "success"
+      commit: "ops-manager-cloudfoundry"
   
 - name: update-tile-version
   serial: true
@@ -146,6 +246,26 @@ jobs:
       PRODUCT_PROPERTIES: ((product_properties))
       PRODUCT_NETWORK_AZS: ((product_network_azs))
       CONFIG: ((env-config))
+    on_failure:
+      put: "update-tile-status"
+      params:
+        state: "failure"
+        commit: "ops-manager-cloudfoundry"
+    on_error:
+      put: "update-tile-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+    on_abort:
+      put: "update-tile-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+        description: aborted
+  - put: "update-tile-status"
+    params:
+      state: "success"
+      commit: "ops-manager-cloudfoundry"
 
 - name: check-application
   serial: true
@@ -161,6 +281,26 @@ jobs:
       CF_APP_URL: ((cf-app-url))
       CF_APP_USER: ((cf-app-username))
       CF_APP_PASSWORD: ((cf-app-password))
+    on_failure:
+      put: "check-app-status"
+      params:
+        state: "failure"
+        commit: "ops-manager-cloudfoundry"
+    on_error:
+      put: "check-app-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+    on_abort:
+      put: "check-app-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+        description: aborted
+  - put: "check-app-status"
+    params:
+      state: "success"
+      commit: "ops-manager-cloudfoundry"
 
 - name: cleanup
   serial: true
@@ -170,12 +310,32 @@ jobs:
     - get: ops-manager-cloudfoundry
       trigger: true
       passed: [ check-application ]
-  - task: cleaning - delete service\application
-    file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/run-delete-service.sh
+  - task: cleaning - delete service and application
+    file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task-delete-service.yml
     params:
       CF_APP_URL: ((cf-app-url))
       CF_APP_USER: ((cf-app-username))
       CF_APP_PASSWORD: ((cf-app-password))
+    on_failure:
+      put: "cleanup-status"
+      params:
+        state: "failure"
+        commit: "ops-manager-cloudfoundry"
+    on_error:
+      put: "cleanup-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+    on_abort:
+      put: "cleanup-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+        description: aborted
+  - put: "cleanup-status"
+    params:
+      state: "success"
+      commit: "ops-manager-cloudfoundry"
   
 - name: deploy-mongodb-service
   serial: true
@@ -194,6 +354,26 @@ jobs:
         INSTALL_TIMEOUT: 120
         REPLICA_SET_PLAN: replica_set_small
         BACKUP_ENABLED: true
+      on_failure:
+        put: "deploy-service-status"
+        params:
+          state: "failure"
+          commit: "ops-manager-cloudfoundry"
+      on_error:
+        put: "deploy-service-status"
+        params:
+          state: "error"
+          commit: "ops-manager-cloudfoundry"
+      on_abort:
+        put: "deploy-service-status"
+        params:
+          state: "error"
+          commit: "ops-manager-cloudfoundry"
+          description: aborted
+    - put: "deploy-service-status"
+      params:
+        state: "success"
+        commit: "ops-manager-cloudfoundry"
 
 - name: smoke-tests
   serial: true
@@ -209,6 +389,26 @@ jobs:
       PCF_URL: ((pcf-url))
       PCF_USERNAME: ((pcf-username))
       PCF_PASSWORD: ((pcf-password))
+    on_failure:
+      put: "test-status"
+      params:
+        state: "failure"
+        commit: "ops-manager-cloudfoundry"
+    on_error:
+      put: "test-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+    on_abort:
+      put: "test-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+        description: aborted
+  - put: "test-status"
+    params:
+      state: "success"
+      commit: "ops-manager-cloudfoundry"
 
 - name: delete-tile
   serial: true
@@ -224,3 +424,23 @@ jobs:
       PCF_URL: ((pcf-url))
       PCF_USERNAME: ((pcf-username))
       PCF_PASSWORD: ((pcf-password))
+    on_failure:
+      put: "delete-tile-status"
+      params:
+        state: "failure"
+        commit: "ops-manager-cloudfoundry"
+    on_error:
+      put: "delete-tile-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+    on_abort:
+      put: "delete-tile-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+        description: aborted
+  - put: "delete-tile-status"
+    params:
+      state: "success"
+      commit: "ops-manager-cloudfoundry"
