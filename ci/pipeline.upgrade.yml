@@ -69,7 +69,7 @@ resources:
   source:
     repository: 10gen/ops-manager-cloudfoundry
     access_token: ((repo-github-token))
-    context: check-application
+    context: check-application-
 
 - name: "update-tile-status"
   type: "github-status"
@@ -352,7 +352,7 @@ jobs:
         CF_APP_USER: ((cf-app-username))
         CF_APP_PASSWORD: ((cf-app-password))
         INSTALL_TIMEOUT: 120
-        REPLICA_SET_PLAN: replica_set_small
+        SET_PLAN: replica_set_small
         BACKUP_ENABLED: true
       on_failure:
         put: "deploy-service-status"
