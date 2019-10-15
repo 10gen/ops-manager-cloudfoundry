@@ -15,7 +15,7 @@ resources:
 - name: ops-manager-cloudfoundry
   type: git
   source:
-    branch: tile-upgrade-playground
+    branch: ((git-branch-name))
     uri: git@github.com:10gen/ops-manager-cloudfoundry.git
     private_key: ((git-private-key))
 
@@ -140,19 +140,18 @@ jobs:
   serial: true
   build_logs_to_retain: 50
   plan:
-  - in_parallel:
-    - get: ops-manager-cloudfoundry
-      trigger: true
-      passed: [ delete-tile ]
-    - get: artifacts
-      params:
-        file: artifacts/mongodb-on-demand-*.pivotal
-    - get: version
-    - get: versionold
-    - get: stemcell
-      params:
-        globs: [((globs-param))]
-    - get: tileold
+  - get: ops-manager-cloudfoundry
+    trigger: true
+    passed: [ delete-tile ]
+  - get: artifacts
+    params:
+      file: artifacts/mongodb-on-demand-*.pivotal
+  - get: version
+  - get: versionold
+  - get: stemcell
+    params:
+      globs: [((globs-param))]
+  - get: tileold
   - task: deploy-tile-old
     file: ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/task.yml
     params:
@@ -189,10 +188,9 @@ jobs:
   serial: true
   build_logs_to_retain: 50
   plan:
-  - in_parallel:
-    - get: ops-manager-cloudfoundry
-      trigger: true
-      passed: [ deploy-mongodb-service ]
+  - get: ops-manager-cloudfoundry
+    trigger: true
+    passed: [ deploy-mongodb-service ]
   - task: use application
     file: ops-manager-cloudfoundry/ci/tasks/application-check/task-put.yml
     params:
@@ -224,17 +222,16 @@ jobs:
   serial: true
   build_logs_to_retain: 50
   plan:
-  - in_parallel:
-    - get: ops-manager-cloudfoundry
-      trigger: true
-      passed: [ use-application ]
-    - get: artifacts
-      params:
-        file: artifacts/mongodb-on-demand-*.pivotal
-    - get: version
-    - get: stemcell
-      params:
-        globs: [((globs-param))]
+  - get: ops-manager-cloudfoundry
+    trigger: true
+    passed: [ use-application ]
+  - get: artifacts
+    params:
+      file: artifacts/mongodb-on-demand-*.pivotal
+  - get: version
+  - get: stemcell
+    params:
+      globs: [((globs-param))]
   - task: deploy-tile
     file: ops-manager-cloudfoundry/ci/tasks/deploy-tile/task.yml
     params:
@@ -271,10 +268,9 @@ jobs:
   serial: true
   build_logs_to_retain: 50
   plan:
-  - in_parallel:
-    - get: ops-manager-cloudfoundry
-      trigger: true
-      passed: [ update-tile-version ]
+  - get: ops-manager-cloudfoundry
+    trigger: true
+    passed: [ update-tile-version ]
   - task: check application
     file: ops-manager-cloudfoundry/ci/tasks/application-check/task-get.yml
     params:
@@ -306,10 +302,9 @@ jobs:
   serial: true
   build_logs_to_retain: 50
   plan:
-  - in_parallel:
-    - get: ops-manager-cloudfoundry
-      trigger: true
-      passed: [ check-application ]
+  - get: ops-manager-cloudfoundry
+    trigger: true
+    passed: [ check-application ]
   - task: cleaning - delete service and application
     file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task-delete-service.yml
     params:
@@ -341,48 +336,46 @@ jobs:
   serial: true
   build_logs_to_retain: 50
   plan:
-    - in_parallel:
-        - get: ops-manager-cloudfoundry
-          trigger: true
-          passed: [ deploy-tile-old ]
-    - task: deploy-mongodb-service
-      file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task-create-service.yml
+  - get: ops-manager-cloudfoundry
+    trigger: true
+    passed: [ deploy-tile-old ]
+  - task: deploy-mongodb-service
+    file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task-create-service.yml
+    params:
+      CF_APP_URL: ((cf-app-url))
+      CF_APP_USER: ((cf-app-username))
+      CF_APP_PASSWORD: ((cf-app-password))
+      INSTALL_TIMEOUT: 120
+      SET_PLAN: replica_set_small
+      BACKUP_ENABLED: true
+    on_failure:
+      put: "deploy-service-status"
       params:
-        CF_APP_URL: ((cf-app-url))
-        CF_APP_USER: ((cf-app-username))
-        CF_APP_PASSWORD: ((cf-app-password))
-        INSTALL_TIMEOUT: 120
-        SET_PLAN: replica_set_small
-        BACKUP_ENABLED: true
-      on_failure:
-        put: "deploy-service-status"
-        params:
-          state: "failure"
-          commit: "ops-manager-cloudfoundry"
-      on_error:
-        put: "deploy-service-status"
-        params:
-          state: "error"
-          commit: "ops-manager-cloudfoundry"
-      on_abort:
-        put: "deploy-service-status"
-        params:
-          state: "error"
-          commit: "ops-manager-cloudfoundry"
-          description: aborted
-    - put: "deploy-service-status"
-      params:
-        state: "success"
+        state: "failure"
         commit: "ops-manager-cloudfoundry"
+    on_error:
+      put: "deploy-service-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+    on_abort:
+      put: "deploy-service-status"
+      params:
+        state: "error"
+        commit: "ops-manager-cloudfoundry"
+        description: aborted
+  - put: "deploy-service-status"
+    params:
+      state: "success"
+      commit: "ops-manager-cloudfoundry"
 
 - name: smoke-tests
   serial: true
   build_logs_to_retain: 50
   plan:
-  - in_parallel:
-    - get: ops-manager-cloudfoundry
-      trigger: true
-      passed: [ check-application ]
+  - get: ops-manager-cloudfoundry
+    trigger: true
+    passed: [ check-application ]
   - task: smoke-tests
     file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
     params:
@@ -414,10 +407,9 @@ jobs:
   serial: true
   build_logs_to_retain: 50
   plan:
-  - in_parallel:
-    - get: version
-    - get: ops-manager-cloudfoundry
-      trigger: true
+  - get: version
+  - get: ops-manager-cloudfoundry
+    trigger: true
   - task: delete-tile
     file: ops-manager-cloudfoundry/ci/tasks/delete-tile/task.yml
     params:
