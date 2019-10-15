@@ -26,11 +26,11 @@ product-properties:
       secret:  ((OM_API_KEY))
 network-properties:
   network:
-    name: sandimas-pas-subnet
+    name: patterson-pas-subnet
   other_availability_zones:
   - name: "us-central1-f"
   service_network:
-    name: sandimas-services-subnet
+    name: patterson-services-subnet
   singleton_availability_zone:
     name: "us-central1-f"
 resource-config:
