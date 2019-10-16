@@ -145,27 +145,26 @@ jobs:
   serial: true
   build_logs_to_retain: 50
   plan:
-  - in_parallel:
-    - get: ops-manager-cloudfoundry
-      trigger: true
-    - get: on-demand-service-broker-release
-      params:
-        filename: on-demand-service-broker-(.*).tgz
-    - get: syslog-migration-release
-      params:
-        filename: syslog-migration-(.*).tgz
-    - get: pcf-mongodb-helpers
-      params:
-        filename: pcf-mongodb-helpers-(.*).tgz
-    - get: bpm-release
-      params:
-        filename: bpm-release-(.*).tgz
-    - get: mongodb
-      params:
-        filename: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
-    - get: version
-      params:
-        pre: rc
+  - get: ops-manager-cloudfoundry
+    trigger: true
+  - get: on-demand-service-broker-release
+    params:
+      filename: on-demand-service-broker-(.*).tgz
+  - get: syslog-migration-release
+    params:
+      filename: syslog-migration-(.*).tgz
+  - get: pcf-mongodb-helpers
+    params:
+      filename: pcf-mongodb-helpers-(.*).tgz
+  - get: bpm-release
+    params:
+      filename: bpm-release-(.*).tgz
+  - get: mongodb
+    params:
+      filename: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
+  - get: version
+    params:
+      pre: rc
   - put: "build-status"
     params:
       state: "pending"
@@ -206,17 +205,16 @@ jobs:
   serial: true
   build_logs_to_retain: 50
   plan:
-  - in_parallel:
-    - get: ops-manager-cloudfoundry
-      trigger: true
-      passed: [ build-tile ]
-    - get: artifacts
-      params:
-        file: artifacts/mongodb-on-demand-*.pivotal
-    - get: version
-    - get: stemcell
-      params:
-        globs: ["*azure*"]
+  - get: ops-manager-cloudfoundry
+    trigger: true
+    passed: [ build-tile ]
+  - get: artifacts
+    params:
+      file: artifacts/mongodb-on-demand-*.pivotal
+  - get: version
+  - get: stemcell
+    params:
+      globs: ["*azure*"]
   - put: "deploy-status"
     params:
       state: "pending"
@@ -257,10 +255,9 @@ jobs:
   serial: true
   build_logs_to_retain: 50
   plan:
-  - in_parallel:
-    - get: ops-manager-cloudfoundry
-      trigger: true
-      passed: [ deploy-tile ]
+  - get: ops-manager-cloudfoundry
+    trigger: true
+    passed: [ deploy-tile ]
   - put: "test-status"
     params:
       state: "pending"
@@ -296,28 +293,26 @@ jobs:
   serial: true
   build_logs_to_retain: 50
   plan:
-  - in_parallel:
-    - get: ops-manager-cloudfoundry
-      passed: [ smoke-tests ]
-    - get: on-demand-service-broker-release
-      params:
-        filename: on-demand-service-broker-(.*).tgz
-    - get: syslog-migration-release
-      params:
-        filename: syslog-migration-(.*).tgz
-    - get: pcf-mongodb-helpers
-      params:
-        filename: pcf-mongodb-helpers-(.*).tgz
-    - get: bpm-release
-      params:
-        filename: bpm-release-(.*).tgz
-    - get: mongodb
-      params:
-        filename: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
-    - get: version
-      params:
-        bump: final
-
+  - get: ops-manager-cloudfoundry
+    passed: [ smoke-tests ]
+  - get: on-demand-service-broker-release
+    params:
+      filename: on-demand-service-broker-(.*).tgz
+  - get: syslog-migration-release
+    params:
+      filename: syslog-migration-(.*).tgz
+  - get: pcf-mongodb-helpers
+    params:
+      filename: pcf-mongodb-helpers-(.*).tgz
+  - get: bpm-release
+    params:
+      filename: bpm-release-(.*).tgz
+  - get: mongodb
+    params:
+      filename: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
+  - get: version
+    params:
+      bump: final
   - task: shipit
     file: ops-manager-cloudfoundry/ci/tasks/shipit/task.yml
     params:
@@ -333,8 +328,7 @@ jobs:
   serial: true
   build_logs_to_retain: 50
   plan:
-  - in_parallel:
-    - get: ops-manager-cloudfoundry
+  - get: ops-manager-cloudfoundry
   - task: delete-tile
     file: ops-manager-cloudfoundry/ci/tasks/delete-tile/task.yml
     params:

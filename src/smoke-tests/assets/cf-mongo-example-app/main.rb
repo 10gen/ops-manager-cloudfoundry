@@ -34,6 +34,16 @@ put '/service/mongo/:key' do
   'success'
 end
 
+delete '/service/mongo/:key' do
+  client = load_mongo
+  if client[:data_values].find('_id' => params[:key]).to_a.empty?
+    'document is not found'
+  else
+    client[:data_values].find('_id' => params[:key]).delete_one
+  end
+  'deleted success'
+end
+
 get '/service/mongo/:key' do
   client = load_mongo
   client[:data_values].find('_id' => params[:key]).to_a.first['data_value']

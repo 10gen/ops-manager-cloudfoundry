@@ -1,6 +1,6 @@
 #!/usr/local/bin/dumb-init /bin/bash
 set -euo pipefail
-[ 'true' = "${DEBUG:-}" ] && set -x
+[[ ${DEBUG:-} = true ]] && set -x
 
 base=$PWD
 PCF_URL="$PCF_URL"
@@ -64,5 +64,5 @@ RESULT=$(echo "$STAGED" | jq --arg product_name "$PRODUCT" 'map(select(.type == 
 DATA=$(echo '{"deploy_products": []}' | jq ".deploy_products += [$RESULT]")
 
 ${om} curl --path /api/v0/installations --request POST --data "$DATA"
-${om} apply-changes --skip-deploy-products="true"
+${om} apply-changes --skip-deploy-products="true" --reattach
 ${om} delete-unused-products
