@@ -1,12 +1,11 @@
 #!/usr/local/bin/dumb-init /bin/bash
 set -euo pipefail
-[ 'true' = "${DEBUG:-}" ] && set -x
+[[ ${DEBUG:-} = true ]] && set -x
 
 base=$PWD
 PCF_URL="$PCF_URL"
 PCF_USERNAME="$PCF_USERNAME"
 PCF_PASSWORD="$PCF_PASSWORD"
-
 
 VERSION=$(cat "$base"/versionold/number)
 if [ -z "${VERSION:-}" ]; then
@@ -14,6 +13,7 @@ if [ -z "${VERSION:-}" ]; then
   exit 1
 fi
 ls "$base"
+
 TILE_FILE=`cd tileold; ls *-${VERSION}.pivotal`
 if [ -z "${TILE_FILE}" ]; then
 	echo "No files matching tileold/*.pivotal"
@@ -28,11 +28,9 @@ if [ -z "${STEMCELL_FILE}" ]; then
 	exit 1
 fi
 
-PRODUCT="$(cat $base/ops-manager-cloudfoundry/tile/tile.yml | grep '^name' | cut -d' ' -f 2)"
-echo "Product " $PRODUCT
-# if [ -z "${PRODUCT}" ]; then
-# 	PRODUCT=mongodb-on-demand
-# fi
+PRODUCT="$(yq r $base/ops-manager-cloudfoundry/tile/tile.yml name)"
+echo "Product: " $PRODUCT
+
 om="om -t $PCF_URL -u $PCF_USERNAME -p $PCF_PASSWORD -k"
 echo ${om} $TILE_FILE
 ${om} upload-product --product "tileold/$TILE_FILE"
@@ -50,19 +48,21 @@ ${om} stage-product --product-name "$PRODUCT" --product-version "$VERSION"
 	# echo ${om} configure-product --product-name "$PRODUCT" --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config"
 	# ${om} configure-product  --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config"
 cd ops-manager-cloudfoundry
-cat > "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/vars.yml" << EOF
+cat > "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/vars.yml" << EOF
 
 OM_API_KEY: "$OM_API_KEY"
 OM_API_USER: "$OM_API_USER"
 
 EOF
 # ${om} configure-product --product-name "$PRODUCT" --product-network "$network_config" --product-properties "$properties_config"
-${om} configure-product  --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/$CONFIG" -l "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/vars.yml"
+${om} configure-product  --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/$CONFIG" -l "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/vars.yml"
 
 STAGED=$(${om} curl --path /api/v0/staged/products)
 RESULT=$(echo "$STAGED" | jq --arg product_name "$PRODUCT" 'map(select(.type == $product_name)) | .[].guid')
+echo $RESULT
 DATA=$(echo '{"deploy_products": []}' | jq ".deploy_products += [$RESULT]")
+echo $DATA
 
 ${om} curl --path /api/v0/installations --request POST --data "$DATA"
-${om} apply-changes --skip-deploy-products="true"
+${om} apply-changes --skip-deploy-products="true" --reattach
 ${om} delete-unused-products
