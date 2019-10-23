@@ -44,6 +44,24 @@ type mongodbTestConfig struct {
 	ServiceName string      `json:"service_name"`
 	PlanNames   []string    `json:"plan_names"`
 	Retry       retryConfig `json:"retry"`
+	Backup      []string    `json:"backup_enabled"`
+	SSL         []string    `json:"ssl_enabled"`
+}
+
+//test if all parameters in pipeline was provided
+func (testConfig mongodbTestConfig) ValidateMongodbTestConfig() {
+	if testConfig.ServiceName == "" {
+		panic("Parameter Service name is not define at pipeline")
+	}
+	if testConfig.PlanNames == nil || len(testConfig.PlanNames) == 0 {
+		panic("Parameter \"PLAN_NAMES\" is not define at pipeline")
+	}
+	if testConfig.Backup == nil || len(testConfig.Backup) == 0 {
+		panic("Parameter \"BACKUP_ENABLED\" is not define at pipeline")
+	}
+	if testConfig.SSL == nil || len(testConfig.SSL) == 0 {
+		panic("Parameter \"SSL_ENABLED\" is not define at pipeline")
+	}
 }
 
 func loadCFTestConfig(path string) services.Config {

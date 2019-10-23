@@ -284,9 +284,9 @@ func (cf *CF) Delete(appName string) func() {
 }
 
 // CreateService is equivalent to `cf create-service {serviceName} {planName} {instanceName}`
-func (cf *CF) CreateService(serviceName, planName, instanceName string, skip *bool) func() {
+func (cf *CF) CreateService(serviceName, planName, instanceName string, skip *bool, config string) func() {
 	createServiceFn := func() *gexec.Session {
-		return helpersCF.Cf("create-service", serviceName, planName, instanceName)
+		return helpersCF.Cf("create-service", serviceName, planName, instanceName, config)
 	}
 
 	succeeds := func(session *gexec.Session) bool {

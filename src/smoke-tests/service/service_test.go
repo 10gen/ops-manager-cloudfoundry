@@ -218,18 +218,22 @@ var _ = Describe("MongoDB Service", func() {
 		afterSuiteSteps[0].Perform()
 	})
 
-	AssertLifeCycleBehavior := func(planName string) {
-		It(strings.ToUpper(planName)+": create, bind to, write to, read from, unbind, and destroy a service instance", func() {
+	// AssertLifeCycleBehavior := func(planName string) {
+	AssertLifeCycleBehavior := func(testServiceConfig TestServiceConfig) {
+		It(strings.ToUpper(testServiceConfig.planName)+": create, bind to, write to, read from, unbind, and destroy a service instance", func() {
 			var skip bool
 
 			uri := fmt.Sprintf("https://%s.%s", appName, cfTestConfig.AppsDomain)
 			app := mongodb.NewApp(uri, testCF.ShortTimeout, retryInterval)
 			testValue := randomName()
 
-			fmt.Println("serviceName : ", mongodbConfig.ServiceName, " planName: ", planName, " serviceInstanceName: ", serviceInstanceName, " planName: ", planName)
+			backupConfig := "-c \"{\"enable_backup\":" + testServiceConfig.enable_backup + "\"}"
+			fmt.Println("serviceName : ", testServiceConfig.ServiceName, " planName: ", testServiceConfig.planName, " serviceInstanceName: ", serviceInstanceName,
+				"configuration : ", backupConfig)
+
 			serviceCreateStep := reporter.NewStep(
-				fmt.Sprintf("Create a '%s' plan instance of MongoDB", planName),
-				testCF.CreateService(mongodbConfig.ServiceName, planName, serviceInstanceName, &skip),
+				fmt.Sprintf("Create a '%s' plan instance of MongoDB", testServiceConfig.planName),
+				testCF.CreateService(testServiceConfig.ServiceName, testServiceConfig.planName, serviceInstanceName, &skip, backupConfig),
 			)
 
 			smokeTestReporter.RegisterSpecSteps([]*reporter.Step{serviceCreateStep})
@@ -281,8 +285,12 @@ var _ = Describe("MongoDB Service", func() {
 	}
 
 	Context("for each plan", func() {
-		for _, planName = range mongodbConfig.PlanNames {
-			AssertLifeCycleBehavior(planName)
+		mongodbConfig.ValidateMongodbTestConfig()
+		var cases []TestServiceConfig
+		cases = generateServiceConfigs(testData)
+		printGeneratedServiceConfigs(cases)
+		for _, oneCase = range cases {
+			AssertLifeCycleBehavior(oneCase)
 		}
 	})
 })

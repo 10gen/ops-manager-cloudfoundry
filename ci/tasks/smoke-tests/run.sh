@@ -16,6 +16,8 @@ cat > config.json << EOF
 {
   "service_name": "mongodb-odb",
   "plan_names": $PLAN_NAMES,
+  "backup_enabled": $BACKUP_ENABLED,
+  "ssl_enabled": $SSL_ENABLED,
   "retry": {
     "max_attempts": 10,
     "backoff": "linear",
