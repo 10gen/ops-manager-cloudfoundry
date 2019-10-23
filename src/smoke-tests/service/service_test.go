@@ -12,7 +12,8 @@ import (
 	"github.com/10gen/ops-manager-cloudfoundry/src/smoke-tests/service/reporter"
 	"github.com/pborman/uuid"
 
-	smokeTestCF "github.com/10gen/ops-manager-cloudfoundry/src/smoke-tests/cf"
+	// smokeTestCF "github.com/10gen/ops-manager-cloudfoundry/src/smoke-tests/cf"
+	smokeTestCF "smoke-tests/cf"
 	"github.com/pivotal-cf-experimental/cf-test-helpers/services"
 
 	. "github.com/onsi/ginkgo"
@@ -219,21 +220,21 @@ var _ = Describe("MongoDB Service", func() {
 	})
 
 	// AssertLifeCycleBehavior := func(planName string) {
-	AssertLifeCycleBehavior := func(testServiceConfig TestServiceConfig) {
-		It(strings.ToUpper(testServiceConfig.planName)+": create, bind to, write to, read from, unbind, and destroy a service instance", func() {
+	AssertLifeCycleBehavior := func(sp ServiceParameters) {
+		It(strings.ToUpper(sp.PlanName)+": create, bind to, write to, read from, unbind, and destroy a service instance", func() {
 			var skip bool
-
+			
 			uri := fmt.Sprintf("https://%s.%s", appName, cfTestConfig.AppsDomain)
 			app := mongodb.NewApp(uri, testCF.ShortTimeout, retryInterval)
 			testValue := randomName()
 
-			backupConfig := "-c \"{\"enable_backup\":" + testServiceConfig.enable_backup + "\"}"
-			fmt.Println("serviceName : ", testServiceConfig.ServiceName, " planName: ", testServiceConfig.planName, " serviceInstanceName: ", serviceInstanceName,
+			backupConfig := "-c \"{\"enable_backup\":" + sp.BackupEnable + "\"}"
+			fmt.Println("serviceName : ", sp.ServiceName, " planName: ", sp.PlanName, " serviceInstanceName: ", serviceInstanceName,
 				"configuration : ", backupConfig)
 
 			serviceCreateStep := reporter.NewStep(
-				fmt.Sprintf("Create a '%s' plan instance of MongoDB", testServiceConfig.planName),
-				testCF.CreateService(testServiceConfig.ServiceName, testServiceConfig.planName, serviceInstanceName, &skip, backupConfig),
+				fmt.Sprintf("Create a '%s' plan instance of MongoDB", sp.PlanName),
+				testCF.CreateService(sp.ServiceName, sp.PlanName, serviceInstanceName, &skip, backupConfig),
 			)
 
 			smokeTestReporter.RegisterSpecSteps([]*reporter.Step{serviceCreateStep})
@@ -286,10 +287,10 @@ var _ = Describe("MongoDB Service", func() {
 
 	Context("for each plan", func() {
 		mongodbConfig.ValidateMongodbTestConfig()
-		var cases []TestServiceConfig
-		cases = generateServiceConfigs(testData)
-		printGeneratedServiceConfigs(cases)
-		for _, oneCase = range cases {
+		var cases []ServiceParameters
+		cases = generateTestServiceParameters(mongodbConfig)
+		printGeneratedServiceParameters(cases)
+		for _, oneCase := range cases {
 			AssertLifeCycleBehavior(oneCase)
 		}
 	})
