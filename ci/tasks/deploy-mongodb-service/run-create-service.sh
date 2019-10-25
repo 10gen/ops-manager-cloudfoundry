@@ -17,6 +17,7 @@ until [[ $service_status != "create in progress" ]] || [[ $time -gt $INSTALL_TIM
 done
 if [[ $service_status == "create succeeded " ]]; then
   cf push app-ruby-sample -p $base/ops-manager-cloudfoundry/src/smoke-tests/assets/cf-mongo-example-app
+  sleep 1m
   cf bind-service app-ruby-sample test-mongodb-service --binding-name mongodb-service
   cf restage app-ruby-sample
 else
