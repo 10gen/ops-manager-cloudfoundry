@@ -13,7 +13,7 @@ until [[ $service_status != "create in progress" ]] || [[ $time -gt $INSTALL_TIM
   let "time=$time+3"
   service_status=$(cf services | grep test-mongodb-service | awk '{print $4" "$5" "$6}')
 done
-if [[ $service_status == "create succeeded" ]]; then
+if [[ $service_status == "create succeeded " ]]; then
   cf push app-ruby-sample -p $base/ops-manager-cloudfoundry/src/smoke-tests/assets/cf-mongo-example-app
   cf bind-service app-ruby-sample test-mongodb-service --binding-name mongodb-service
   cf restage app-ruby-sample
