@@ -12,7 +12,6 @@ import (
 	"github.com/10gen/ops-manager-cloudfoundry/src/smoke-tests/service/reporter"
 	"github.com/pborman/uuid"
 
-	// smokeTestCF "github.com/10gen/ops-manager-cloudfoundry/src/smoke-tests/cf"
 	smokeTestCF "smoke-tests/cf"
 	"github.com/pivotal-cf-experimental/cf-test-helpers/services"
 
@@ -228,7 +227,7 @@ var _ = Describe("MongoDB Service", func() {
 			app := mongodb.NewApp(uri, testCF.ShortTimeout, retryInterval)
 			testValue := randomName()
 
-			backupConfig := "-c \"{\"enable_backup\":" + sp.BackupEnable + "\"}"
+			backupConfig := "-c \"{\\\"enable_backup\\\":\\\" + sp.BackupEnable + \\\"}"
 			fmt.Println("serviceName : ", sp.ServiceName, " planName: ", sp.PlanName, " serviceInstanceName: ", serviceInstanceName,
 				"configuration : ", backupConfig)
 
