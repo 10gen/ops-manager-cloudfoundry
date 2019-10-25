@@ -222,6 +222,7 @@ jobs:
   build_logs_to_retain: 50
   plan:
   - get: ops-manager-cloudfoundry
+  - get: deploy-service-status
     trigger: true
   - get: artifacts
     params:
