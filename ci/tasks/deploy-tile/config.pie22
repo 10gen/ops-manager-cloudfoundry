@@ -46,10 +46,10 @@ resource-config:
     internet_connected: true
 errand-config:
   delete-all-service-instances:
-    pre-delete-state: false
+    pre-delete-state: true
   deregister-broker:
-    pre-delete-state: false
+    pre-delete-state: true
   register-broker:
     post-deploy-state: true
   upgrade-all-service-instances:
-    post-deploy-state: false
+    post-deploy-state: true

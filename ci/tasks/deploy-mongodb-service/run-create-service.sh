@@ -2,6 +2,8 @@
 set -eo pipefail
 [[ ${DEBUG:-} = true ]] && set -x
 base=$PWD
+# Sometimes client failes to identify broker. this might be due to race conditions. Trying to add dealyfly and see if it fixes.
+sleep 3m
 
 cf login -a $CF_APP_URL -u $CF_APP_USER -p $CF_APP_PASSWORD --skip-ssl-validation -o system -s system
 cf create-service mongodb-odb "$SET_PLAN" test-mongodb-service -c "{\"enable_backup\":\"$BACKUP_ENABLED\"}"
