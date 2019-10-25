@@ -224,6 +224,7 @@ jobs:
   - get: ops-manager-cloudfoundry
   - get: deploy-service-status
     trigger: true
+    passed: [ deploy-mongodb-service ]
   - get: artifacts
     params:
       file: artifacts/mongodb-on-demand-*.pivotal
