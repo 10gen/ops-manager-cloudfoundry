@@ -24,6 +24,10 @@ type ServiceParameters struct {
 	SSLEnable    string
 }
 
+func (sp ServiceParameters) PrintParameters() string {
+	return fmt.Sprintf("%s (Backup: %v, SSL: %v)", 
+		strings.ToUpper(sp.ServiceName), sp.BackupEnable, sp.SSLEnable)
+}
 //generate different service config for test
 func generateTestServiceParameters(testConfig mongodbTestConfig) []ServiceParameters {
 	var testServiceParameters []ServiceParameters

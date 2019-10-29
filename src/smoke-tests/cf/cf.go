@@ -486,8 +486,8 @@ func (cf CF) DeleteServiceKey(serviceInstanceName, serviceKeyName string) func()
 	}
 }
 
-func (cf *CF) getServiceInstanceGuid(serviceName string) string {
-	session := helpersCF.Cf("service", "--guid", serviceName)
+func (cf *CF) getServiceInstanceGuid(serviceInstanceName string) string {
+	session := helpersCF.Cf("service", "--guid", serviceInstanceName)
 	Eventually(session, cf.ShortTimeout).Should(gexec.Exit(0), `{"FailReason": "Failed to retrieve GUID for service instance"}`)
 
 	return strings.Trim(string(session.Out.Contents()), " \n")
@@ -519,4 +519,17 @@ func (cf *CF) getServiceKeyCredentials(serviceGuid string) []string {
 	Expect(servers).NotTo(BeEmpty(), `{"FailReason": "Invalid service key, missing servers"}`)
 	Expect(uri).NotTo(BeEmpty(), `{"FailReason": "Invalid service key, missing uri"}`)
 	return servers
+}
+
+//GetGroupID with use of `cf` tool get projectID/groupIP
+func (cf *CF) GetGroupID(serviceInstanceName string) string {
+	session := helpersCF.Cf("service", serviceInstanceName)
+	Eventually(session, cf.ShortTimeout).Should(gexec.Exit(0), `{"FailReason": "Failed to get service information"}`)
+	projectID := regexp.MustCompile("^dashboard:.*/(.*)$").FindString(string(session.Out.Contents()))
+	return projectID
+}
+
+//GetProjectID is aliace to GetGroupID - this names means the same
+func (cf *CF) GetProjectID(serviceInstanceName string) string {
+	return cf.GetGroupID(serviceInstanceName)
 }

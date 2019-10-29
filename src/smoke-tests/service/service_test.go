@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/10gen/ops-manager-cloudfoundry/src/smoke-tests/mongodb"
@@ -220,14 +219,13 @@ var _ = Describe("MongoDB Service", func() {
 
 	// AssertLifeCycleBehavior := func(planName string) {
 	AssertLifeCycleBehavior := func(sp ServiceParameters) {
-		It(strings.ToUpper(sp.PlanName)+": create, bind to, write to, read from, unbind, and destroy a service instance", func() {
+		It(sp.PrintParameters() + ": create, bind to, write to, read from, unbind, and destroy a service instance", func() {
 			var skip bool
 			
 			uri := fmt.Sprintf("https://%s.%s", appName, cfTestConfig.AppsDomain)
 			app := mongodb.NewApp(uri, testCF.ShortTimeout, retryInterval)
 			testValue := randomName()
-
-			backupConfig := "-c \"{\\\"enable_backup\\\":\\\" + sp.BackupEnable + \\\"}"
+			backupConfig := "-c \"{\\\"enable_backup\\\":\\\"" + sp.BackupEnable + "\\\"}"
 			fmt.Println("serviceName : ", sp.ServiceName, " planName: ", sp.PlanName, " serviceInstanceName: ", serviceInstanceName,
 				"configuration : ", backupConfig)
 
@@ -273,6 +271,11 @@ var _ = Describe("MongoDB Service", func() {
 
 			serviceCreateStep.Perform()
 			serviceCreateStep.Description = fmt.Sprintf("Create a '%s' plan instance of MongoDB", planName)
+
+			//TODO remove in the end
+			fmt.Println("test-tests")
+			fmt.Printf("GroupID: %s", testCF.GetGroupID(serviceInstanceName))
+			fmt.Printf("ProjectID: %s", testCF.GetProjectID(serviceInstanceName))
 
 			if skip {
 				serviceCreateStep.Result = "SKIPPED"
