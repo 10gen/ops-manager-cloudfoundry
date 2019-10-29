@@ -225,7 +225,7 @@ var _ = Describe("MongoDB Service", func() {
 			uri := fmt.Sprintf("https://%s.%s", appName, cfTestConfig.AppsDomain)
 			app := mongodb.NewApp(uri, testCF.ShortTimeout, retryInterval)
 			testValue := randomName()
-			backupConfig := "-c \"{\\\"enable_backup\\\":\\\"" + sp.BackupEnable + "\\\"}\""
+			backupConfig := fmt.Sprintf("-c '{\"enable_backup\":\"%s\"}'", sp.BackupEnable)
 			fmt.Println("serviceName : ", sp.ServiceName, " planName: ", sp.PlanName, " serviceInstanceName: ", serviceInstanceName,
 				"configuration : ", backupConfig)
 
