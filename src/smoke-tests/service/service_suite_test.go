@@ -25,8 +25,8 @@ type ServiceParameters struct {
 }
 
 func (sp ServiceParameters) PrintParameters() string {
-	return fmt.Sprintf("%s (Backup: %v, SSL: %v)", 
-		strings.ToUpper(sp.ServiceName), sp.BackupEnable, sp.SSLEnable)
+	return fmt.Sprintf("%s ( Backup: %v, SSL: %v)", 
+		strings.ToUpper(sp.PlanName), sp.BackupEnable, sp.SSLEnable)
 }
 //generate different service config for test
 func generateTestServiceParameters(testConfig mongodbTestConfig) []ServiceParameters {
