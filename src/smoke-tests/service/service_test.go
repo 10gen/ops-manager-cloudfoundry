@@ -225,13 +225,13 @@ var _ = Describe("MongoDB Service", func() {
 			uri := fmt.Sprintf("https://%s.%s", appName, cfTestConfig.AppsDomain)
 			app := mongodb.NewApp(uri, testCF.ShortTimeout, retryInterval)
 			testValue := randomName()
-			backupConfig := fmt.Sprintf("-c '{\"enable_backup\":\"%s\"}'", sp.BackupEnable)
+			backupConfig := fmt.Sprintf(`{"enable_backup":"%s"}`, backupEnable)
 			fmt.Println("serviceName : ", sp.ServiceName, " planName: ", sp.PlanName, " serviceInstanceName: ", serviceInstanceName,
 				"configuration : ", backupConfig)
 
 			serviceCreateStep := reporter.NewStep(
 				fmt.Sprintf("Create a '%s' plan instance of MongoDB", sp.PlanName),
-				testCF.CreateService(sp.ServiceName, sp.PlanName, serviceInstanceName, &skip, backupConfig),
+				testCF.CreateService(sp.ServiceName, sp.PlanName, serviceInstanceName, &skip, "-c " + backupConfig),
 			)
 
 			smokeTestReporter.RegisterSpecSteps([]*reporter.Step{serviceCreateStep})
