@@ -7,11 +7,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/10gen/ops-manager-cloudfoundry/src/smoke-tests/mongodb"
 	"github.com/10gen/ops-manager-cloudfoundry/src/smoke-tests/service/reporter"
 	"github.com/pborman/uuid"
 
 	smokeTestCF "smoke-tests/cf"
+	"smoke-tests/mongodb"
+
 	"github.com/pivotal-cf-experimental/cf-test-helpers/services"
 
 	. "github.com/onsi/ginkgo"
@@ -219,19 +220,19 @@ var _ = Describe("MongoDB Service", func() {
 
 	// AssertLifeCycleBehavior := func(planName string) {
 	AssertLifeCycleBehavior := func(sp ServiceParameters) {
-		It(sp.PrintParameters() + ": create, bind to, write to, read from, unbind, and destroy a service instance", func() {
+		It(sp.PrintParameters()+": create, bind to, write to, read from, unbind, and destroy a service instance", func() {
 			var skip bool
-			
+
 			uri := fmt.Sprintf("https://%s.%s", appName, cfTestConfig.AppsDomain)
 			app := mongodb.NewApp(uri, testCF.ShortTimeout, retryInterval)
 			testValue := randomName()
-			backupConfig := fmt.Sprintf(`{"enable_backup":"%s"}`, backupEnable)
+			backupConfig := fmt.Sprintf(`{"enable_backup":"%s"}`, sp.BackupEnable)
 			fmt.Println("serviceName : ", sp.ServiceName, " planName: ", sp.PlanName, " serviceInstanceName: ", serviceInstanceName,
-				"configuration : ", backupConfig)
+				"configuration : -c ", backupConfig)
 
 			serviceCreateStep := reporter.NewStep(
 				fmt.Sprintf("Create a '%s' plan instance of MongoDB", sp.PlanName),
-				testCF.CreateService(sp.ServiceName, sp.PlanName, serviceInstanceName, "-c " + backupConfig, &skip),
+				testCF.CreateService(sp.ServiceName, sp.PlanName, serviceInstanceName, "-c "+backupConfig, &skip),
 			)
 
 			smokeTestReporter.RegisterSpecSteps([]*reporter.Step{serviceCreateStep})
