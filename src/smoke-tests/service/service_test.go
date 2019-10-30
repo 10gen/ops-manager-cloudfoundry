@@ -231,7 +231,7 @@ var _ = Describe("MongoDB Service", func() {
 
 			serviceCreateStep := reporter.NewStep(
 				fmt.Sprintf("Create a '%s' plan instance of MongoDB", sp.PlanName),
-				testCF.CreateService(sp.ServiceName, sp.PlanName, serviceInstanceName, &skip, "-c " + backupConfig),
+				testCF.CreateService(sp.ServiceName, sp.PlanName, serviceInstanceName, "-c " + backupConfig, &skip),
 			)
 
 			smokeTestReporter.RegisterSpecSteps([]*reporter.Step{serviceCreateStep})
