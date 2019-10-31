@@ -25,6 +25,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"runtime"
@@ -238,8 +239,9 @@ func validateStatusCode(resp *HTTPResponse, expectedStatuses []int, verb string,
 	var errorDetails interface{}
 	decoder := json.NewDecoder(resp.Response.Body)
 	err := decoder.Decode(&errorDetails)
+	val, _ := ioutil.ReadAll(resp.Response.Body)
 	if err != nil {
-		panic(resp.Response.Body)
+		panic(string(val))
 	}
 	useful.PanicOnUnrecoverableError(err)
 
