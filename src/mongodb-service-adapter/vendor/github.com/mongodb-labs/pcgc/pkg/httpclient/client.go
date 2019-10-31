@@ -24,13 +24,14 @@ package httpclient
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mongodb-labs/pcgc/pkg/useful"
-	"gopkg.in/errgo.v1"
 	"io"
 	"net"
 	"net/http"
 	"runtime"
 	"strings"
+
+	"github.com/mongodb-labs/pcgc/pkg/useful"
+	"gopkg.in/errgo.v1"
 
 	"github.com/Sectorbob/mlab-ns2/gae/ns/digest"
 )
@@ -237,6 +238,9 @@ func validateStatusCode(resp *HTTPResponse, expectedStatuses []int, verb string,
 	var errorDetails interface{}
 	decoder := json.NewDecoder(resp.Response.Body)
 	err := decoder.Decode(&errorDetails)
+	if err != nil {
+		panic(resp.Response.Body)
+	}
 	useful.PanicOnUnrecoverableError(err)
 
 	// otherwise augment the error and return false

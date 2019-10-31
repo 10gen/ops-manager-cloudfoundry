@@ -2,7 +2,7 @@ module mongodb-service-adapter
 
 go 1.12
 
-replace github.com/mongodb-labs/pcgc => github.com/vasilevp/pcgc v0.0.2
+replace github.com/mongodb-labs/pcgc => github.com/vasilevp/pcgc v0.0.3
 
 require (
 	code.cloudfoundry.org/lager v2.0.0+incompatible // indirect

@@ -6,7 +6,7 @@ github.com/Sectorbob/mlab-ns2/gae/ns/digest
 github.com/google/uuid
 # github.com/gorilla/mux v1.7.3
 github.com/gorilla/mux
-# github.com/mongodb-labs/pcgc v0.0.0-00010101000000-000000000000 => github.com/vasilevp/pcgc v0.0.2
+# github.com/mongodb-labs/pcgc v0.0.0-00010101000000-000000000000 => github.com/vasilevp/pcgc v0.0.3
 github.com/mongodb-labs/pcgc/pkg/httpclient
 github.com/mongodb-labs/pcgc/pkg/opsmanager
 github.com/mongodb-labs/pcgc/pkg/useful
