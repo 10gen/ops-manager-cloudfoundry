@@ -43,7 +43,8 @@ type GroupHosts struct {
 var versionsManifest = []string{"/var/vcap/packages/versions/versions.json", "../../mongodb_versions/versions.json"}
 
 func (oc *OMClient) Client() opsmanager.Client {
-	return opsmanager.NewClientWithDigestAuth(httpclient.NewURLResolver(oc.Url), oc.Username, oc.ApiKey)
+	r := httpclient.NewURLResolverWithPrefix(oc.Url, "api/public/v1.0")
+	return opsmanager.NewClientWithDigestAuth(r, oc.Username, oc.ApiKey)
 }
 
 func (oc *OMClient) CreateGroup(id string, request GroupCreateRequest) (opsmanager.ProjectResponse, error) {

@@ -8,6 +8,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mongodb-labs/pcgc/pkg/httpclient"
+	"github.com/mongodb-labs/pcgc/pkg/opsmanager"
+
 	"mongodb-service-adapter/adapter"
 	"mongodb-service-adapter/adapter/config"
 )
@@ -26,9 +29,11 @@ func main() {
 	}
 
 	logger := log.New(os.Stderr, "[mongodb-config-agent] ", log.LstdFlags)
-	omClient := adapter.OMClient{Url: cfg.URL, Username: cfg.Username, ApiKey: cfg.APIKey}
 
-	automation, err := omClient.Client().GetAutomationConfig(cfg.GroupID)
+	r := httpclient.NewURLResolverWithPrefix(cfg.URL, "api/public/v1.0")
+	omClient := opsmanager.NewClientWithDigestAuth(r, cfg.Username, cfg.APIKey)
+
+	automation, err := omClient.GetAutomationConfig(cfg.GroupID)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -68,7 +73,7 @@ func main() {
 		ctx.CompatibilityVersion = "4.0"
 	}
 
-	automation, err = omClient.Client().UpdateAutomationConfig(cfg.GroupID, automation)
+	automation, err = omClient.UpdateAutomationConfig(cfg.GroupID, automation)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -79,12 +84,12 @@ func main() {
 	}
 	logger.Println(string(doc))
 
-	err = omClient.Client().UpdateMonitoringConfig(cfg.GroupID, config.GetMonitoringAgentConfiguration(ctx))
+	err = omClient.UpdateMonitoringConfig(cfg.GroupID, config.GetMonitoringAgentConfiguration(ctx))
 	if err != nil {
 		logger.Fatal(err)
 	}
 
-	err = omClient.Client().UpdateBackupConfig(cfg.GroupID, config.GetBackupAgentConfiguration(ctx))
+	err = omClient.UpdateBackupConfig(cfg.GroupID, config.GetBackupAgentConfiguration(ctx))
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -93,7 +98,7 @@ func main() {
 
 	for {
 		logger.Printf("Checking group %s", cfg.GroupID)
-		groupHosts, err := omClient.Client().GetHosts(cfg.GroupID)
+		groupHosts, err := omClient.GetHosts(cfg.GroupID)
 		if err != nil {
 			logger.Fatal(err)
 		}

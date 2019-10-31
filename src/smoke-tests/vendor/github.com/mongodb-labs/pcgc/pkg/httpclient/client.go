@@ -35,11 +35,12 @@ import (
 	"github.com/Sectorbob/mlab-ns2/gae/ns/digest"
 )
 
-// ContentTypeJSON defines the JSON content type
-const ContentTypeJSON = "application/json; charset=UTF-8"
-
-// PreferJSON signal that we are accepting JSON responses, but do not reject non-JSON data
-const PreferJSON = "application/json;q=0.9, */*;q=0.8"
+const (
+	// ContentTypeJSON defines the JSON content type
+	ContentTypeJSON = "application/json; charset=UTF-8"
+	// PreferJSON signal that we are accepting JSON responses, but do not reject non-JSON data
+	PreferJSON = "application/json;q=0.9, */*;q=0.8"
+)
 
 var (
 	// userAgent holds a user agent string which will be passed along with every request
@@ -80,13 +81,13 @@ type BasicClient interface {
 }
 
 // Error implementation for error responses
-func (resp HTTPResponse) Error() string {
-	return resp.Err.Error()
+func (r HTTPResponse) Error() string {
+	return r.Err.Error()
 }
 
 // IsError returns true if the associated error is not nil
-func (resp HTTPResponse) IsError() bool {
-	return resp.Err != nil
+func (r HTTPResponse) IsError() bool {
+	return r.Err != nil
 }
 
 // NewClient builds a new client, allowing for dynamic configuration
@@ -120,20 +121,20 @@ func WithAcceptedStatusCodes(acceptedStatusCodes []int) func(*basicClient) {
 }
 
 // WithTimeouts configures a client with the specified timeouts
-func WithTimeouts(timeouts *RequestTimeouts) func(*basicClient) {
+func WithTimeouts(t *RequestTimeouts) func(*basicClient) {
 	return func(client *basicClient) {
 		// set global (total) timeout
-		client.client.Timeout = timeouts.GlobalTimeout
+		client.client.Timeout = t.GlobalTimeout
 
-		// set all other timeouts
+		// set all other t
 		client.client.Transport = &http.Transport{
 			DialContext: (&net.Dialer{
-				Timeout: timeouts.DialTimeout,
+				Timeout: t.DialTimeout,
 			}).DialContext,
-			ExpectContinueTimeout: timeouts.ExpectContinueTimeout,
-			IdleConnTimeout:       timeouts.IdleConnectionTimeout,
-			ResponseHeaderTimeout: timeouts.ResponseHeaderTimeout,
-			TLSHandshakeTimeout:   timeouts.TLSHandshakeTimeout,
+			ExpectContinueTimeout: t.ExpectContinueTimeout,
+			IdleConnTimeout:       t.IdleConnectionTimeout,
+			ResponseHeaderTimeout: t.ResponseHeaderTimeout,
+			TLSHandshakeTimeout:   t.TLSHandshakeTimeout,
 		}
 	}
 }
@@ -146,28 +147,28 @@ func WithDigestAuthentication(username string, password string) func(*basicClien
 }
 
 // GetJSON retrieves the specified URL
-func (cl basicClient) GetJSON(url string) HTTPResponse {
-	return cl.genericJSONRequest(http.MethodGet, url, nil)
+func (c basicClient) GetJSON(url string) HTTPResponse {
+	return c.genericJSONRequest(http.MethodGet, url, nil)
 }
 
 // PostJson executes a POST request, sending the specified body, encoded as JSON, to the passed URL
-func (cl basicClient) PostJSON(url string, body io.Reader) HTTPResponse {
-	return cl.genericJSONRequest(http.MethodPost, url, body)
+func (c basicClient) PostJSON(url string, body io.Reader) HTTPResponse {
+	return c.genericJSONRequest(http.MethodPost, url, body)
 }
 
 // PutJSON executes a PUT request, sending the specified body, encoded as JSON, to the passed URL
-func (cl basicClient) PutJSON(url string, body io.Reader) (resp HTTPResponse) {
-	return cl.genericJSONRequest(http.MethodPut, url, body)
+func (c basicClient) PutJSON(url string, body io.Reader) (resp HTTPResponse) {
+	return c.genericJSONRequest(http.MethodPut, url, body)
 }
 
 // PatchJSON executes a PATCH request, sending the specified body, encoded as JSON, to the passed URL
-func (cl basicClient) PatchJSON(url string, body io.Reader) (resp HTTPResponse) {
-	return cl.genericJSONRequest(http.MethodPatch, url, body)
+func (c basicClient) PatchJSON(url string, body io.Reader) (resp HTTPResponse) {
+	return c.genericJSONRequest(http.MethodPatch, url, body)
 }
 
 // Delete executes a DELETE request
-func (cl basicClient) Delete(url string) (resp HTTPResponse) {
-	return cl.genericJSONRequest(http.MethodDelete, url, nil)
+func (c basicClient) Delete(url string) (resp HTTPResponse) {
+	return c.genericJSONRequest(http.MethodDelete, url, nil)
 }
 
 // CloseResponseBodyIfNotNil simple helper which can ensure a response's body is correctly closed, if one exists
@@ -184,7 +185,7 @@ func CloseResponseBodyIfNotNil(resp HTTPResponse) {
 	useful.LogError(resp.Response.Body.Close)
 }
 
-func (cl basicClient) genericJSONRequest(verb string, url string, body io.Reader) (resp HTTPResponse) {
+func (c basicClient) genericJSONRequest(verb string, url string, body io.Reader) (resp HTTPResponse) {
 	req, err := http.NewRequest(verb, url, body)
 	if err != nil {
 		resp.Err = err
@@ -198,15 +199,15 @@ func (cl basicClient) genericJSONRequest(verb string, url string, body io.Reader
 		req.Header.Add("Content-Type", ContentTypeJSON)
 	}
 
-	if cl.auth != nil {
+	if c.auth != nil {
 		// if we have authentication credentials, use them
-		resp.Response, resp.Err = cl.auth.RoundTrip(req)
+		resp.Response, resp.Err = c.auth.RoundTrip(req)
 	} else {
 		// otherwise issue an unauthenticated request
-		resp.Response, resp.Err = cl.client.Do(req)
+		resp.Response, resp.Err = c.client.Do(req)
 	}
 
-	if !validateStatusCode(&resp, cl.listOfAcceptedStatusCodes, verb, url) {
+	if !validateStatusCode(&resp, c.listOfAcceptedStatusCodes, verb, url) {
 		// if the response code is not expected, stop here
 		return
 	}
@@ -214,9 +215,9 @@ func (cl basicClient) genericJSONRequest(verb string, url string, body io.Reader
 	return
 }
 
-func validateStatusCode(resp *HTTPResponse, expectedStatuses []int, verb string, url string) bool {
+func validateStatusCode(r *HTTPResponse, expectedStatuses []int, verb string, url string) bool {
 	// no response => not valid
-	if resp == nil || resp.Response == nil {
+	if r == nil || r.Response == nil {
 		return false
 	}
 
@@ -227,25 +228,25 @@ func validateStatusCode(resp *HTTPResponse, expectedStatuses []int, verb string,
 
 	// check if the resulting status is one of the expected ones
 	for _, status := range expectedStatuses {
-		if resp.Response.StatusCode == status {
+		if r.Response.StatusCode == status {
 			return true
 		}
 	}
 
 	// parse response body
-	defer CloseResponseBodyIfNotNil(*resp)
+	defer CloseResponseBodyIfNotNil(*r)
 	var errorDetails interface{}
-	decoder := json.NewDecoder(resp.Response.Body)
+	decoder := json.NewDecoder(r.Response.Body)
 	err := decoder.Decode(&errorDetails)
 	useful.PanicOnUnrecoverableError(err)
 
 	// otherwise augment the error and return false
 	sb := strings.Builder{}
 	sb.WriteString(fmt.Sprintf("failed to execute %s request to %s\n", verb, url))
-	sb.WriteString(fmt.Sprintf("status code: %d\n", resp.Response.StatusCode))
-	sb.WriteString(fmt.Sprintf("response: %s\n", resp.Response.Status))
+	sb.WriteString(fmt.Sprintf("status code: %d\n", r.Response.StatusCode))
+	sb.WriteString(fmt.Sprintf("response: %s\n", r.Response.Status))
 	sb.WriteString(fmt.Sprintf("details: %s\n", errorDetails))
-	resp.Err = errgo.Notef(resp.Err, sb.String())
+	r.Err = errgo.Notef(r.Err, sb.String())
 
 	return false
 }

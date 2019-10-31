@@ -4,10 +4,6 @@ go 1.12
 
 replace mongodb-service-adapter => ../mongodb-service-adapter
 
-replace github.com/mongod-labs/pcgc => ../pcgc
-
-replace github.com/mongodb-labs/pcgc => github.com/vasilevp/pcgc v0.0.2
-
 require (
 	github.com/onsi/ginkgo v1.10.2
 	github.com/onsi/gomega v1.7.0

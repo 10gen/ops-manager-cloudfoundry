@@ -2,9 +2,10 @@ package httpclient
 
 import (
 	"fmt"
-	"github.com/mongodb-labs/pcgc/pkg/useful"
 	"net/url"
 	"path"
+
+	"github.com/mongodb-labs/pcgc/pkg/useful"
 )
 
 type baseURL struct {
