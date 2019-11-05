@@ -2,7 +2,7 @@ product-name: mongodb-on-demand
 product-properties:
   .properties.az_multi_select:
     value:
-    - "null"
+    - us-west-1c
   .properties.backup_enabled:
     value: false
   .properties.bosh_dns_disable:
@@ -24,15 +24,18 @@ product-properties:
   .properties.api_key:
     value:
       secret:  ((OM_API_KEY))
+  .properties.vm_extensions:
+    value:
+    - public_ip
 network-properties:
   network:
-    name: test-pas-subnet
+    name: pas
   other_availability_zones:
-  - name: "null"
+  - name: "us-west-1c"
   service_network:
-    name: test-services-subnet
+    name: services
   singleton_availability_zone:
-    name: "null"
+    name: "us-west-1c"
 resource-config:
   broker:
     instances: automatic
