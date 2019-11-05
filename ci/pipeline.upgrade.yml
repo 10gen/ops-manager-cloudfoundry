@@ -60,7 +60,7 @@ resources:
   source:
     bucket: ((aws-bucket))
     region_name: eu-west-1
-    regexp: mongodb-on-demand-(.*).pivotal
+    regexp: mongodb-on-demand-(1.*).pivotal
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
 
@@ -189,8 +189,7 @@ jobs:
   build_logs_to_retain: 50
   plan:
   - get: ops-manager-cloudfoundry
-    trigger: true
-    passed: [ deploy-mongodb-service ]
+
   - task: use application
     file: ops-manager-cloudfoundry/ci/tasks/application-check/task-put.yml
     params:
@@ -223,8 +222,9 @@ jobs:
   build_logs_to_retain: 50
   plan:
   - get: ops-manager-cloudfoundry
+  - get: deploy-service-status
     trigger: true
-    passed: [ use-application ]
+    passed: [ deploy-mongodb-service ]
   - get: artifacts
     params:
       file: artifacts/mongodb-on-demand-*.pivotal
@@ -269,8 +269,7 @@ jobs:
   build_logs_to_retain: 50
   plan:
   - get: ops-manager-cloudfoundry
-    trigger: true
-    passed: [ update-tile-version ]
+
   - task: check application
     file: ops-manager-cloudfoundry/ci/tasks/application-check/task-get.yml
     params:
@@ -303,8 +302,7 @@ jobs:
   build_logs_to_retain: 50
   plan:
   - get: ops-manager-cloudfoundry
-    trigger: true
-    passed: [ check-application ]
+
   - task: cleaning - delete service and application
     file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task-delete-service.yml
     params:
@@ -375,7 +373,7 @@ jobs:
   plan:
   - get: ops-manager-cloudfoundry
     trigger: true
-    passed: [ check-application ]
+    passed: [ update-tile-version ]
   - task: smoke-tests
     file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
     params:
