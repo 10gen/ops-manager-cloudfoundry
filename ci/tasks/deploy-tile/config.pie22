@@ -50,6 +50,6 @@ errand-config:
   deregister-broker:
     pre-delete-state: false
   register-broker:
-    post-deploy-state: true
+    post-deploy-state: false
   upgrade-all-service-instances:
-    post-deploy-state: true
+    post-deploy-state: false
