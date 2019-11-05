@@ -1,6 +1,6 @@
 #!/usr/local/bin/dumb-init /bin/bash
 set -euo pipefail
-[ 'true' = "${DEBUG:-}" ] && set -x
+[[ ${DEBUG:-} == true ]] && set -x
 
 base=$PWD
 PCF_URL="$PCF_URL"
@@ -29,11 +29,9 @@ if [ -z "${STEMCELL_FILE}" ]; then
 	exit 1
 fi
 
-PRODUCT="$(cat $base/ops-manager-cloudfoundry/tile/tile.yml | grep '^name' | cut -d' ' -f 2)"
-echo "Product " $PRODUCT
-# if [ -z "${PRODUCT}" ]; then
-# 	PRODUCT=mongodb-on-demand
-# fi
+PRODUCT="$(yq r $base/ops-manager-cloudfoundry/tile/tile.yml name)"
+echo "Product: " $PRODUCT
+
 om="om -t $PCF_URL -u $PCF_USERNAME -p $PCF_PASSWORD -k"
 echo ${om} $TILE_FILE
 ${om} upload-product --product "tileold/$TILE_FILE"
@@ -60,8 +58,10 @@ ${om} configure-product --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy
 
 STAGED=$(${om} curl --path /api/v0/staged/products)
 RESULT=$(echo "$STAGED" | jq --arg product_name "$PRODUCT" 'map(select(.type == $product_name)) | .[].guid')
+echo $RESULT
 DATA=$(echo '{"deploy_products": []}' | jq ".deploy_products += [$RESULT]")
+echo $DATA
 
 ${om} curl --path /api/v0/installations --request POST --data "$DATA"
-${om} apply-changes --reattach -n cf,mongodb-on-demand
+${om} apply-changes --skip-deploy-products="true" --reattach
 ${om} delete-unused-products

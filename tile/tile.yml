@@ -331,7 +331,7 @@ requires_product_versions:
 - name: cf
   version: '>= 1.10'
 runtime_configs:
-- name: mongodb_bpm_runtime_config
+- name: mongodb-dns-aliases-tile
   runtime_config:
     releases:
     - name: bpm

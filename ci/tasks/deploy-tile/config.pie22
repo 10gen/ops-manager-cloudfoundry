@@ -24,6 +24,9 @@ product-properties:
   .properties.api_key:
     value:
       secret:  ((OM_API_KEY))
+  .properties.vm_extensions:
+    value:
+    - public_ip
 network-properties:
   network:
     name: rome-pas-subnet
@@ -43,10 +46,10 @@ resource-config:
     internet_connected: true
 errand-config:
   delete-all-service-instances:
-    pre-delete-state: true
+    pre-delete-state: false
   deregister-broker:
-    pre-delete-state: true
+    pre-delete-state: false
   register-broker:
     post-deploy-state: true
   upgrade-all-service-instances:
-    post-deploy-state: true
+    post-deploy-state: false

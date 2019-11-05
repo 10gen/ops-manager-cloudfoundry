@@ -1,6 +1,6 @@
 #!/usr/local/bin/dumb-init /bin/bash
 set -euo pipefail
-[ 'true' = "${DEBUG:-}" ] && set -x
+[[ ${DEBUG:-} = true ]] && set -x
 
 base=$PWD
 
@@ -46,6 +46,8 @@ cd ops-manager-cloudfoundry/tile
 yq w -i tile.yml packages.[4].path "$(ls resources/mongodb-*.tgz)"
 yq w -i tile.yml packages.[4].jobs[0].properties.service_deployment.releases[0].version "${VERSION}"
 yq w -i tile.yml runtime_configs[0].runtime_config.releases[0].version "${VERSION}"
+yq w -i tile.yml runtime_configs[1].runtime_config.releases[0].version "${VERSION}"
+
 tile build "${VERSION}"
 )
 mkdir -p "$base"/release
