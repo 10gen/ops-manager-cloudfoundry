@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"strings"
 
 	"github.com/mongodb-labs/pcgc/pkg/httpclient"
@@ -54,7 +55,15 @@ func (oc *OMClient) CreateGroup(id string, request GroupCreateRequest) (opsmanag
 		request.Name = fmt.Sprintf("PCF_%s", strings.ToUpper(id))
 	}
 
-	group, err := oc.Client().GetProjectByName(request.Name)
+	safeclient := opsmanager.NewClient(
+		opsmanager.WithResolver(httpclient.NewURLResolverWithPrefix(oc.Url, "api/public/v1.0")),
+		opsmanager.WithHTTPClient(httpclient.NewClient(
+			httpclient.WithDigestAuthentication(oc.Username, oc.ApiKey),
+			httpclient.WithAcceptedStatusCodes([]int{http.StatusOK, http.StatusCreated, http.StatusNotFound}),
+		)),
+	)
+
+	group, err := safeclient.GetProjectByName(request.Name)
 	if err != nil {
 		log.Printf("CreateGroup GetGroupByName with request.Name: %s, error: %v", request.Name, err)
 		return group, err
@@ -62,7 +71,7 @@ func (oc *OMClient) CreateGroup(id string, request GroupCreateRequest) (opsmanag
 
 	if group.Name == request.Name {
 		log.Printf("Continue with existing group %q", group.ID)
-		apiKey, err := oc.Client().CreateAgentAPIKEY(group.ID, "MongoDB On-Demand broker generated Agent API Key")
+		apiKey, err := safeclient.CreateAgentAPIKEY(group.ID, "MongoDB On-Demand broker generated Agent API Key")
 		if err != nil {
 			log.Printf("CreateGroup CreateGroupAPIKey group.ID: %s, error: %v", group.ID, err)
 			return group, err
@@ -71,7 +80,7 @@ func (oc *OMClient) CreateGroup(id string, request GroupCreateRequest) (opsmanag
 		return group, nil
 	}
 
-	resp, err := oc.Client().CreateOneProject(request.Name, request.OrgId)
+	resp, err := safeclient.CreateOneProject(request.Name, request.OrgId)
 	if err != nil {
 		log.Printf("CreateGroup CreateOneProject, request: %+v, error: %v", request, err)
 		return group, err
