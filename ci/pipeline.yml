@@ -44,7 +44,7 @@ resources:
   source:
     bucket: ((aws-bucket))
     region_name: eu-west-1
-    regexp: on-demand-service-broker-(.*).tgz
+    regexp: on-demand-service-broker-(0.24.0).tgz
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
 
@@ -81,7 +81,7 @@ resources:
   source:
     bucket: ((aws-bucket))
     region_name: eu-west-1
-    regexp: bpm-release-(1.0.*).tgz
+    regexp: bpm-release-(1.0.0).tgz
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
 
@@ -90,7 +90,7 @@ resources:
   source:
     bucket: ((aws-bucket))
     region_name: eu-west-1
-    regexp: mongodb-on-demand-(1.*).pivotal
+    regexp: mongodb-on-demand-(1.1.*).pivotal
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
 
@@ -98,7 +98,7 @@ resources:
   type: s3
   source:
     bucket: ((release-bucket))
-    regexp: mongodb-on-demand-(1.*).pivotal
+    regexp: mongodb-on-demand-(1.1.*).pivotal
     region_name: eu-west-1
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
