@@ -275,7 +275,9 @@ func (oc *OMClient) ConfigureGroup(configurationDoc string, groupID string) erro
 	u := fmt.Sprintf("/api/public/v1.0/groups/%s/automationConfig", groupID)
 	b, err := oc.doRequest("PUT", u, strings.NewReader(configurationDoc))
 	if err != nil {
-		return err
+		log.Println(string("ERROR: Configuration was not applied!"))
+		log.Println(string(configurationDoc))
+		// return err
 	}
 	log.Println(string(b))
 
@@ -286,7 +288,9 @@ func (oc *OMClient) ConfigureMonitoringAgent(configurationDoc string, groupID st
 	u := fmt.Sprintf("/api/public/v1.0/groups/%s/automationConfig/monitoringAgentConfig", groupID)
 	b, err := oc.doRequest("PUT", u, strings.NewReader(configurationDoc))
 	if err != nil {
-		return err
+		log.Println(string("ERROR: Configuration was not applied!"))
+		log.Println(string(configurationDoc))
+		// return err
 	}
 	log.Println(string(b))
 
