@@ -33,11 +33,6 @@ func main() {
 	r := httpclient.NewURLResolverWithPrefix(cfg.URL, "api/public/v1.0")
 	omClient := opsmanager.NewClientWithDigestAuth(r, cfg.Username, cfg.APIKey)
 
-	automation, err := omClient.GetAutomationConfig(cfg.GroupID)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
 	nodes := strings.Split(cfg.NodeAddresses, ",")
 	ctx := &config.DocContext{
 		ID:                      cfg.ID,
@@ -73,16 +68,36 @@ func main() {
 		ctx.CompatibilityVersion = "4.0"
 	}
 
-	automation, err = omClient.UpdateAutomationConfig(cfg.GroupID, automation)
+	ac, err := omClient.GetAutomationConfig(cfg.GroupID)
 	if err != nil {
 		logger.Fatal(err)
 	}
 
-	doc, err := json.Marshal(automation)
+	logger.Println("Original AutomationConfig:")
+	printConfig(logger, ac)
+
+	automation := (*config.AutomationConfig)(&ac)
+	switch cfg.PlanID {
+	case adapter.PlanStandalone:
+		automation.ToStandalone(ctx)
+
+	case adapter.PlanReplicaSet:
+		automation.ToReplicaSet(ctx)
+
+	case adapter.PlanShardedCluster:
+		automation.ToShardedCluster(ctx)
+
+	default:
+		logger.Fatalf("unknown plan ID %q", cfg.PlanID)
+	}
+
+	logger.Println("Modified AutomationConfig:")
+	printConfig(logger, ac)
+
+	_, err = omClient.UpdateAutomationConfig(cfg.GroupID, ac)
 	if err != nil {
 		logger.Fatal(err)
 	}
-	logger.Println(string(doc))
 
 	err = omClient.UpdateMonitoringConfig(cfg.GroupID, config.GetMonitoringAgentConfiguration(ctx))
 	if err != nil {
@@ -107,4 +122,13 @@ func main() {
 		}
 		time.Sleep(30 * time.Second)
 	}
+}
+
+func printConfig(logger *log.Logger, cfg interface{}) {
+	data, err := json.Marshal(cfg)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	logger.Print(string(data))
 }
