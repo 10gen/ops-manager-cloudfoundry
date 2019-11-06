@@ -213,6 +213,7 @@ func (r *AutomationConfig) ToReplicaSet(ctx *DocContext) {
 	if ctx.CompatibilityVersion == "4.0" {
 		protocolVersion = 1
 	}
+
 	r.ReplicaSets = []opsmanager.ReplicaSet{{
 		ID:              "pcf_repl",
 		ProtocolVersion: protocolVersion,
@@ -240,8 +241,13 @@ func (r *AutomationConfig) ToReplicaSet(ctx *DocContext) {
 		})
 
 		r.ReplicaSets[0].Members = append(r.ReplicaSets[0].Members, opsmanager.Member{
-			ID:   i,
-			Host: node,
+			ID:          i,
+			ArbiterOnly: false,
+			Hidden:      false,
+			Host:        node,
+			Priority:    1,
+			SlaveDelay:  0,
+			Votes:       1,
 		})
 	}
 
