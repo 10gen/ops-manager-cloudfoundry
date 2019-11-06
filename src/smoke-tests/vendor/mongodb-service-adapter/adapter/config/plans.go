@@ -13,6 +13,8 @@ func (r *AutomationConfig) ToStandalone(ctx *DocContext) {
 
 	if ctx.RequireSSL {
 		r.SSL = getDefaultSSL()
+	} else {
+		r.SSL = nil
 	}
 
 	r.MongoDBVersions, r.BackupVersions, r.MonitoringVersions = getDefaultVersions(ctx.Version, ctx.Nodes[0])
@@ -56,6 +58,8 @@ func (r *AutomationConfig) ToShardedCluster(ctx *DocContext) {
 	r.Options.DownloadBase = "/var/lib/mongodb-mms-automation"
 	if ctx.RequireSSL {
 		r.SSL = getDefaultSSL()
+	} else {
+		r.SSL = nil
 	}
 
 	r.MongoDBVersions, r.BackupVersions, r.MonitoringVersions = getDefaultVersions(ctx.Version, ctx.Cluster.ConfigServers[0])
@@ -199,6 +203,8 @@ func (r *AutomationConfig) ToReplicaSet(ctx *DocContext) {
 
 	if ctx.RequireSSL {
 		r.SSL = getDefaultSSL()
+	} else {
+		r.SSL = nil
 	}
 
 	r.MongoDBVersions, r.BackupVersions, r.MonitoringVersions = getDefaultVersions(ctx.Version, ctx.Nodes[0])
