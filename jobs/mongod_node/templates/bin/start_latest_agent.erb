@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+
+BIN_DIR=/var/vcap/packages/mongod-node/bin
+
+# list all agent binaries | version-aware sort, descending | take first
+LATEST_BINARY=$(ls $BIN_DIR/mongodb-mms-automation-agent* | sort -Vr | head -1)
+
+exec $LATEST_BINARY "$@"

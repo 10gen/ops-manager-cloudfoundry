@@ -215,7 +215,7 @@ jobs:
     - get: version
     - get: stemcell
       params:
-        globs: ["*aws*"]
+        globs: [((globs-param))]
   - put: "deploy-status"
     params:
       state: "pending"
@@ -230,7 +230,7 @@ jobs:
       OM_API_USER: ((om-api-user))
       PRODUCT_PROPERTIES: ((product_properties))
       PRODUCT_NETWORK_AZS: ((product_network_azs))
-      CONFIG: config
+      CONFIG: ((env-config))
     on_failure:
       put: "deploy-status"
       params:

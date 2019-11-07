@@ -18,19 +18,22 @@ product-properties:
   .properties.syslog_transport_protocol:
     value: tcp
   .properties.url:
-    value: http://ec2-54-88-70-89.compute-1.amazonaws.com:9080
+    value: http://ec2-18-212-202-77.compute-1.amazonaws.com:9080/
   .properties.username:
-    value: andrey.belik@mongodb.com
+    value: ((OM_API_USER))
   .properties.api_key:
     value:
       secret:  ((OM_API_KEY))
+  .properties.vm_extensions:
+    value:
+    - public_ip
 network-properties:
   network:
-    name: vallejo-pas-subnet
+    name: rome-pas-subnet
   other_availability_zones:
   - name: "us-central1-f"
   service_network:
-    name: vallejo-services-subnet
+    name: rome-services-subnet
   singleton_availability_zone:
     name: "us-central1-f"
 resource-config:
@@ -40,13 +43,13 @@ resource-config:
       size_mb: automatic
     instance_type:
       id: automatic
-    internet_connected: false
+    internet_connected: true
 errand-config:
   delete-all-service-instances:
-    pre-delete-state: true
+    pre-delete-state: false
   deregister-broker:
-    pre-delete-state: true
+    pre-delete-state: false
   register-broker:
     post-deploy-state: true
   upgrade-all-service-instances:
-    post-deploy-state: false
+    post-deploy-state: true
