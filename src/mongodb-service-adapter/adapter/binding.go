@@ -71,13 +71,13 @@ func (b Binder) CreateBinding(bindingID string, deploymentTopology bosh.BoshVMs,
 		servers = cluster.Routers
 	}
 
-	if ssl {
-		omClient := OMClient{Url: URL, Username: adminUsername, ApiKey: adminAPIKey}
-		servers, err = omClient.GetGroupHostnames(groupID, plan)
-		if err != nil {
-			return serviceadapter.Binding{}, err
-		}
+	// if ssl {
+	omClient := OMClient{Url: URL, Username: adminUsername, ApiKey: adminAPIKey}
+	servers, err = omClient.GetGroupHostnames(groupID, plan)
+	if err != nil {
+		return serviceadapter.Binding{}, err
 	}
+	// }
 
 	sslOption := ""
 	if ssl {
