@@ -13,7 +13,7 @@ wait_for_service() {
     mongo \
       $1 admin --eval 'quit(db.runCommand({ping: 1}).ok ? 0 : 1)' \
       --quiet &> /dev/null && break
-    elapsed=$[$elapsed+5]
+    elapsed=$[$elapsed+2]
     sleep 5
   done
 
