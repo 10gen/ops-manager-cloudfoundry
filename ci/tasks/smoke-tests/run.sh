@@ -16,7 +16,9 @@ cat > config.json << EOF
 {
   "service_name": "mongodb-odb",
   "plan_names": [
-    "standalone_small"
+    "standalone_small",
+    "replica_set_small",
+    "sharded_cluster_small"
   ],
   "retry": {
     "max_attempts": 10,
