@@ -64,5 +64,5 @@ RESULT=$(echo "$STAGED" | jq --arg product_name "$PRODUCT" 'map(select(.type == 
 DATA=$(echo '{"deploy_products": []}' | jq ".deploy_products += [$RESULT]")
 
 ${om} curl --path /api/v0/installations --request POST --data "$DATA"
-${om} apply-changes --skip-deploy-products="true"
+${om} apply-changes
 ${om} delete-unused-products
