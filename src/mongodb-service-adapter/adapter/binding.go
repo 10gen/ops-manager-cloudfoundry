@@ -79,14 +79,15 @@ func (b Binder) CreateBinding(bindingID string, deploymentTopology bosh.BoshVMs,
 	}
 	// }
 
+	replicaSetName := ""
+	if plan == PlanReplicaSet {
+		replicaSetName = "replicaSet=pcf_repl"
+	}
 	sslOption := ""
 	if ssl {
 		sslOption = "&ssl=true"
 	}
-	replicaSetName := ""
-	if plan == PlanReplicaSet {
-		replicaSetName = "&replicaSet=pcf_repl"
-	}
+
 	connectionOptions := []string{sslOption, replicaSetName}
 
 	session, err := GetWithCredentials(servers, adminPassword, ssl)
@@ -117,11 +118,10 @@ func (b Binder) CreateBinding(bindingID string, deploymentTopology bosh.BoshVMs,
 		return serviceadapter.Binding{}, err
 	}
 
-	url := fmt.Sprintf("mongodb://%s:%s@%s/%s?authSource=admin%s",
+	url := fmt.Sprintf("mongodb://%s:%s@%s/?%s",
 		username,
 		password,
 		strings.Join(servers, ","),
-		defaultDB,
 		strings.Join(connectionOptions, ""),
 	)
 
