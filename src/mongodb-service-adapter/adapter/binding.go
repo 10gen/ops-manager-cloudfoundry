@@ -84,10 +84,10 @@ func (b Binder) CreateBinding(bindingID string, deploymentTopology bosh.BoshVMs,
 	}
 	sslOption := ""
 	if ssl {
-		sslOption = "ssl=true"
+		sslOption = "&ssl=true"
 	}
 
-	connectionOptions := []string{sslOption, replicaSetName}
+	connectionOptions := []string{replicaSetName, sslOption}
 
 	session, err := GetWithCredentials(servers, adminPassword, ssl)
 	if err != nil {
@@ -122,7 +122,7 @@ func (b Binder) CreateBinding(bindingID string, deploymentTopology bosh.BoshVMs,
 		password,
 		strings.Join(servers, ","),
 		defaultDB,
-		strings.Join(connectionOptions, "&"),
+		strings.Join(connectionOptions, ""),
 	)
 
 	return serviceadapter.Binding{
