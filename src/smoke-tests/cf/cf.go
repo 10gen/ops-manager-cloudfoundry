@@ -525,7 +525,8 @@ func (cf *CF) getServiceKeyCredentials(serviceGuid string) []string {
 func (cf *CF) GetGroupID(serviceInstanceName string) string {
 	session := helpersCF.Cf("service", serviceInstanceName)
 	Eventually(session, cf.ShortTimeout).Should(gexec.Exit(0), `{"FailReason": "Failed to get service information"}`)
-	projectID := regexp.MustCompile("^dashboard:.*/(.*)$").FindString(string(session.Out.Contents()))
+	projectID := string(regexp.MustCompile("v\\d/(.*)").FindSubmatch(session.Out.Contents())[1])
+	Eventually(projectID).ShouldNot(BeEmpty())
 	return projectID
 }
 

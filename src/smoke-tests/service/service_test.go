@@ -6,8 +6,10 @@ import (
 	"io/ioutil"
 	"os"
 	"time"
+	"strconv"
 
 	"github.com/10gen/ops-manager-cloudfoundry/src/smoke-tests/service/reporter"
+	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/adapter"
 	"github.com/pborman/uuid"
 
 	smokeTestCF "smoke-tests/cf"
@@ -25,6 +27,13 @@ type CFTestContext struct {
 
 var _ = Describe("MongoDB Service", func() {
 	var (
+
+		config = GetConfig()
+		client = &adapter.OMClient{
+			Url:      config.URL,
+			Username: config.Username,
+			ApiKey:   config.APIKey,
+		}
 		testCF = smokeTestCF.CF{
 			ShortTimeout: time.Minute * 3,
 			LongTimeout:  time.Minute * 15,
@@ -266,17 +275,23 @@ var _ = Describe("MongoDB Service", func() {
 					"Read from MongoDB",
 					app.ReadAssert("testkey", testValue),
 				),
+				reporter.NewStep(
+					"Check backup Agent",
+					func() {
+						groupID := testCF.GetGroupID(serviceInstanceName)
+						fmt.Printf("Got groupID/ProjectID: %s", groupID)
+						backupState, err := client.HasBackupAgent(groupID)
+						Expect(err).NotTo(HaveOccurred())
+						configBackupEnable, _ := strconv.ParseBool(sp.BackupEnable) //TODO remove it
+						Expect(backupState).Should(Equal(configBackupEnable))
+					},
+				),
 			}
 
 			smokeTestReporter.RegisterSpecSteps(specSteps)
 
 			serviceCreateStep.Perform()
 			serviceCreateStep.Description = fmt.Sprintf("Create a '%s' plan instance of MongoDB", planName)
-
-			//TODO remove in the end
-			fmt.Println("test-tests")
-			fmt.Printf("GroupID: %s", testCF.GetGroupID(serviceInstanceName))
-			fmt.Printf("ProjectID: %s", testCF.GetProjectID(serviceInstanceName))
 
 			if skip {
 				serviceCreateStep.Result = "SKIPPED"
@@ -301,4 +316,12 @@ var _ = Describe("MongoDB Service", func() {
 
 func randomName() string {
 	return uuid.NewRandom().String()
+}
+
+func GetConfig() *adapter.Config {
+	config, err := adapter.LoadConfig("../../mongodb-service-adapter/testdata/manifest.json")
+	if err != nil {
+		return nil
+	}
+	return config
 }

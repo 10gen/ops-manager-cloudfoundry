@@ -3,18 +3,11 @@ package adapter_test
 import (
 	"encoding/json"
 	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/adapter"
+	"smoke-tests/mongodb"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"reflect"
 )
-
-var GetConfig = func() *adapter.Config {
-	config, err := adapter.LoadConfig("../../mongodb-service-adapter/testdata/manifest.json")
-	if err != nil {
-		return nil
-	}
-	return config
-}
 
 var _ = Describe("Client", func() {
 
@@ -31,7 +24,7 @@ var _ = Describe("Client", func() {
 	BeforeEach(func() {
 
 		latestVersion = "4.0.7"
-		config = GetConfig()
+		config = mongodb.GetConfig()
 
 		c = &adapter.OMClient{
 			Url:      config.URL,
@@ -306,10 +299,10 @@ var _ = Describe("Client", func() {
 
 			ctx := &adapter.DocContext{
 				ID:                      "id1",
-				Key:                     GetConfig().AuthKey,
+				Key:                     mongodb.GetConfig().AuthKey,
 				AdminPassword:           "admin",
 				AutomationAgentPassword: "admin",
-				Nodes:                   []string{GetConfig().NodeAddresses},
+				Nodes:                   []string{mongodb.GetConfig().NodeAddresses},
 				Version:                 latestVersion,
 				RequireSSL:              false,
 				KeyfileWindows:          kfw,
@@ -331,10 +324,10 @@ var _ = Describe("Client", func() {
 		It("returns no error ", func() {
 			ctx := &adapter.DocContext{
 				ID:                      "id1",
-				Key:                     GetConfig().AuthKey,
+				Key:                     mongodb.GetConfig().AuthKey,
 				AdminPassword:           "admin",
 				AutomationAgentPassword: "admin",
-				Nodes:                   []string{GetConfig().NodeAddresses},
+				Nodes:                   []string{mongodb.GetConfig().NodeAddresses},
 				Version:                 latestVersion,
 				RequireSSL:              false,
 			}
@@ -355,10 +348,10 @@ var _ = Describe("Client", func() {
 
 			ctx := &adapter.DocContext{
 				ID:                      "id1",
-				Key:                     GetConfig().AuthKey,
+				Key:                     mongodb.GetConfig().AuthKey,
 				AdminPassword:           "admin",
 				AutomationAgentPassword: "admin",
-				Nodes:                   []string{GetConfig().NodeAddresses},
+				Nodes:                   []string{mongodb.GetConfig().NodeAddresses},
 				Version:                 "4.0.7",
 				RequireSSL:              false,
 			}
@@ -367,7 +360,7 @@ var _ = Describe("Client", func() {
 
 			Expect(err).ToNot(HaveOccurred())
 
-			err = c.ConfigureBackupAgent(backupAgentDoc, GetConfig().GroupID)
+			err = c.ConfigureBackupAgent(backupAgentDoc, mongodb.GetConfig().GroupID)
 
 			Expect(err).ToNot(HaveOccurred())
 		})
