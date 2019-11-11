@@ -51,7 +51,7 @@ func (b Binder) CreateBinding(bindingID string, deploymentTopology bosh.BoshVMs,
 	ssl := properties["require_ssl"].(bool)
 	groupID := properties["group_id"].(string)
 
-	b.logf("properties: %v", properties)
+	//b.logf("properties: %v", properties)
 
 	servers := make([]string, len(deploymentTopology["mongod_node"]))
 	for i, node := range deploymentTopology["mongod_node"] {
@@ -71,21 +71,20 @@ func (b Binder) CreateBinding(bindingID string, deploymentTopology bosh.BoshVMs,
 		servers = cluster.Routers
 	}
 
-	// if ssl {
-	omClient := OMClient{Url: URL, Username: adminUsername, ApiKey: adminAPIKey}
-	servers, err = omClient.GetGroupHostnames(groupID, plan)
-	if err != nil {
-		return serviceadapter.Binding{}, err
-	}
-	// }
-
 	replicaSetName := ""
 	if plan == PlanReplicaSet {
+		// if ssl {
+		omClient := OMClient{Url: URL, Username: adminUsername, ApiKey: adminAPIKey}
+		servers, err = omClient.GetGroupHostnames(groupID, plan)
+		if err != nil {
+			return serviceadapter.Binding{}, err
+		}
+		// }
 		replicaSetName = "replicaSet=pcf_repl"
 	}
 	sslOption := ""
 	if ssl {
-		sslOption = "&ssl=true"
+		sslOption = "ssl=true"
 	}
 
 	connectionOptions := []string{sslOption, replicaSetName}
@@ -118,11 +117,12 @@ func (b Binder) CreateBinding(bindingID string, deploymentTopology bosh.BoshVMs,
 		return serviceadapter.Binding{}, err
 	}
 
-	url := fmt.Sprintf("mongodb://%s:%s@%s/?%s",
+	url := fmt.Sprintf("mongodb://%s:%s@%s/%s?%s",
 		username,
 		password,
 		strings.Join(servers, ","),
-		strings.Join(connectionOptions, ""),
+		defaultDB,
+		strings.Join(connectionOptions, "&"),
 	)
 
 	return serviceadapter.Binding{
