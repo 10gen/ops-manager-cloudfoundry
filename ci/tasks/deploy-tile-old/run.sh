@@ -55,7 +55,12 @@ OM_API_USER: "$OM_API_USER"
 
 EOF
 # ${om} configure-product --product-name "$PRODUCT" --product-network "$network_config" --product-properties "$properties_config"
-${om} configure-product  --config "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/$CONFIG" -l "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/vars.yml"
+config_path=$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/config.pie
+if [ -f $file ] ; then
+	rm $file
+fi
+echo "$CONFIG" >> config.pie
+${om} configure-product  --config "$config_path" -l "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/vars.yml"
 
 STAGED=$(${om} curl --path /api/v0/staged/products)
 RESULT=$(echo "$STAGED" | jq --arg product_name "$PRODUCT" 'map(select(.type == $product_name)) | .[].guid')
