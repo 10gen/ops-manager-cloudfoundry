@@ -33,6 +33,19 @@ cat > config.json << EOF
 }
 EOF
 
+#TODO change deploy-tile-old >> deploy-tile. after removing task deploy-tile-old
+cat > mongo-ops.json << EOF
+{
+    "url": "$(yq r ../deploy-tile-old/config.pie [product-properties.properties].url.value)",
+    "username": "$(yq r ../deploy-tile-old/config.pie [product-properties.properties].username.value)",
+    "api_key": "$(yq r ../deploy-tile-old/config.pie [product-properties.properties].api_key.value.secret)",
+    "group": "5d68ef6a6a94055d183032e5",
+    "auth_key": "5d68fcd06a94055d18308834f769efdc2edb26f530db6269411aceb8",
+    "nodes": "localhost",
+    "org": "5d68ef6a6a94055d183032e5"
+}
+EOF
+
 export CONFIG_PATH="$base"/config.json
 
 PACKAGE_NAME=github.com/10gen/ops-manager-cloudfoundry

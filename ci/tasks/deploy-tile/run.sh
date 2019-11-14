@@ -59,8 +59,8 @@ EOF
 
 # ${om} configure-product --product-name "$PRODUCT" --product-network "$network_config" --product-properties "$properties_config"
 config_path=$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config.pie
-if [ -f $file ] ; then
-	rm $file
+if [ -f $config_path ] ; then
+	rm $config_path
 fi
 echo "$CONFIG" >> config.pie
 ${om} configure-product  --config "$config_path" -l "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/vars.yml"

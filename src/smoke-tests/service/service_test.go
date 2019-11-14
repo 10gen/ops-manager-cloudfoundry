@@ -319,7 +319,7 @@ func randomName() string {
 }
 
 func GetConfig() *adapter.Config {
-	config, err := adapter.LoadConfig("../../mongodb-service-adapter/testdata/manifest.json")
+	config, err := adapter.LoadConfig("../mongo-ops.json")
 	if err != nil {
 		return nil
 	}
