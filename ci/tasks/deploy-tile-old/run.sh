@@ -56,7 +56,7 @@ OM_API_USER: "$OM_API_USER"
 EOF
 # ${om} configure-product --product-name "$PRODUCT" --product-network "$network_config" --product-properties "$properties_config"
 config_path=$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/config.pie
-if [ -f $file ] ; then
+if [[ -f $file ]] ; then
 	rm $file
 fi
 echo "$CONFIG" >> config.pie

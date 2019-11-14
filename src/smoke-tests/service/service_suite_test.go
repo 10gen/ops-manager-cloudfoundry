@@ -25,9 +25,9 @@ type ServiceParameters struct {
 }
 
 func (sp ServiceParameters) PrintParameters() string {
-	return fmt.Sprintf("%s ( Backup: %v, SSL: %v)", 
-		strings.ToUpper(sp.PlanName), sp.BackupEnable, sp.SSLEnable)
+	return fmt.Sprintf("%s ( Backup: %s, SSL: %s)", strings.ToUpper(sp.PlanName), sp.BackupEnable, sp.SSLEnable)
 }
+
 //generate different service config for test
 func generateTestServiceParameters(testConfig mongodbTestConfig) []ServiceParameters {
 	var testServiceParameters []ServiceParameters
@@ -84,7 +84,7 @@ type mongodbTestConfig struct {
 	PlanNames   []string    `json:"plan_names"`
 	Retry       retryConfig `json:"retry"`
 	Backup      []string    `json:"backup_enabled"`
-	SSL         []string    `json:"ssl_enabled"`
+	SSL         []string	`json:"ssl_enabled"`
 }
 
 //test if all parameters in pipeline was provided
