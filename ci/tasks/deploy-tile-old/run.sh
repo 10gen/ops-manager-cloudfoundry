@@ -59,7 +59,7 @@ config_path=$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/config.pie
 if [[ -f $config_path ]] ; then
 	rm $config_path
 fi
-echo "$CONFIG" >> config.pie
+echo "$CONFIG" >> $config_path
 ${om} configure-product  --config "$config_path" -l "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/vars.yml"
 
 STAGED=$(${om} curl --path /api/v0/staged/products)
