@@ -1,7 +1,6 @@
 #!/usr/local/bin/dumb-init /bin/bash
 set -eo pipefail
 [[ ${DEBUG:-} = true ]] && set -x
-. ../helpers/cf-helper.sh
 base=$PWD
 
 cf login -a $CF_APP_URL -u $CF_APP_USER -p $CF_APP_PASSWORD --skip-ssl-validation -o system -s system
