@@ -20,7 +20,7 @@ delete_service_if_exists() {
   if [[ $service == "exist" ]]; then
     cf delete-service test-mongodb-service -f
   fi
-  wait_service_status_change("delete in progress")
+  wait_service_status_change $instance_name "delete in progress"
   service_status=$(cf services | awk  '/'$instance_name'.*failed/{print "failed"}')
   if [[ $service_status == "failed" ]]; then
     cf purge-service-instance test-mongodb-service -f
