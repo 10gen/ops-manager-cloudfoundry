@@ -6,3 +6,4 @@ cf login -a $CF_APP_URL -u $CF_APP_USER -p $CF_APP_PASSWORD --skip-ssl-validatio
 cf unbind-service app-ruby-sample test-mongodb-service
 cf delete-service test-mongodb-service -f
 cf delete app-ruby-sample -f
+cf logout

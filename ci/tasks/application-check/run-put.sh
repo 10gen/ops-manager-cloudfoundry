@@ -11,3 +11,4 @@ if [[ $status != "success" ]]; then
     echo "Error: check application"
     exit 1
 fi
+cf logout
