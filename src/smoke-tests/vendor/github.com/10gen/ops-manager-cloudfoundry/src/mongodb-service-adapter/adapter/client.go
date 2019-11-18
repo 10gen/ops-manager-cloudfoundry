@@ -303,6 +303,20 @@ func (oc *OMClient) ConfigureBackupAgent(configurationDoc string, groupID string
 
 	return nil
 }
+
+func (oc *OMClient) HasBackupAgent(groupID string) (bool, error) {
+	u := fmt.Sprintf("/api/public/v1.0/groups/%s/agents/BACKUP", groupID)
+	b, err := oc.doRequest("GET", u, nil)
+	if err != nil {
+		return false, err
+	}
+	state := gjson.GetBytes(b, "results.#.stateName").String()
+	if strings.Contains(state, "ACTIVE") {
+		return true, err
+	}
+	return false, err
+}
+
 func (oc *OMClient) GetAvailableVersions(groupID string) (Automation, error) {
 	var versions Automation
 

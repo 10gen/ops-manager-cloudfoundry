@@ -2,6 +2,8 @@ code.cloudfoundry.org/lager v0.0.0-20190115020142-54c4f2530dde h1:2P/1L5rJ11ZsoL
 code.cloudfoundry.org/lager v0.0.0-20190115020142-54c4f2530dde/go.mod h1:O2sS7gKP3HM2iemG+EnwvyNQK7pTSC6Foi4QiMp9sSk=
 github.com/10gen/ops-manager-cloudfoundry v0.0.0-20190802141135-984acdf00a53 h1:BrQODrr7VOKkjxTthqvVj25h3a0rn08Ju4sYGYrUgrY=
 github.com/10gen/ops-manager-cloudfoundry v0.0.0-20190802141135-984acdf00a53/go.mod h1:UEg4LgoorNshm+N+8o6ldV3N/IVPzUg4BjGbCpGNnp8=
+github.com/10gen/ops-manager-cloudfoundry v0.0.0-20191016104356-4d6e003bc20c h1:cvst4vv1M2y6INnla5kZKzSt1Ug7RnnCzucIpvOVDEk=
+github.com/10gen/ops-manager-cloudfoundry/src/smoke-tests v0.0.0-20191016104356-4d6e003bc20c h1:GY6XGcvtdarfNISXDgv4WlrsXjDAmYI9alCQzfhNjTE=
 github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 h1:DDGfHa7BWjL4YnC6+E63dPcxHo2sUxDIu8g3QgEJdRY=
 github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869/go.mod h1:Ekp36dRnpXw/yCqJaO+ZrUyxD+3VXMFFr56k5XYrpB4=
 github.com/bmizerany/pat v0.0.0-20170815010413-6226ea591a40 h1:y4B3+GPxKlrigF1ha5FFErxK+sr6sWxQovRMzwMhejo=
