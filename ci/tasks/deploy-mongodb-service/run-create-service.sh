@@ -1,40 +1,22 @@
 #!/usr/local/bin/dumb-init /bin/bash
 set -eo pipefail
 [[ ${DEBUG:-} = true ]] && set -x
+. ../helpers/cf-helper.sh
 base=$PWD
+instance_name="test-mongodb-service"
 
 cf login -a $CF_APP_URL -u $CF_APP_USER -p $CF_APP_PASSWORD --skip-ssl-validation -o system -s system
-service=$(cf services | awk '$1 ~ /test-mongodb-service/{print "exist"}')
-if [[ $service == "exist" ]]; then
-  cf delete-service test-mongodb-service -f
-fi
-time=0
-service_status=$(cf services | awk '$1 ~ /test-mongodb-service/{print $4" "$5" "$6}')
-until [[ $service_status != "delete in progress" ]] || [[ $time -gt $INSTALL_TIMEOUT ]]; do
-  echo "...${service_status}"
-  sleep 3m
-  let "time=$time+3"
-  service_status=$(cf services | awk '$1 ~ /test-mongodb-service/{print $4" "$5" "$6}') 
-done
-if [[ $service_status == "deleted failed" ]]; then
-  cf purge-service-instance test-mongodb-service -f
-fi
-
-cf create-service mongodb-odb "$SET_PLAN" test-mongodb-service -c "{\"enable_backup\":\"$BACKUP_ENABLED\"}"
-service_status=$(cf services | awk '$1 ~ /test-mongodb-service/{print $4" "$5" "$6}')
-time=0
-until [[ $service_status != "create in progress" ]] || [[ $time -gt $INSTALL_TIMEOUT ]]; do
-  echo "...${service_status}"
-  sleep 3m
-  let "time=$time+3"
-  service_status=$(cf services | awk '$1 ~ /test-mongodb-service/{print $4" "$5" "$6}') 
-done
-if [[ $service_status == "create succeeded mongodb-odb" ]]; then
+delete_service_if_exists($instance_name)
+cf create-service mongodb-odb "$SET_PLAN" $instance_name -c "{\"enable_backup\":\"$BACKUP_ENABLED\"}"
+wait_service_status_change("create in progress")
+service_status=$(cf services | awk  '/$instance_name.*succeeded/{print "succeeded"}')
+if [[ $service_status == "succeeded" ]]; then
   cf push app-ruby-sample -p $base/ops-manager-cloudfoundry/src/smoke-tests/assets/cf-mongo-example-app
-  cf bind-service app-ruby-sample test-mongodb-service --binding-name mongodb-service
+  cf bind-service app-ruby-sample $instance_name --binding-name mongodb-service
   cf restage app-ruby-sample
+  cf logout
 else
-  echo "FAILED! wrong status: ${service_status}"
+  echo "FAILED! wrong status: ${cf service test-mongodb-service}"
+  cf logout
   exit 1
 fi
-cf logout
