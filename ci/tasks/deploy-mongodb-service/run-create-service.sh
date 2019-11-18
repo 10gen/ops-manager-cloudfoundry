@@ -5,7 +5,7 @@ base=$PWD
 
 cf login -a $CF_APP_URL -u $CF_APP_USER -p $CF_APP_PASSWORD --skip-ssl-validation -o system -s system
 service=$(cf services | awk '$1 ~ /test-mongodb-service/{print "exist"}')
-if [[ $service == "exist"]]; then
+if [[ $service == "exist" ]]; then
   cf purge-service-instance test-mongodb-service
 fi
 cf create-service mongodb-odb "$SET_PLAN" test-mongodb-service -c "{\"enable_backup\":\"$BACKUP_ENABLED\"}"
