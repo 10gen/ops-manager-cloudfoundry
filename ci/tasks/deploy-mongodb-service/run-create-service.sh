@@ -16,7 +16,7 @@ if [[ $service_status == "succeeded" ]]; then
   cf restage app-ruby-sample
   cf logout
 else
-  echo "FAILED! wrong status: ${cf service test-mongodb-service}"
+  echo "FAILED! wrong status: $(cf service test-mongodb-service)"
   cf logout
   exit 1
 fi
