@@ -3,6 +3,9 @@ set -euo pipefail
 [[ ${DEBUG:-} = true ]] && set -x
 
 base=$PWD
+. "$base/ops-manager-cloudfoundry/ci/tasks/helpers/tmp-helper.sh"
+config_path=$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config.pie
+make_env_config $config_path
 
 cat > metadata << EOF
 ---
