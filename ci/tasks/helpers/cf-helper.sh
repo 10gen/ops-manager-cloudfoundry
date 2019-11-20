@@ -15,10 +15,16 @@ wait_service_status_change() {
   done
 }
 
-delete_service_if_exists() {
+delete_service_app_if_exists() {
   local instance_name=$1
+  local app_name=$2
   local service=$(cf services | awk '/'"$instance_name"'[ $]/{print "exist"}')
   if [[ $service == "exist" ]]; then
+    local app=$(cf apps | awk '/'"$app"'[ $]/{print "exist"}')
+    if [[ $app == "exist "]]; then
+      cf unbind-service $app_name $instance_name
+      cf delete $app_name -f
+    fi
     cf delete-service $instance_name -f
     wait_service_status_change $instance_name "delete in progress"
     service_status=$(cf services | awk  '/'"$instance_name"'[ $].*failed/{print "failed"}')
