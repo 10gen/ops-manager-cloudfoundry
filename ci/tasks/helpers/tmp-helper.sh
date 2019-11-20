@@ -6,7 +6,7 @@ make_env_config() {
     if [ -f $file ] ; then
         rm $file
     fi
-    echo "$CONFIG" >> config.pie
+    echo "$CONFIG" >> $file
 }
 
 

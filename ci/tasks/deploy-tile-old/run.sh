@@ -6,7 +6,7 @@ base=$PWD
 PCF_URL="$PCF_URL"
 PCF_USERNAME="$PCF_USERNAME"
 PCF_PASSWORD="$PCF_PASSWORD"
-. "$base/ops-manager-cloudfoundry/ci/tasks/helpers/helper.sh"
+. "$base/ops-manager-cloudfoundry/ci/tasks/helpers/tmp-helper.sh"
 
 VERSION=$(cat "$base"/versionold/number)
 if [ -z "${VERSION:-}" ]; then
