@@ -20,6 +20,7 @@ params:
   PRODUCT_NETWORK_AZS:
   OM_API_KEY:
   OM_API_USER:
+  CONFIG:
 
 run:
   path: ops-manager-cloudfoundry/ci/tasks/deploy-tile/run.sh
