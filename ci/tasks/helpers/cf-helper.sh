@@ -23,7 +23,19 @@ delete_service_if_exists() {
     wait_service_status_change $instance_name "delete in progress"
     service_status=$(cf services | awk  '/'"$instance_name"'[ $].*failed/{print "failed"}')
     if [[ $service_status == "failed" ]]; then
-        cf purge-service-instance $instance_name -f
+      cf purge-service-instance $instance_name -f
     fi
+  fi
+}
+
+create_service() {
+  local instance_name=$1
+  cf create-service mongodb-odb "$SET_PLAN" $instance_name -c "{\"enable_backup\":\"$BACKUP_ENABLED\"}"
+  wait_service_status_change $instance_name "create in progress"
+  service_status=$(cf services | awk  '/'"$instance_name"'[ ].*succeeded/{print "succeeded"}')
+  if [[ $service_status != "succeeded" ]]; then
+    echo "FAILED! wrong status: $(cf service $instance_name)"
+    cf logout
+    exit 1
   fi
 }
