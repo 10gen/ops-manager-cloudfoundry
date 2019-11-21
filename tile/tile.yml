@@ -345,7 +345,7 @@ runtime_configs:
         release: bpm
       include:
         jobs:
-        - name: mongodb_service_adapter
+        - name: mongodb_config_agent
           release: mongodb
         - name: mongod_node
           release: mongodb
