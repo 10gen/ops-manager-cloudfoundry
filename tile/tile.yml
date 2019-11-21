@@ -347,6 +347,8 @@ runtime_configs:
         jobs:
         - name: mongodb_service_adapter
           release: mongodb
+        - name: mongod_node
+          release: mongodb
     - name: mongodb-dns-aliases
       include:
         jobs:
