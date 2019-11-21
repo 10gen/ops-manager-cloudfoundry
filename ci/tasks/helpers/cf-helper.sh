@@ -20,8 +20,8 @@ delete_service_app_if_exists() {
   local app_name=$2
   local service=$(cf services | awk '/'"$instance_name"'[ $]/{print "exist"}')
   if [[ $service == "exist" ]]; then
-    local app=$(cf apps | awk '/'"$app"'[ $]/{print "exist"}')
-    if [[ $app == "exist "]]; then
+    local app=$(cf apps | awk '/'"$app_name"'[ $]/{print "exist"}')
+    if [[ $app_name == "exist" ]]; then
       cf unbind-service $app_name $instance_name
       cf delete $app_name -f
     fi
