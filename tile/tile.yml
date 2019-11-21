@@ -343,6 +343,10 @@ runtime_configs:
       jobs:
       - name: bpm
         release: bpm
+      include:
+        jobs:
+        - name: mongodb_service_adapter
+          release: mongodb
     - name: mongodb-dns-aliases
       include:
         jobs:
