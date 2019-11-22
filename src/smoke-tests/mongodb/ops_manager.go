@@ -9,8 +9,9 @@ import (
 )
 
 type OpsManager struct {
-	BaseUrl string
+	BaseURL string
 }
+
 type Service struct {
 	Name          string
 	Service       string
@@ -33,12 +34,3 @@ func GetConfig() *adapter.Config {
 	}
 	return config
 }
-
-var (
-	config = GetConfig()
-	c      = &adapter.OMClient{
-		Url:      config.URL,
-		Username: config.Username,
-		ApiKey:   config.APIKey,
-	}
-)

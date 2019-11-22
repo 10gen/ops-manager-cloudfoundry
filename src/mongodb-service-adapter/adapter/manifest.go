@@ -49,7 +49,7 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 	url := mongoOps["url"].(string)
 	url = strings.TrimRight(url, "/")
 
-	oc := &OMClient{Url: url, Username: username, ApiKey: apiKey}
+	oc := &OMClient{URL: url, Username: username, APIKey: apiKey}
 
 	var previousMongoProperties map[interface{}]interface{}
 
@@ -435,13 +435,12 @@ func groupForMongoServer(mongoID string, oc *OMClient,
 	planProperties map[string]interface{},
 	previousMongoProperties map[interface{}]interface{},
 	arbitraryParams map[string]interface{}) (opsmanager.ProjectResponse, error) {
-
 	req := GroupCreateRequest{}
 	if name, found := arbitraryParams["projectName"]; found {
 		req.Name = name.(string)
 	}
-	if orgId, found := arbitraryParams["orgId"]; found {
-		req.OrgId = orgId.(string)
+	if orgID, found := arbitraryParams["orgId"]; found {
+		req.OrgID = orgID.(string)
 	}
 	tags := planProperties["mongo_ops"].(map[string]interface{})["tags"]
 	if tags != nil {
@@ -459,9 +458,9 @@ func groupForMongoServer(mongoID string, oc *OMClient,
 		// AgentAPIKey is empty for PATCH and GET requests in OM 3.6, taking the value from previous manifest instead
 		group.AgentAPIKey = previousMongoProperties["agent_api_key"].(string)
 		return group, nil
-	} else {
-		return oc.CreateGroup(mongoID, req)
 	}
+
+	return oc.CreateGroup(mongoID, req)
 }
 
 func findReleaseForJob(releases serviceadapter.ServiceReleases, requiredJob string) (serviceadapter.ServiceRelease, error) {

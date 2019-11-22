@@ -31,7 +31,6 @@ var (
 )
 
 func (b Binder) CreateBinding(params serviceadapter.CreateBindingParams) (serviceadapter.Binding, error) {
-
 	// create an admin level user
 	username := mkUsername(params.BindingID)
 	password, err := GenerateString(32)
@@ -68,7 +67,7 @@ func (b Binder) CreateBinding(params serviceadapter.CreateBindingParams) (servic
 	}
 
 	if ssl {
-		omClient := OMClient{Url: URL, Username: adminUsername, ApiKey: adminAPIKey}
+		omClient := OMClient{URL: URL, Username: adminUsername, APIKey: adminAPIKey}
 		hosts, err := omClient.Client().GetHosts(groupID)
 		if err != nil {
 			return serviceadapter.Binding{}, err
@@ -136,7 +135,6 @@ func (b Binder) CreateBinding(params serviceadapter.CreateBindingParams) (servic
 }
 
 func (Binder) DeleteBinding(params serviceadapter.DeleteBindingParams) error {
-
 	// create an admin level user
 	username := mkUsername(params.BindingID)
 	properties := params.Manifest.Properties["mongo_ops"].(map[interface{}]interface{})
@@ -154,7 +152,7 @@ func (Binder) DeleteBinding(params serviceadapter.DeleteBindingParams) error {
 
 	if ssl {
 		var err error
-		omClient := OMClient{Url: URL, Username: adminUsername, ApiKey: adminAPIKey}
+		omClient := OMClient{URL: URL, Username: adminUsername, APIKey: adminAPIKey}
 		hosts, err := omClient.Client().GetHosts(groupID)
 		if err != nil {
 			return err

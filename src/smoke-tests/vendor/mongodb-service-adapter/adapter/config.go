@@ -46,7 +46,6 @@ func LoadConfig(configFile string) (config *Config, err error) {
 }
 
 func (c Config) Validate() error {
-
 	if c.URL == "" {
 		return errors.New("Must provide a non-empty URL")
 	}

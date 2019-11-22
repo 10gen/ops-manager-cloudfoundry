@@ -8,6 +8,8 @@ import (
 
 type DashboardURLGenerator struct{}
 
+var _ serviceadapter.DashboardUrlGenerator = new(DashboardURLGenerator)
+
 func (d *DashboardURLGenerator) DashboardUrl(params serviceadapter.DashboardUrlParams) (serviceadapter.DashboardUrl, error) {
 	properties := params.Manifest.Properties["mongo_ops"].(map[interface{}]interface{})
 	url := properties["url"].(string)

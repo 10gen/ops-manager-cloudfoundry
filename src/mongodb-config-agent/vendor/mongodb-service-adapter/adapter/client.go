@@ -14,9 +14,9 @@ import (
 )
 
 type OMClient struct {
-	Url      string
+	URL      string
 	Username string
-	ApiKey   string
+	APIKey   string
 }
 
 type Automation struct {
@@ -29,7 +29,7 @@ type MongoDbVersionsType struct {
 
 type GroupCreateRequest struct {
 	Name  string   `json:"name"`
-	OrgId string   `json:"orgId,omitempty"`
+	OrgID string   `json:"orgId,omitempty"`
 	Tags  []string `json:"tags"`
 }
 
@@ -44,8 +44,8 @@ type GroupHosts struct {
 var versionsManifest = []string{"/var/vcap/packages/versions/versions.json", "../../mongodb_versions/versions.json"}
 
 func (oc *OMClient) Client() opsmanager.Client {
-	r := httpclient.NewURLResolverWithPrefix(oc.Url, "api/public/v1.0")
-	return opsmanager.NewClientWithDigestAuth(r, oc.Username, oc.ApiKey)
+	r := httpclient.NewURLResolverWithPrefix(oc.URL, "api/public/v1.0")
+	return opsmanager.NewClientWithDigestAuth(r, oc.Username, oc.APIKey)
 }
 
 func (oc *OMClient) CreateGroup(id string, request GroupCreateRequest) (opsmanager.ProjectResponse, error) {
@@ -56,9 +56,9 @@ func (oc *OMClient) CreateGroup(id string, request GroupCreateRequest) (opsmanag
 	}
 
 	safeclient := opsmanager.NewClient(
-		opsmanager.WithResolver(httpclient.NewURLResolverWithPrefix(oc.Url, "api/public/v1.0")),
+		opsmanager.WithResolver(httpclient.NewURLResolverWithPrefix(oc.URL, "api/public/v1.0")),
 		opsmanager.WithHTTPClient(httpclient.NewClient(
-			httpclient.WithDigestAuthentication(oc.Username, oc.ApiKey),
+			httpclient.WithDigestAuthentication(oc.Username, oc.APIKey),
 			httpclient.WithAcceptedStatusCodes([]int{http.StatusOK, http.StatusCreated, http.StatusNotFound}),
 		)),
 	)
@@ -80,7 +80,7 @@ func (oc *OMClient) CreateGroup(id string, request GroupCreateRequest) (opsmanag
 		return group, nil
 	}
 
-	resp, err := safeclient.CreateOneProject(request.Name, request.OrgId)
+	resp, err := safeclient.CreateOneProject(request.Name, request.OrgID)
 	if err != nil {
 		log.Printf("CreateGroup CreateOneProject, request: %+v, error: %v", request, err)
 		return group, err

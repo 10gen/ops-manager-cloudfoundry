@@ -17,6 +17,7 @@ import (
 // if something goes wrong.
 func GenerateString(l int) (string, error) {
 	b := make([]byte, l)
+
 	for i := l; i != 0; {
 		n, err := rand.Read(b)
 		if err != nil {
@@ -48,6 +49,7 @@ func NodesToCluster(nodes []string, routers, configServers, replicas int) (*conf
 
 	nodes = nodes[routers+configServers:]
 	c.Shards = make([][]string, 0, len(nodes)/replicas)
+
 	for i := 0; i < len(nodes)/replicas; i++ {
 		c.Shards = append(c.Shards, make([]string, 0, replicas))
 		for j := 0; j < replicas; j++ {
@@ -59,7 +61,7 @@ func NodesToCluster(nodes []string, routers, configServers, replicas int) (*conf
 
 func addrn(addr string) int {
 	if !strings.Contains(addr, ":") {
-		addr = addr + ":0"
+		addr += ":0"
 	}
 
 	n := 0
