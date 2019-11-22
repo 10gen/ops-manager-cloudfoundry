@@ -71,6 +71,6 @@ def load_mongo
     :database => credentials["database"],
     :user => credentials["username"],
     :password => credentials["password"],
-    # :auth_source => "admin"
+    :auth_source => "admin"
   )
 end
