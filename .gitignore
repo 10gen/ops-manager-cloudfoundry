@@ -23,6 +23,9 @@ ci/secret.yml
 ci/creds*.yml
 src/smoke-tests/integration_config.json
 src/mongodb
+src/smoke-tests/metadata
+src/smoke-tests/config.json
+src/smoke-tests/q/
 
 /bin
 /pkg

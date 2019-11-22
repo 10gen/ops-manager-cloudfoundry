@@ -283,10 +283,10 @@ func (cf *CF) Delete(appName string) func() {
 	}
 }
 
-// CreateService is equivalent to `cf create-service {serviceName} {planName} {instanceName}`
-func (cf *CF) CreateService(serviceName, planName, instanceName string, skip *bool) func() {
+// CreateService is equivalent to `cf create-service {serviceName} {planName} {instanceName} {сonfig}`
+func (cf *CF) CreateService(serviceName, planName, instanceName string, config string, skip *bool) func() {
 	createServiceFn := func() *gexec.Session {
-		return helpersCF.Cf("create-service", serviceName, planName, instanceName)
+		return helpersCF.Cf("create-service", serviceName, planName, instanceName, config)
 	}
 
 	succeeds := func(session *gexec.Session) bool {
@@ -486,8 +486,8 @@ func (cf CF) DeleteServiceKey(serviceInstanceName, serviceKeyName string) func()
 	}
 }
 
-func (cf *CF) getServiceInstanceGuid(serviceName string) string {
-	session := helpersCF.Cf("service", "--guid", serviceName)
+func (cf *CF) getServiceInstanceGuid(serviceInstanceName string) string {
+	session := helpersCF.Cf("service", "--guid", serviceInstanceName)
 	Eventually(session, cf.ShortTimeout).Should(gexec.Exit(0), `{"FailReason": "Failed to retrieve GUID for service instance"}`)
 
 	return strings.Trim(string(session.Out.Contents()), " \n")
@@ -519,4 +519,18 @@ func (cf *CF) getServiceKeyCredentials(serviceGuid string) []string {
 	Expect(servers).NotTo(BeEmpty(), `{"FailReason": "Invalid service key, missing servers"}`)
 	Expect(uri).NotTo(BeEmpty(), `{"FailReason": "Invalid service key, missing uri"}`)
 	return servers
+}
+
+//GetGroupID with use of `cf` tool get projectID/groupIP
+func (cf *CF) GetGroupID(serviceInstanceName string) string {
+	session := helpersCF.Cf("service", serviceInstanceName)
+	Eventually(session, cf.ShortTimeout).Should(gexec.Exit(0), `{"FailReason": "Failed to get service information"}`)
+	projectID := string(regexp.MustCompile("v\\d/(.*)").FindSubmatch(session.Out.Contents())[1])
+	Eventually(projectID).ShouldNot(BeEmpty())
+	return projectID
+}
+
+//GetProjectID is aliace to GetGroupID - this names means the same
+func (cf *CF) GetProjectID(serviceInstanceName string) string {
+	return cf.GetGroupID(serviceInstanceName)
 }

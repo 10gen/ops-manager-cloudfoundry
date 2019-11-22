@@ -2,10 +2,11 @@ package digest_test
 
 import (
 	"fmt"
-	"mongodb-service-adapter/adapter"
-	"mongodb-service-adapter/digest"
 	"net/http"
 	"testing"
+
+	"mongodb-service-adapter/adapter"
+	"mongodb-service-adapter/digest"
 )
 
 func TestApplyDigestAuth(t *testing.T) {
