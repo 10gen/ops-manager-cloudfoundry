@@ -158,10 +158,6 @@ jobs:
       PCF_URL: ((pcf-url))
       PCF_USERNAME: ((pcf-username))
       PCF_PASSWORD: ((pcf-password))
-      OM_API_USER: ((om-api-user))
-      OM_API_KEY: ((om-api-key))
-      PRODUCT_PROPERTIES: ((product_properties))
-      PRODUCT_NETWORK_AZS: ((product_network_azs))
       CONFIG: ((env-config))
     on_failure:
       put: "deploy-status"
@@ -189,7 +185,8 @@ jobs:
   build_logs_to_retain: 50
   plan:
   - get: ops-manager-cloudfoundry
-
+    trigger: true
+    passed: [ deploy-mongodb-service ]
   - task: use application
     file: ops-manager-cloudfoundry/ci/tasks/application-check/task-put.yml
     params:
@@ -238,10 +235,6 @@ jobs:
       PCF_URL: ((pcf-url))
       PCF_USERNAME: ((pcf-username))
       PCF_PASSWORD: ((pcf-password))
-      OM_API_KEY: ((om-api-key))
-      OM_API_USER: ((om-api-user))
-      PRODUCT_PROPERTIES: ((product_properties))
-      PRODUCT_NETWORK_AZS: ((product_network_azs))
       CONFIG: ((env-config))
     on_failure:
       put: "update-tile-status"
@@ -269,7 +262,8 @@ jobs:
   build_logs_to_retain: 50
   plan:
   - get: ops-manager-cloudfoundry
-
+    trigger: true
+    passed: [ update-tile-version ]
   - task: check application
     file: ops-manager-cloudfoundry/ci/tasks/application-check/task-get.yml
     params:
@@ -302,7 +296,8 @@ jobs:
   build_logs_to_retain: 50
   plan:
   - get: ops-manager-cloudfoundry
-
+    trigger: true
+    passed: [ check-application ]
   - task: cleaning - delete service and application
     file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task-delete-service.yml
     params:
@@ -373,13 +368,17 @@ jobs:
   plan:
   - get: ops-manager-cloudfoundry
     trigger: true
-    passed: [ update-tile-version ]
+    passed: [ check-application ]
   - task: smoke-tests
     file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
     params:
       PCF_URL: ((pcf-url))
       PCF_USERNAME: ((pcf-username))
       PCF_PASSWORD: ((pcf-password))
+      PLAN_NAMES: '["standalone_small", "replica_set_small" , "sharded_cluster_small"]'
+      BACKUP_ENABLED: '["false", "true"]'
+      SSL_ENABLED: '["false"]'
+      CONFIG: ((env-config))
     on_failure:
       put: "test-status"
       params:
