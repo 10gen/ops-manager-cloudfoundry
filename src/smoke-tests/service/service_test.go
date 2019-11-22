@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strconv"
 	"time"
 
 	"mongodb-service-adapter/adapter"
@@ -26,12 +25,12 @@ type CFTestContext struct {
 
 var _ = Describe("MongoDB Service", func() {
 	var (
-		config = GetConfig()
-		client = &adapter.OMClient{
-			Url:      config.URL,
-			Username: config.Username,
-			ApiKey:   config.APIKey,
-		}
+		// config = GetConfig()
+		// client = &adapter.OMClient{
+		// 	URL:      config.URL,
+		// 	Username: config.Username,
+		// 	APIKey:   config.APIKey,
+		// }
 		testCF = smokeTestCF.CF{
 			ShortTimeout: time.Minute * 3,
 			LongTimeout:  time.Minute * 15,
@@ -274,17 +273,18 @@ var _ = Describe("MongoDB Service", func() {
 					"Read from MongoDB",
 					app.ReadAssert("testkey", testValue),
 				),
-				reporter.NewStep(
-					"Check backup Agent",
-					func() {
-						groupID := testCF.GetGroupID(serviceInstanceName)
-						fmt.Printf("Got groupID/ProjectID: %s", groupID)
-						backupState, err := client.HasBackupAgent(groupID)
-						Expect(err).NotTo(HaveOccurred())
-						configBackupEnable, _ := strconv.ParseBool(sp.BackupEnable) //TODO remove it
-						Expect(backupState).Should(Equal(configBackupEnable))
-					},
-				),
+				// TODO: implement in pcgc?
+				// reporter.NewStep(
+				// 	"Check backup Agent",
+				// 	func() {
+				// 		groupID := testCF.GetGroupID(serviceInstanceName)
+				// 		fmt.Printf("Got groupID/ProjectID: %s", groupID)
+				// 		backupState, err := client.HasBackupAgent(groupID)
+				// 		Expect(err).NotTo(HaveOccurred())
+				// 		configBackupEnable, _ := strconv.ParseBool(sp.BackupEnable) //TODO remove it
+				// 		Expect(backupState).Should(Equal(configBackupEnable))
+				// 	},
+				// ),
 			}
 
 			smokeTestReporter.RegisterSpecSteps(specSteps)
