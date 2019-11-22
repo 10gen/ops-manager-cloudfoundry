@@ -79,9 +79,6 @@ func (r *AutomationConfig) ToShardedCluster(ctx *DocContext) {
 			Args26: &opsmanager.Args26{
 				NET:       getdefaultNet(ctx.RequireSSL),
 				SystemLog: getDefaultSystemLog(),
-				Storage: &opsmanager.StorageArg{
-					DBPath: "/var/vcap/store/mongodb-data",
-				},
 			},
 			Name:                        node,
 			Hostname:                    node,
@@ -115,7 +112,7 @@ func (r *AutomationConfig) ToShardedCluster(ctx *DocContext) {
 			Version:                     ctx.Version,
 			FeatureCompatibilityVersion: ctx.CompatibilityVersion,
 			AuthSchemaVersion:           5,
-			ProcessType:                 "mongos",
+			ProcessType:                 "mongod",
 		})
 
 		r.ReplicaSets[0].Members = append(r.ReplicaSets[0].Members, opsmanager.Member{

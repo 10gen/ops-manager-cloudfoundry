@@ -228,8 +228,6 @@ jobs:
       PCF_URL: ((pcf-url))
       PCF_USERNAME: ((pcf-username))
       PCF_PASSWORD: ((pcf-password))
-      PRODUCT_PROPERTIES: ((product_properties))
-      PRODUCT_NETWORK_AZS: ((product_network_azs))
       CONFIG: ((env-config))
     on_failure:
       put: "deploy-status"
