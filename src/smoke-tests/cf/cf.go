@@ -10,10 +10,11 @@ import (
 	"strings"
 	"time"
 
-	"smoke-tests/retry"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gexec"
 	helpersCF "github.com/pivotal-cf-experimental/cf-test-helpers/cf"
+
+	"smoke-tests/retry"
 )
 
 type CF struct {
@@ -286,7 +287,7 @@ func (cf *CF) Delete(appName string) func() {
 // CreateService is equivalent to `cf create-service {serviceName} {planName} {instanceName} {сonfig}`
 func (cf *CF) CreateService(serviceName, planName, instanceName string, config string, skip *bool) func() {
 	createServiceFn := func() *gexec.Session {
-		return helpersCF.Cf("create-service", serviceName, planName, instanceName, config)
+		return helpersCF.Cf("create-service", serviceName, planName, instanceName, "-c", config)
 	}
 
 	succeeds := func(session *gexec.Session) bool {

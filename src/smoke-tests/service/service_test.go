@@ -233,13 +233,13 @@ var _ = Describe("MongoDB Service", func() {
 			app := mongodb.NewApp(uri, testCF.ShortTimeout, retryInterval)
 			testValue := randomName()
 			//TODO rename config + use "version" mongo 4.0.9-ent ,
-			backupConfig := fmt.Sprintf(`'{"enable_backup":"%s"}'`, sp.BackupEnable)
+			backupConfig := fmt.Sprintf(`{"enable_backup":"%s"}`, sp.BackupEnable)
 			fmt.Println("serviceName : ", sp.ServiceName, " planName: ", sp.PlanName, " serviceInstanceName: ", serviceInstanceName,
 				"configuration : -c ", backupConfig)
 
 			serviceCreateStep := reporter.NewStep(
 				fmt.Sprintf("Create a '%s' plan instance of MongoDB", sp.PlanName),
-				testCF.CreateService(sp.ServiceName, sp.PlanName, serviceInstanceName, "-c "+backupConfig, &skip),
+				testCF.CreateService(sp.ServiceName, sp.PlanName, serviceInstanceName, backupConfig, &skip),
 			)
 
 			smokeTestReporter.RegisterSpecSteps([]*reporter.Step{serviceCreateStep})
