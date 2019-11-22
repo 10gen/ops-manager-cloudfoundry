@@ -345,6 +345,8 @@ runtime_configs:
         release: bpm
       include:
         jobs:
+        - name: broker
+          release: on-demand-service-broker
         - name: mongodb_config_agent
           release: mongodb
         - name: mongod_node
