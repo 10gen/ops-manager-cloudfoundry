@@ -67,6 +67,7 @@ check_app_unbinding() {
 check_app_started() {
   local app_name=$1
   local app=$(cf apps | grep "$app_name " | awk  '/started/{print "started"}')
+  local try=10
   until [[ $app == "started" ]]; do
     app=$(cf apps | grep "$app_name " | awk  '/started/{print "started"}')
     if [[ $try -lt 0 ]]; then
@@ -76,4 +77,5 @@ check_app_started() {
     let "try--"
     echo "checking application status ($try)"
   done
+  echo "Application started"
 }
