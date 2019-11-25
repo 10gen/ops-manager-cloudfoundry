@@ -49,26 +49,31 @@ create_service() {
 }
 
 check_app_unbinding() {
-  local app_name=$1
-  local app_binding=$(cf services | grep $app_name | awk '!/'"$app_name"'/{print "not binded"}')
+  local instance_name=$1
+  local app_name=$2
+  local app_binding=$(cf services | grep "$instance_name " | awk '!/'"$app_name"'/{print "not bounded"}')
   local try=10
-  until [[ $app_binding == "has binded" ]]; do
-    app_binding=$(cf services | grep $app_name | awk '!/'"$app_name"'/{print "not binded"}')
+  until [[ $app_binding == "not bounded" ]]; do
+    app_binding=$(cf services | grep "$instance_name " | awk '!/'"$app_name"'/{print "not bounded"}')
     if [[ $try -lt 0 ]]; then
       echo "ERROR: unbinding is getting too long"
       exit 1
     fi
+    let "try--"
+    echo "checking unbinding ($try)"
   done
 }
 
 check_app_started() {
   local app_name=$1
-  local app=$(cf apps | grep $app_name | awk  '/started/{print "started"}')
+  local app=$(cf apps | grep "$app_name " | awk  '/started/{print "started"}')
   until [[ $app == "started" ]]; do
-    app=$(cf apps | grep $app_name | awk  '/started/{print "started"}')
+    app=$(cf apps | grep "$app_name " | awk  '/started/{print "started"}')
     if [[ $try -lt 0 ]]; then
       echo "ERROR: unbinding is getting too long"
       exit 1
     fi
+    let "try--"
+    echo "checking application status ($try)"
   done
 }
