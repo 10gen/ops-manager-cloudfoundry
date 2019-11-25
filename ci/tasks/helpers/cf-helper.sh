@@ -24,6 +24,7 @@ delete_service_app_if_exists() {
     local app=$(cf apps | awk '/'"$app_name"'[ $]/{print "exist"}')
     if [[ $app == "exist" ]]; then
       cf unbind-service $app_name $instance_name
+      check_app_unbinding $app_name
       cf delete $app_name -f
     fi
     cf delete-service $instance_name -f
@@ -45,4 +46,29 @@ create_service() {
     cf logout
     exit 1
   fi
+}
+
+check_app_unbinding() {
+  local app_name=$1
+  local app_binding=$(cf services | grep $app_name | awk '!/'"$app_name"'/{print "not binded"}')
+  local try=10
+  until [[ $app_binding == "has binded" ]]; do
+    app_binding=$(cf services | grep $app_name | awk '!/'"$app_name"'/{print "not binded"}')
+    if [[ $try -lt 0 ]]; then
+      echo "ERROR: unbinding is getting too long"
+      exit 1
+    fi
+  done
+}
+
+check_app_started() {
+  local app_name=$1
+  local app=$(cf apps | grep $app_name | awk  '/started/{print "started"}')
+  until [[ $app == "started" ]]; do
+    app=$(cf apps | grep $app_name | awk  '/started/{print "started"}')
+    if [[ $try -lt 0 ]]; then
+      echo "ERROR: unbinding is getting too long"
+      exit 1
+    fi
+  done
 }
