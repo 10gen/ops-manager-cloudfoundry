@@ -18,21 +18,42 @@ wait_service_status_change() {
 delete_service_app_if_exists() {
   local instance_name=$1
   local app_name=$2
-  local service=$(cf services | awk '/'"$instance_name"'[ $]/{print "exist"}')
-  if [[ $service == "exist" ]]; then
-    echo "check if $app_name is exist"
-    local app=$(cf apps | awk '/'"$app_name"'[ $]/{print "exist"}')
-    if [[ $app == "exist" ]]; then
+  delete_bind $instance_name $app_name
+  delete_application $app_name
+  delete_service $instance_name $app_name
+}
+
+delete_bind() {
+  local instance_name=$1
+  local app_name=$2
+  echo "check if $app_name binding exist"
+  local binding=$(cf service | grep $instance_name | awk '/'"$app_name"'/{print "exist"}')
+  if [[ $binding == "exist" ]]; then
       cf unbind-service $app_name $instance_name
       check_app_unbinding $app_name
-      cf delete $app_name -f
-    fi
+  fi
+}
+
+delete_service() {
+  local instance_name=$1
+  local app_name=$2
+  local service=$(cf services | awk '/'"$instance_name"'[ $]/{print "exist"}')
+  if [[ $service == "exist" ]]; then
     cf delete-service $instance_name -f
     wait_service_status_change $instance_name "delete in progress"
     service_status=$(cf services | awk  '/'"$instance_name"'[ $].*failed/{print "failed"}')
     if [[ $service_status == "failed" ]]; then
       cf purge-service-instance $instance_name -f
     fi
+  fi
+}
+
+delete_application() {
+  local app_name=$1
+  echo "check if $app_name exists"
+  local app=$(cf apps | awk '/'"$app_name"'[ $]/{print "exist"}')
+  if [[ $app == "exist" ]]; then
+    cf delete $app_name -f
   fi
 }
 
