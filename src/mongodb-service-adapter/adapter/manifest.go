@@ -462,11 +462,14 @@ func groupForMongoServer(
 	arbitraryParams map[string]interface{},
 ) (opsmanager.ProjectResponse, error) {
 	name := ""
+	orgID := ""
 	if p, found := arbitraryParams["projectName"]; found {
 		name = p.(string)
 	}
 
-	// TODO: arbitraryParams["orgId"] was never used - removed
+	if p, found := arbitraryParams["orgId"]; found {
+		orgID = p.(string)
+	}
 
 	// TODO: tags are never used when creating a group - investigate?
 	tags := []string{}
@@ -487,6 +490,7 @@ func groupForMongoServer(
 		return group, nil
 	}
 
+	// CreateGroup(mongoID, req)
 	log.Println(fmt.Sprintf("CreateGroup: id %q, name %q", mongoID, name))
 
 	if name == "" {
@@ -510,9 +514,9 @@ func groupForMongoServer(
 		return group, nil
 	}
 
-	resp, err := oc.CreateOneProject(name, mongoID)
+	resp, err := oc.CreateOneProject(name, orgID)
 	if err != nil {
-		log.Printf("CreateGroup CreateOneProject: id %q, name %q error: %v", mongoID, name, err)
+		log.Printf("CreateGroup CreateOneProject: name %q, orgID %q error: %v", name, orgID, err)
 		return group, err
 	}
 
