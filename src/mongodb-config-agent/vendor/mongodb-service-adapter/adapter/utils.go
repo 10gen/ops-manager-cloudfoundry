@@ -16,6 +16,11 @@ import (
 	"mongodb-service-adapter/adapter/config"
 )
 
+const (
+	versionsManifest1 = "/var/vcap/packages/versions/versions.json"
+	versionsManifest2 = "../../mongodb_versions/versions.json"
+)
+
 // GenerateString generates a random string or panics
 // if something goes wrong.
 func GenerateString(l int) (string, error) {
@@ -87,11 +92,6 @@ func ToEndpointList(hosts opsmanager.HostsResponse) []string {
 
 	return servers
 }
-
-const (
-	versionsManifest1 = "/var/vcap/packages/versions/versions.json"
-	versionsManifest2 = "../../mongodb_versions/versions.json"
-)
 
 func validateVersionManifest(version string) (string, error) {
 	b, err := ioutil.ReadFile(versionsManifest1)
