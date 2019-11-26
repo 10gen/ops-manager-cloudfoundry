@@ -45,6 +45,8 @@ ${om} upload-product --product "artifacts/$TILE_FILE"
 ${om} upload-stemcell --stemcell "stemcell/$STEMCELL_FILE"
 ${om} available-products
 ${om} stage-product --product-name "$PRODUCT" --product-version "$VERSION"
+cf_version=${om} available-products -f json | jq '.[0].version'
+${om} stage-product --product-name cf --product-version $cf_version
 
 config_path=$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config.pie
 make_env_config $config_path
