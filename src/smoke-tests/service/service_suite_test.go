@@ -84,7 +84,7 @@ type mongodbTestConfig struct {
 	PlanNames   []string    `json:"plan_names"`
 	Retry       retryConfig `json:"retry"`
 	Backup      []string    `json:"backup_enabled"`
-	SSL         []string	`json:"ssl_enabled"`
+	SSL         []string    `json:"ssl_enabled"`
 }
 
 //test if all parameters in pipeline was provided

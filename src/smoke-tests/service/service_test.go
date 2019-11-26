@@ -304,8 +304,7 @@ var _ = Describe("MongoDB Service", func() {
 
 	Context("for each plan", func() {
 		mongodbConfig.ValidateMongodbTestConfig()
-		var cases []ServiceParameters
-		cases = generateTestServiceParameters(mongodbConfig)
+		cases := generateTestServiceParameters(mongodbConfig)
 		printGeneratedServiceParameters(cases)
 		for _, oneCase := range cases {
 			AssertLifeCycleBehavior(oneCase)
