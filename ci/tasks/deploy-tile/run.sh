@@ -55,9 +55,12 @@ export OM_API_KEY=$(yq r $config_path product-properties[.properties.api_key].va
 ${om} configure-product --config "$config_path" --vars-env OM_API
 
 STAGED=$(${om} curl --path /api/v0/staged/products)
-RESULT=$(echo "$STAGED" | jq --arg product_name "$PRODUCT" 'map(select(.type == $product_name)) | .[].guid')
-DATA=$(echo '{"deploy_products": []}' | jq ".deploy_products += [$RESULT]")
+# get GUIDs of cf and $PRODUCT
+RESULT=$(echo "$STAGED" | jq --arg product_name "$PRODUCT" '.[] | select(.type == $product_name or .type == "cf") | .guid')
+# merge GUIDs
+RESULT=$(echo "$RESULT" | jq --slurp)
+DATA=$(echo '{"deploy_products": []}' | jq ".deploy_products += $RESULT")
 
 ${om} curl --path /api/v0/installations --request POST --data "$DATA"
-${om} apply-changes --reattach -n cf,mongodb-on-demand
+${om} apply-changes --reattach -n cf,"$PRODUCT"
 ${om} delete-unused-products
