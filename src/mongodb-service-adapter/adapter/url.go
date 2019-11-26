@@ -10,7 +10,7 @@ type DashboardURLGenerator struct{}
 
 var _ serviceadapter.DashboardUrlGenerator = new(DashboardURLGenerator)
 
-func (d *DashboardURLGenerator) DashboardUrl(params serviceadapter.DashboardUrlParams) (serviceadapter.DashboardUrl, error) {
+func (d *DashboardURLGenerator) DashboardUrl(params serviceadapter.DashboardUrlParams) (serviceadapter.DashboardUrl, error) { // nolint
 	properties := params.Manifest.Properties["mongo_ops"].(map[interface{}]interface{})
 	url := properties["url"].(string)
 	groupID := properties["group_id"].(string)
