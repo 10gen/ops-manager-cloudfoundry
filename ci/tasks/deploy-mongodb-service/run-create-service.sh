@@ -12,5 +12,5 @@ create_service $instance_name
 cf push $app_name -p $base/ops-manager-cloudfoundry/src/smoke-tests/assets/cf-mongo-example-app
 cf bind-service $app_name $instance_name --binding-name mongodb-test-binding
 cf restage $app_name
-check_app_started $instance_name $app_name
+check_app_started $app_name
 cf logout
