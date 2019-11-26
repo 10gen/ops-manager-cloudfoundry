@@ -26,7 +26,7 @@ type CFTestContext struct {
 
 var _ = Describe("MongoDB Service", func() {
 	var (
-		config = GetConfig()
+		// config = GetConfig()
 		// client = &adapter.OMClient{
 		// 	URL:      config.URL,
 		// 	Username: config.Username,
