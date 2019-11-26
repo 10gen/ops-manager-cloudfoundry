@@ -67,8 +67,8 @@ func (b Binder) CreateBinding(params serviceadapter.CreateBindingParams) (servic
 	}
 
 	if ssl {
-		omClient := OMClient{URL: URL, Username: adminUsername, APIKey: adminAPIKey}
-		hosts, err := omClient.Client().GetHosts(groupID)
+		omClient := NewPCGCClient(URL, adminUsername, adminAPIKey)
+		hosts, err := omClient.GetHosts(groupID)
 		if err != nil {
 			return serviceadapter.Binding{}, err
 		}
@@ -152,8 +152,8 @@ func (Binder) DeleteBinding(params serviceadapter.DeleteBindingParams) error {
 
 	if ssl {
 		var err error
-		omClient := OMClient{URL: URL, Username: adminUsername, APIKey: adminAPIKey}
-		hosts, err := omClient.Client().GetHosts(groupID)
+		omClient := NewPCGCClient(URL, adminUsername, adminAPIKey)
+		hosts, err := omClient.GetHosts(groupID)
 		if err != nil {
 			return err
 		}

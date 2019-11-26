@@ -8,9 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mongodb-labs/pcgc/pkg/httpclient"
-	"github.com/mongodb-labs/pcgc/pkg/opsmanager"
-
 	"mongodb-service-adapter/adapter"
 	"mongodb-service-adapter/adapter/config"
 )
@@ -30,8 +27,7 @@ func main() {
 
 	logger := log.New(os.Stderr, "[mongodb-config-agent] ", log.LstdFlags)
 
-	r := httpclient.NewURLResolverWithPrefix(cfg.URL, "api/public/v1.0")
-	omClient := opsmanager.NewClientWithDigestAuth(r, cfg.Username, cfg.APIKey)
+	omClient := adapter.NewPCGCClient(cfg.URL, cfg.Username, cfg.APIKey)
 
 	nodes := strings.Split(cfg.NodeAddresses, ",")
 	ctx := &config.DocContext{
@@ -60,12 +56,9 @@ func main() {
 		}
 	}
 
-	if strings.HasPrefix(ctx.Version, "3.4") {
-		ctx.CompatibilityVersion = "3.4"
-	} else if strings.HasPrefix(ctx.Version, "3.6") {
-		ctx.CompatibilityVersion = "3.6"
-	} else if strings.HasPrefix(ctx.Version, "4.0") {
-		ctx.CompatibilityVersion = "4.0"
+	switch c := ctx.Version[:3]; c {
+	case "3.4", "3.6", "4.0":
+		ctx.CompatibilityVersion = c
 	}
 
 	ac, err := omClient.GetAutomationConfig(cfg.GroupID)

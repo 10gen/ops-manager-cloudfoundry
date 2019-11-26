@@ -4,11 +4,14 @@ import (
 	"crypto/rand"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net"
 	"sort"
 	"strings"
 
 	"github.com/mongodb-labs/pcgc/pkg/opsmanager"
+	"github.com/tidwall/gjson"
 
 	"mongodb-service-adapter/adapter/config"
 )
@@ -83,4 +86,27 @@ func ToEndpointList(hosts opsmanager.HostsResponse) []string {
 	}
 
 	return servers
+}
+
+const (
+	versionsManifest1 = "/var/vcap/packages/versions/versions.json"
+	versionsManifest2 = "../../mongodb_versions/versions.json"
+)
+
+func validateVersionManifest(version string) (string, error) {
+	b, err := ioutil.ReadFile(versionsManifest1)
+	if err != nil {
+		b, err = ioutil.ReadFile(versionsManifest2)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	v := gjson.GetBytes(b, fmt.Sprintf(`versions.#[name="%s"].name`, version))
+	log.Printf("Using %q version of MongoDB", v.String())
+	if v.String() == "" {
+		return "", errors.New("failed to find expected version, continue with provided versions ")
+	}
+
+	return version, nil
 }
