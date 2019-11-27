@@ -225,7 +225,6 @@ var _ = Describe("MongoDB Service", func() {
 		afterSuiteSteps[0].Perform()
 	})
 
-	// AssertLifeCycleBehavior := func(planName string) {
 	AssertLifeCycleBehavior := func(sp ServiceParameters) {
 		It(sp.PrintParameters()+": create, bind to, write to, read from, unbind, and destroy a service instance", func() {
 			var skip bool
@@ -233,14 +232,13 @@ var _ = Describe("MongoDB Service", func() {
 			uri := fmt.Sprintf("https://%s.%s", appName, cfTestConfig.AppsDomain)
 			app := mongodb.NewApp(uri, testCF.ShortTimeout, retryInterval)
 			testValue := randomName()
-			//TODO rename config + use "version" mongo 4.0.9-ent ,
-			backupConfig := fmt.Sprintf(`{"enable_backup":"%s"}`, sp.BackupEnable)
+			serviceConfig := fmt.Sprintf(`{"enable_backup":"%s", "version":"%s"}`, sp.BackupEnable, sp.MongoDBVersion)
 			fmt.Println("serviceName : ", sp.ServiceName, " planName: ", sp.PlanName, " serviceInstanceName: ", serviceInstanceName,
-				"configuration : -c ", backupConfig)
+				"configuration : -c ", serviceConfig)
 
 			serviceCreateStep := reporter.NewStep(
 				fmt.Sprintf("Create a '%s' plan instance of MongoDB", sp.PlanName),
-				testCF.CreateService(sp.ServiceName, sp.PlanName, serviceInstanceName, backupConfig, &skip),
+				testCF.CreateService(sp.ServiceName, sp.PlanName, serviceInstanceName, serviceConfig, &skip),
 			)
 
 			smokeTestReporter.RegisterSpecSteps([]*reporter.Step{serviceCreateStep})
@@ -304,7 +302,7 @@ var _ = Describe("MongoDB Service", func() {
 	}
 
 	Context("for each plan", func() {
-		mongodbConfig.ValidateMongodbTestConfig()
+		mongodbConfig.SetDefaultForNonDefinedParameters()
 		var cases []ServiceParameters
 		cases = generateTestServiceParameters(mongodbConfig)
 		printGeneratedServiceParameters(cases)

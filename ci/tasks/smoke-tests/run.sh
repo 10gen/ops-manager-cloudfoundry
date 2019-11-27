@@ -18,6 +18,7 @@ EOF
 cat >config.json <<EOF
 {
   "service_name": "mongodb-odb",
+  "mongodb_version": $MONGO_VERSION,
   "plan_names": $PLAN_NAMES,
   "backup_enabled": $BACKUP_ENABLED,
   "ssl_enabled": $SSL_ENABLED,
