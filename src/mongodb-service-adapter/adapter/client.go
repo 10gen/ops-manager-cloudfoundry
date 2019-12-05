@@ -3,6 +3,7 @@ package adapter
 import (
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -11,6 +12,8 @@ import (
 	"github.com/mongodb-labs/pcgc/pkg/httpclient"
 	"github.com/mongodb-labs/pcgc/pkg/opsmanager"
 	"github.com/tidwall/gjson"
+
+	"mongodb-service-adapter/digest"
 )
 
 type OMClient struct {
@@ -140,4 +143,64 @@ func (oc *OMClient) ValidateVersionManifest(version string) (string, error) {
 	}
 
 	return version, nil
+}
+
+func (oc *OMClient) HasBackupAgent(groupID string) (bool, error) {
+	u := fmt.Sprintf("/api/public/v1.0/groups/%s/agents/BACKUP", groupID)
+	b, err := oc.doRequest("GET", u, nil)
+	if err != nil {
+		return false, err
+	}
+	state := gjson.GetBytes(b, "results.#.stateName").String()
+	if strings.Contains(state, "ACTIVE") {
+		return true, err
+	}
+	return false, err
+}
+
+func (oc *OMClient) doRequest(method string, path string, body io.Reader) ([]byte, error) {
+	uri := fmt.Sprintf("%s%s", oc.URL, path)
+	req, err := http.NewRequest(method, uri, body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	if err = digest.ApplyDigestAuth(oc.Username, oc.APIKey, uri, req); err != nil {
+		return nil, err
+	}
+	log.Printf("API Call: %s%s", oc.URL, path)
+
+	// dump, err := httputil.DumpRequestOut(req, true)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// // log.Printf("API Request: %q", dump)
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	// dump, err = httputil.DumpResponse(res, true)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// // log.Printf("API Response: %q", dump)
+
+	b, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	// oc.GetGroupByName return 404 if group not found
+	if res.StatusCode == 404 {
+		log.Printf("Received %d status code for %s path", res.StatusCode, path)
+		return b, nil
+	} else if res.StatusCode < 200 || res.StatusCode >= 300 {
+		return nil, fmt.Errorf("%s %s request error: code=%d body=%q", method, path, res.StatusCode, b)
+	}
+	return b, nil
 }
