@@ -27,7 +27,7 @@ delete_bind() {
   local instance_name=$1
   local app_name=$2
   echo "check if $app_name binding exist"
-  local binding=$(cf service | grep $instance_name | awk '/'"$app_name"'/{print "exist"}')
+  local binding=$(cf services | grep $instance_name | awk '/'"$app_name"'/{print "exist"}')
   if [[ $binding == "exist" ]]; then
       cf unbind-service $app_name $instance_name
       check_app_unbinding $instance_name $app_name
