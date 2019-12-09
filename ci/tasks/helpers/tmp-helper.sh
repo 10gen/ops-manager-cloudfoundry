@@ -11,7 +11,7 @@ make_env_config() {
 
 make_pcf_metadata() {
     file="metadata"
-    if [ -f $file]; then
+    if [ -f $file ]; then
         rm $file
     fi
     cat >$file <<EOF
