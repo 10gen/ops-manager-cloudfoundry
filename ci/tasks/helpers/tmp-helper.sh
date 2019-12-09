@@ -9,4 +9,18 @@ make_env_config() {
     echo "$CONFIG" >> $file
 }
 
+make_pcf_metadata() {
+    file="metadata"
+    if [ -f $file]; then
+        rm $file
+    fi
+    cat >$file <<EOF
+    ---
+    opsmgr:
+    url: "$PCF_URL"
+    username: "$PCF_USERNAME"
+    password: "$PCF_PASSWORD"
+EOF
+}
+
 

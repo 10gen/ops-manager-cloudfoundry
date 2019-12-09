@@ -1,6 +1,7 @@
 #!/usr/local/bin/dumb-init /bin/bash
 set -eo pipefail
 [[ ${DEBUG:-} = true ]] && set -x
+. "$base/ops-manager-cloudfoundry/ci/tasks/helpers/cf-helper.sh"
 
 cf_login
 host=$(echo $(cf apps | grep app-ruby-sample | awk '{print $6}'))

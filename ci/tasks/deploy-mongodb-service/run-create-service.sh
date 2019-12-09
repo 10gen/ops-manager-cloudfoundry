@@ -3,6 +3,8 @@ set -eo pipefail
 [[ ${DEBUG:-} == true ]] && set -x
 base=$PWD
 . "$base/ops-manager-cloudfoundry/ci/tasks/helpers/cf-helper.sh"
+. "$base/ops-manager-cloudfoundry/ci/tasks/helpers/tmp-helper.sh"
+make_pcf_metadata
 instance_name="test-mongodb-service"
 app_name="app-ruby-sample"
 
