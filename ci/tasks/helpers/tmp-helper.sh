@@ -15,11 +15,11 @@ make_pcf_metadata() {
         rm $file
     fi
     cat >$file <<EOF
-    ---
-    opsmgr:
-    url: "$PCF_URL"
-    username: "$PCF_USERNAME"
-    password: "$PCF_PASSWORD"
+---
+opsmgr:
+  url: "$PCF_URL"
+  username: "$PCF_USERNAME"
+  password: "$PCF_PASSWORD"
 EOF
 }
 
