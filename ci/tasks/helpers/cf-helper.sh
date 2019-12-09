@@ -59,7 +59,7 @@ delete_application() {
 
 create_service() {
   local instance_name=$1
-  cf create-service mongodb-odb "$SET_PLAN" $instance_name -c "{\"enable_backup\":\"$BACKUP_ENABLED\"}"
+  cf create-service mongodb-odb "$SET_PLAN" $instance_name -c "{\"enable_backup\":\"$BACKUP_ENABLED\", \"version\":\"$MONGO_VERSION\"}}"
   wait_service_status_change $instance_name "create in progress"
   service_status=$(cf services | awk  '/'"$instance_name"'[ ].*succeeded/{print "succeeded"}')
   if [[ $service_status != "succeeded" ]]; then
