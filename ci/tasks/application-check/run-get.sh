@@ -5,7 +5,7 @@ base=$PWD
 app_name="app-ruby-sample"
 . "$base/ops-manager-cloudfoundry/ci/tasks/helpers/cf-helper.sh"
 
-cf login -a $CF_APP_URL -u $CF_APP_USER -p $CF_APP_PASSWORD --skip-ssl-validation -o system -s system
+cf_login
 check_app_started $instance_name $app_name
 host=$(echo $(cf apps | grep $app_name | awk '{print $6}'))
 url="http://${host}/service/mongo/test3"

@@ -1,4 +1,10 @@
 #!/usr/local/bin/dumb-init /bin/bash
+cf_login() {
+  local cf_app_url="$(pcf cf-info | grep apps_domain | cut -d' ' -f 3)",
+  local cf_app_user="$(pcf cf-info | grep admin_username | cut -d' ' -f 3)",
+  local cf_app_password="$(pcf cf-info | grep admin_password | cut -d' ' -f 3)",
+  cf login -a $cf_app_url -u $cf_app_user -p $cf_app_password --skip-ssl-validation -o system -s system
+}
 
 #cf.helper. wait for particular service status 
 wait_service_status_change() {
