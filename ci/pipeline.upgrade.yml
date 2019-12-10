@@ -293,9 +293,9 @@ jobs:
   - task: cleaning - delete service and application
     file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task-delete-service.yml
     params:
-      CF_APP_URL: ((cf-app-url))
-      CF_APP_USER: ((cf-app-username))
-      CF_APP_PASSWORD: ((cf-app-password))
+      PCF_URL: ((pcf-url))
+      PCF_USERNAME: ((pcf-username))
+      PCF_PASSWORD: ((pcf-password))
     on_failure:
       put: "cleanup-status"
       params:
@@ -327,6 +327,9 @@ jobs:
   - task: deploy-mongodb-service
     file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task-create-service.yml
     params:
+      PCF_URL: ((pcf-url))
+      PCF_USERNAME: ((pcf-username))
+      PCF_PASSWORD: ((pcf-password))
       INSTALL_TIMEOUT: 120
       SET_PLAN: replica_set_small
       BACKUP_ENABLED: true
