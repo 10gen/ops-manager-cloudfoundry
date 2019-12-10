@@ -2,6 +2,8 @@
 set -eo pipefail
 [[ ${DEBUG:-} = true ]] && set -x
 . "$base/ops-manager-cloudfoundry/ci/tasks/helpers/cf-helper.sh"
+. "$base/ops-manager-cloudfoundry/ci/tasks/helpers/tmp-helper.sh"
+make_pcf_metadata
 
 cf_login
 host=$(echo $(cf apps | grep app-ruby-sample | awk '{print $6}'))

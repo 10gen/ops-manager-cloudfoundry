@@ -4,6 +4,8 @@ set -eo pipefail
 base=$PWD
 app_name="app-ruby-sample"
 . "$base/ops-manager-cloudfoundry/ci/tasks/helpers/cf-helper.sh"
+. "$base/ops-manager-cloudfoundry/ci/tasks/helpers/tmp-helper.sh"
+make_pcf_metadata
 
 cf_login
 check_app_started $instance_name $app_name
