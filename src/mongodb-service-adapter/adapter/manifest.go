@@ -472,23 +472,23 @@ func groupForMongoServer(
 	}
 
 	// TODO: tags are never used when creating a group - investigate?
-	tags := []string{}
-	if p := planProperties["mongo_ops"].(map[string]interface{})["tags"]; p != nil {
-		t := p.([]interface{})
-		for _, tag := range t {
-			tags = append(tags, tag.(map[string]interface{})["tag_name"].(string))
-		}
-	}
+	// tags := []string{}
+	// if p := planProperties["mongo_ops"].(map[string]interface{})["tags"]; p != nil {
+	// 	t := p.([]interface{})
+	// 	for _, tag := range t {
+	// 		tags = append(tags, tag.(map[string]interface{})["tag_name"].(string))
+	// 	}
+	// }
 
-	if previousMongoProperties != nil {
-		group, err := oc.SetProjectTags(previousMongoProperties["group_id"].(string), tags)
-		if err != nil {
-			return opsmanager.ProjectResponse{}, err
-		}
-		// AgentAPIKey is empty for PATCH and GET requests in OM 3.6, taking the value from previous manifest instead
-		group.AgentAPIKey = previousMongoProperties["agent_api_key"].(string)
-		return group, nil
-	}
+	// if previousMongoProperties != nil {
+	// 	group, err := oc.SetProjectTags(previousMongoProperties["group_id"].(string), tags)
+	// 	if err != nil {
+	// 		return opsmanager.ProjectResponse{}, err
+	// 	}
+	// 	// AgentAPIKey is empty for PATCH and GET requests in OM 3.6, taking the value from previous manifest instead
+	// 	group.AgentAPIKey = previousMongoProperties["agent_api_key"].(string)
+	// 	return group, nil
+	// }
 
 	// CreateGroup(mongoID, req)
 	log.Println(fmt.Sprintf("CreateGroup: id %q, name %q", mongoID, name))
