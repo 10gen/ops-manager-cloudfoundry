@@ -3,6 +3,7 @@ package adapter
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
 
 	"github.com/mongodb-labs/pcgc/pkg/opsmanager"
@@ -49,7 +50,8 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 	url := mongoOps["url"].(string)
 	url = strings.TrimRight(url, "/")
 
-	oc := &OMClient{URL: url, Username: username, APIKey: apiKey}
+	oc := NewPCGCClient(url, username, apiKey)
+	oc404 := NewPCGCClient(url, username, apiKey, http.StatusNotFound)
 
 	var previousMongoProperties map[interface{}]interface{}
 
@@ -67,7 +69,7 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 		return serviceadapter.GenerateManifestOutput{}, err
 	}
 
-	group, err := groupForMongoServer(id, oc, params.Plan.Properties, previousMongoProperties, arbitraryParams)
+	group, err := groupForMongoServer(id, oc, oc404, params.Plan.Properties, previousMongoProperties, arbitraryParams)
 	if err != nil {
 		return serviceadapter.GenerateManifestOutput{}, fmt.Errorf("could not create new group (%s)", err.Error())
 	}
@@ -129,7 +131,7 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 	var engineVersion string
 	version := getArbitraryParam("version", "engine_version", arbitraryParams, previousMongoProperties)
 	if version == nil {
-		engineVersion, err = oc.GetLatestVersion(group.ID)
+		engineVersion, err = getLatestVersion(oc, group.ID)
 		if err != nil {
 			return serviceadapter.GenerateManifestOutput{}, fmt.Errorf("unable to find the latest MongoDB version from the MongoDB Ops Manager API. Please contact your system administrator to ensure versions are available in the Version Manager for project '%s' in MongoDB Ops Manager. If your MongoDB Ops Manager is running in Local Mode, then after validating versions are available, please indicate a specific MongoDB version using 'version’ paramater when calling 'create-service'", group.Name)
 		}
@@ -140,7 +142,7 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 			skipVersionValidation = e.(bool)
 		}
 		if !skipVersionValidation {
-			engineVersion, err = oc.ValidateVersionManifest(version.(string))
+			engineVersion, err = validateVersionManifest(version.(string))
 			if err != nil {
 				return serviceadapter.GenerateManifestOutput{}, err
 			}
@@ -236,7 +238,7 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 
 	// if manifest updates we should use password from previous manifest
 	if agentPassword == "" && params.PreviousManifest != nil {
-		cfg, err := oc.Client().GetAutomationConfig(group.ID)
+		cfg, err := oc.GetAutomationConfig(group.ID)
 		if err != nil {
 			panic(err)
 		}
@@ -373,6 +375,26 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 	}, nil
 }
 
+func getLatestVersion(oc opsmanager.Client, groupID string) (string, error) {
+	cfg, err := oc.GetAutomationConfig(groupID)
+	if err != nil || len(cfg.MongoDBVersions) == 0 {
+		return "", fmt.Errorf("unable to find the latest MongoDB version from the MongoDB Ops Manager API. Please contact your system administrator to ensure versions are available in the Version Manager for group '%q' in MongoDB Ops Manager. If your MongoDB Ops Manager is running in Local Mode, then after validating versions are available, please indicate a specific MongoDB version using 'version’ paramater when calling 'create-service'", groupID)
+	}
+
+	versions := make([]string, len(cfg.MongoDBVersions))
+	n := 0
+	for _, i := range cfg.MongoDBVersions {
+		if !strings.HasSuffix(i.Name, "ent") {
+			versions[n] = i.Name
+			n++
+		}
+	}
+	versions = versions[:n]
+	latestVersion := versions[len(versions)-1]
+
+	return latestVersion, nil
+}
+
 func findInstanceGroup(plan serviceadapter.Plan, jobName string) *serviceadapter.InstanceGroup {
 	for _, instanceGroup := range plan.InstanceGroups {
 		if instanceGroup.Name == jobName {
@@ -431,27 +453,35 @@ func authKeyForMongoServer(previousManifestProperties map[interface{}]interface{
 	return GenerateString(8)
 }
 
-func groupForMongoServer(mongoID string, oc *OMClient,
+func groupForMongoServer(
+	mongoID string,
+	oc opsmanager.Client,
+	oc404 opsmanager.Client,
 	planProperties map[string]interface{},
 	previousMongoProperties map[interface{}]interface{},
-	arbitraryParams map[string]interface{}) (opsmanager.ProjectResponse, error) {
-	req := GroupCreateRequest{}
-	if name, found := arbitraryParams["projectName"]; found {
-		req.Name = name.(string)
+	arbitraryParams map[string]interface{},
+) (opsmanager.ProjectResponse, error) {
+	name := ""
+	orgID := ""
+	if p, found := arbitraryParams["projectName"]; found {
+		name = p.(string)
 	}
-	if orgID, found := arbitraryParams["orgId"]; found {
-		req.OrgID = orgID.(string)
+
+	if p, found := arbitraryParams["orgId"]; found {
+		orgID = p.(string)
 	}
-	tags := planProperties["mongo_ops"].(map[string]interface{})["tags"]
-	if tags != nil {
-		t := tags.([]interface{})
+
+	// TODO: tags are never used when creating a group - investigate?
+	tags := []string{}
+	if p := planProperties["mongo_ops"].(map[string]interface{})["tags"]; p != nil {
+		t := p.([]interface{})
 		for _, tag := range t {
-			req.Tags = append(req.Tags, tag.(map[string]interface{})["tag_name"].(string))
+			tags = append(tags, tag.(map[string]interface{})["tag_name"].(string))
 		}
 	}
 
 	if previousMongoProperties != nil {
-		group, err := oc.Client().SetProjectTags(previousMongoProperties["group_id"].(string), req.Tags)
+		group, err := oc.SetProjectTags(previousMongoProperties["group_id"].(string), tags)
 		if err != nil {
 			return opsmanager.ProjectResponse{}, err
 		}
@@ -460,7 +490,37 @@ func groupForMongoServer(mongoID string, oc *OMClient,
 		return group, nil
 	}
 
-	return oc.CreateGroup(mongoID, req)
+	// CreateGroup(mongoID, req)
+	log.Println(fmt.Sprintf("CreateGroup: id %q, name %q", mongoID, name))
+
+	if name == "" {
+		name = fmt.Sprintf("PCF_%s", strings.ToUpper(mongoID))
+	}
+
+	group, err := oc404.GetProjectByName(name)
+	if err != nil {
+		log.Printf("CreateGroup GetGroupByName with name: %q, error: %v", name, err)
+		return group, err
+	}
+
+	if group.Name == name {
+		log.Printf("Continue with existing group %q", group.ID)
+		apiKey, err := oc.CreateAgentAPIKEY(group.ID, "MongoDB On-Demand broker generated Agent API Key")
+		if err != nil {
+			log.Printf("CreateGroup CreateGroupAPIKey group.ID: %s, error: %v", group.ID, err)
+			return group, err
+		}
+		group.AgentAPIKey = apiKey.Key
+		return group, nil
+	}
+
+	resp, err := oc.CreateOneProject(name, orgID)
+	if err != nil {
+		log.Printf("CreateGroup CreateOneProject: name %q, orgID %q error: %v", name, orgID, err)
+		return group, err
+	}
+
+	return resp, nil
 }
 
 func findReleaseForJob(releases serviceadapter.ServiceReleases, requiredJob string) (serviceadapter.ServiceRelease, error) {

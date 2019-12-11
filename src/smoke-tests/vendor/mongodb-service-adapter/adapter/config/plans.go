@@ -74,6 +74,8 @@ func (r *AutomationConfig) ToShardedCluster(ctx *DocContext) {
 		ProtocolVersion: protocolVersion,
 	}}
 
+	r.Processes = nil
+
 	for _, node := range ctx.Cluster.Routers {
 		r.Processes = append(r.Processes, &opsmanager.Process{
 			Args26: &opsmanager.Args26{
@@ -215,6 +217,8 @@ func (r *AutomationConfig) ToReplicaSet(ctx *DocContext) {
 		ID:              "pcf_repl",
 		ProtocolVersion: protocolVersion,
 	}}
+
+	r.Processes = nil
 
 	for i, node := range ctx.Nodes {
 		r.Processes = append(r.Processes, &opsmanager.Process{

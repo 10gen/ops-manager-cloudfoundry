@@ -84,6 +84,9 @@ func (rc retryConfig) MaxRetries() int {
 }
 
 type mongodbTestConfig struct {
+	URL string `json:"url"`
+	UserName string `json:"username"`
+	UserAPIKey string `json:"api_key"`
 	ServiceName string      `json:"service_name"`
 	PlanNames   []string    `json:"plan_names"`
 	Retry       retryConfig `json:"retry"`
@@ -93,7 +96,6 @@ type mongodbTestConfig struct {
 }
 
 //test if all parameters in pipeline was provided
-// func (testConfig mongodbTestConfig) ValidateMongodbTestConfig() {
 func (testConfig *mongodbTestConfig) SetDefaultForNonDefinedParameters() {
 	if testConfig.ServiceName == "" {
 		testConfig.ServiceName = "mongodb-odb"
@@ -148,7 +150,6 @@ var (
 	configPath    = os.Getenv("CONFIG_PATH")
 	cfTestConfig  = loadCFTestConfig(configPath)
 	mongodbConfig = loadMongodbTestConfig(configPath)
-
 	smokeTestReporter *reporter.SmokeTestReport
 )
 

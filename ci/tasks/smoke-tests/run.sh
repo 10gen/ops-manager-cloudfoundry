@@ -34,11 +34,7 @@ cat >config.json <<EOF
   "admin_password": "$(pcf cf-info | grep admin_password | cut -d' ' -f 3)",
   "skip_ssl_validation": true,
   "create_permissive_security_group": false
-}
-EOF
-
-cat >mongo-ops.json <<EOF
-{
+  "mongo_ops": {
     "url": "$(yq r $config_path product-properties[.properties.url].value)",
     "username": "$(yq r $config_path product-properties[.properties.username].value)",
     "api_key": "$(yq r $config_path product-properties[.properties.api_key].value.secret)",
@@ -46,8 +42,21 @@ cat >mongo-ops.json <<EOF
     "auth_key": "5d68fcd06a94055d18308834f769efdc2edb26f530db6269411aceb8",
     "nodes": "localhost",
     "org": "5d68ef6a6a94055d183032e5"
+  }
 }
 EOF
+
+# cat >mongo-ops.json <<EOF
+# {
+#     "url": "$(yq r $config_path product-properties[.properties.url].value)",
+#     "username": "$(yq r $config_path product-properties[.properties.username].value)",
+#     "api_key": "$(yq r $config_path product-properties[.properties.api_key].value.secret)",
+#     "group": "5d68ef6a6a94055d183032e5",
+#     "auth_key": "5d68fcd06a94055d18308834f769efdc2edb26f530db6269411aceb8",
+#     "nodes": "localhost",
+#     "org": "5d68ef6a6a94055d183032e5"
+# }
+# EOF
 
 export CONFIG_PATH="$base"/config.json
 

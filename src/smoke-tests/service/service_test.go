@@ -6,9 +6,8 @@ import (
 	"io/ioutil"
 	"os"
 	"time"
-	"strconv"
 
-	"mongodb-service-adapter/adapter"
+	// "mongodb-service-adapter/adapter"
 
 	smokeTestCF "smoke-tests/cf"
 	"smoke-tests/mongodb"
@@ -16,6 +15,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	// . "github.com/onsi/gomega/gstruct"
 	"github.com/pborman/uuid"
 	"github.com/pivotal-cf-experimental/cf-test-helpers/services"
 )
@@ -26,12 +26,7 @@ type CFTestContext struct {
 
 var _ = Describe("MongoDB Service", func() {
 	var (
-		config = GetConfig()
-		client = &adapter.OMClient{
-			URL:      config.URL,
-			Username: config.Username,
-			APIKey:   config.APIKey,
-		}
+		// client = adapter.NewPCGCClient(mongodbConfig.URL, mongodbConfig.UserName, mongodbConfig.UserAPIKey)
 		testCF = smokeTestCF.CF{
 			ShortTimeout: time.Minute * 3,
 			LongTimeout:  time.Minute * 15,
@@ -273,17 +268,20 @@ var _ = Describe("MongoDB Service", func() {
 					app.ReadAssert("testkey", testValue),
 				),
 				// TODO: implement in pcgc?
-				reporter.NewStep(
-					"Check backup Agent",
-					func() {
-						groupID := testCF.GetGroupID(serviceInstanceName)
-						fmt.Printf("Got groupID/ProjectID: %s", groupID)
-						backupState, err := client.HasBackupAgent(groupID)
-						Expect(err).NotTo(HaveOccurred())
-						configBackupEnable, _ := strconv.ParseBool(sp.BackupEnable) //TODO remove it
-						Expect(backupState).Should(Equal(configBackupEnable))
-					},
-				),
+				// reporter.NewStep(
+				// 	"Check backup Agent",
+				// 	func() {
+				// 	// 	groupID := testCF.GetGroupID(serviceInstanceName)
+				// 	// 	fmt.Printf("Got groupID/ProjectID: %s", groupID)
+				// 	// 	backupState, err := client.GetAgentsByType(groupID, "BACKUP")
+				// 	// 	Expect(err).NotTo(HaveOccurred())
+				// 	// 	Expect(backupState.Results[0]).To(MatchFields(IgnoreExtras, Fields{
+				// 	// 		// "IsManaged": Equal(sp.BackupEnable),
+				// 	// 		"StateName": Equal("ACTIVE"),//ACTIVE
+				// 	// 		"TypeName": Equal("BACKUP"),
+				// 	// 	}))
+				// 	// },
+				// ),
 			}
 
 			smokeTestReporter.RegisterSpecSteps(specSteps)
@@ -303,8 +301,7 @@ var _ = Describe("MongoDB Service", func() {
 
 	Context("for each plan", func() {
 		mongodbConfig.SetDefaultForNonDefinedParameters()
-		var cases []ServiceParameters
-		cases = generateTestServiceParameters(mongodbConfig)
+		cases := generateTestServiceParameters(mongodbConfig)
 		printGeneratedServiceParameters(cases)
 		for _, oneCase := range cases {
 			planName = oneCase.PlanName
@@ -315,12 +312,4 @@ var _ = Describe("MongoDB Service", func() {
 
 func randomName() string {
 	return uuid.NewRandom().String()
-}
-
-func GetConfig() *adapter.Config {
-	config, err := adapter.LoadConfig("../mongo-ops.json")
-	if err != nil {
-		return nil
-	}
-	return config
 }
