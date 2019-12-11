@@ -2,6 +2,7 @@
 groups:
   - name: mongodb-on-demand
     jobs:
+      - build-tile
       - deploy-tile
       - delete-tile
       - smoke-tests
@@ -54,6 +55,43 @@ resource_types:
     repository: cfcommunity/slack-notification-resource
 
 jobs:
+
+- name: build-tile
+  serial: true
+  build_logs_to_retain: 50
+  plan:
+  - aggregate:
+    - get: ops-manager-cloudfoundry
+      trigger: true
+    - get: on-demand-service-broker-release
+      params:
+        filename: on-demand-service-broker-(.*).tgz
+    - get: syslog-migration-release
+      params:
+        filename: syslog-migration-(.*).tgz
+    - get: pcf-mongodb-helpers
+      params:
+        filename: pcf-mongodb-helpers-(.*).tgz
+    - get: bpm-release
+      params:
+        filename: bpm-release-(.*).tgz
+    - get: mongodb
+      params:
+        filename: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
+    - get: version
+      params:
+        pre: rc
+  - task: build-tile
+    file: ops-manager-cloudfoundry/ci/tasks/build-tile/task.yml
+    params:
+      AWS_KEY: ((aws-access-key))
+      AWS_SECRET_KEY: ((aws-secret-access-key))
+  - put: artifacts
+    params:
+      file: artifacts/mongodb-on-demand-*.pivotal
+  - put: version
+    params:
+      pre: rc
 
 - name: deploy-tile
   serial: true
