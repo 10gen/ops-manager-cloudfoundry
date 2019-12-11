@@ -189,6 +189,10 @@ jobs:
     passed: [ deploy-mongodb-service ]
   - task: use application
     file: ops-manager-cloudfoundry/ci/tasks/application-check/task-put.yml
+    params:
+      PCF_URL: ((pcf-url))
+      PCF_USERNAME: ((pcf-username))
+      PCF_PASSWORD: ((pcf-password))
     on_failure:
       put: "check-service-status"
       params:
@@ -262,6 +266,10 @@ jobs:
     passed: [ update-tile-version ]
   - task: check application
     file: ops-manager-cloudfoundry/ci/tasks/application-check/task-get.yml
+    params:
+      PCF_URL: ((pcf-url))
+      PCF_USERNAME: ((pcf-username))
+      PCF_PASSWORD: ((pcf-password))
     on_failure:
       put: "check-app-status"
       params:
