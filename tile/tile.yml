@@ -337,7 +337,7 @@ runtime_configs:
     - name: mongodb
       version: 1.0.33
     - name: bpm
-      version: 1.1.5
+      version: 1.1.1
     addons:
     - name: bpm
       jobs:
@@ -406,7 +406,7 @@ runtime_configs:
 packages:
 - name: bpm
   type: bosh-release
-  path: resources/bpm-release-1.1.5.tgz
+  path: resources/bpm-release-1.1.1.tgz
 - name: pcf-mongodb-helpers
   type: bosh-release
   path: resources/pcf-mongodb-helpers-0.0.1.tgz
