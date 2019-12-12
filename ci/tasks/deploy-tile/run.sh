@@ -49,7 +49,7 @@ ${om} stage-product --product-name "$PRODUCT" --product-version "$VERSION"
 ${om} stage-product --product-name cf --product-version "$cf_version"
 
 echo "CONFIG=${CONFIG}"
-config_path=$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/${CONFIG}
+config_path=$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config
 make_env_config $config_path
 export OM_API_USER=$(yq r $config_path product-properties[.properties.username].value)
 export OM_API_KEY=$(yq r $config_path product-properties[.properties.api_key].value.secret)
