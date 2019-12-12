@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"mongodb-service-adapter/adapter"
+	// "mongodb-service-adapter/adapter"
 
 	smokeTestCF "smoke-tests/cf"
 	"smoke-tests/mongodb"
@@ -15,6 +15,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	// . "github.com/onsi/gomega/gstruct"
 	"github.com/pborman/uuid"
 	"github.com/pivotal-cf-experimental/cf-test-helpers/services"
 )
@@ -25,12 +26,7 @@ type CFTestContext struct {
 
 var _ = Describe("MongoDB Service", func() {
 	var (
-		// config = GetConfig()
-		// client = &adapter.OMClient{
-		// 	URL:      config.URL,
-		// 	Username: config.Username,
-		// 	APIKey:   config.APIKey,
-		// }
+		// client = adapter.NewPCGCClient(mongodbConfig.URL, mongodbConfig.UserName, mongodbConfig.UserAPIKey)
 		testCF = smokeTestCF.CF{
 			ShortTimeout: time.Minute * 3,
 			LongTimeout:  time.Minute * 15,
@@ -224,7 +220,6 @@ var _ = Describe("MongoDB Service", func() {
 		afterSuiteSteps[0].Perform()
 	})
 
-	// AssertLifeCycleBehavior := func(planName string) {
 	AssertLifeCycleBehavior := func(sp ServiceParameters) {
 		It(sp.PrintParameters()+": create, bind to, write to, read from, unbind, and destroy a service instance", func() {
 			var skip bool
@@ -232,14 +227,13 @@ var _ = Describe("MongoDB Service", func() {
 			uri := fmt.Sprintf("https://%s.%s", appName, cfTestConfig.AppsDomain)
 			app := mongodb.NewApp(uri, testCF.ShortTimeout, retryInterval)
 			testValue := randomName()
-			//TODO rename config + use "version" mongo 4.0.9-ent ,
-			backupConfig := fmt.Sprintf(`{"enable_backup":"%s"}`, sp.BackupEnable)
+			serviceConfig := fmt.Sprintf(`{"enable_backup":"%s", "version":"%s"}`, sp.BackupEnable, sp.MongoDBVersion)
 			fmt.Println("serviceName : ", sp.ServiceName, " planName: ", sp.PlanName, " serviceInstanceName: ", serviceInstanceName,
-				"configuration : -c ", backupConfig)
+				"configuration : -c ", serviceConfig)
 
 			serviceCreateStep := reporter.NewStep(
 				fmt.Sprintf("Create a '%s' plan instance of MongoDB", sp.PlanName),
-				testCF.CreateService(sp.ServiceName, sp.PlanName, serviceInstanceName, backupConfig, &skip),
+				testCF.CreateService(sp.ServiceName, sp.PlanName, serviceInstanceName, serviceConfig, &skip),
 			)
 
 			smokeTestReporter.RegisterSpecSteps([]*reporter.Step{serviceCreateStep})
@@ -277,13 +271,16 @@ var _ = Describe("MongoDB Service", func() {
 				// reporter.NewStep(
 				// 	"Check backup Agent",
 				// 	func() {
-				// 		groupID := testCF.GetGroupID(serviceInstanceName)
-				// 		fmt.Printf("Got groupID/ProjectID: %s", groupID)
-				// 		backupState, err := client.HasBackupAgent(groupID)
-				// 		Expect(err).NotTo(HaveOccurred())
-				// 		configBackupEnable, _ := strconv.ParseBool(sp.BackupEnable) //TODO remove it
-				// 		Expect(backupState).Should(Equal(configBackupEnable))
-				// 	},
+				// 	// 	groupID := testCF.GetGroupID(serviceInstanceName)
+				// 	// 	fmt.Printf("Got groupID/ProjectID: %s", groupID)
+				// 	// 	backupState, err := client.GetAgentsByType(groupID, "BACKUP")
+				// 	// 	Expect(err).NotTo(HaveOccurred())
+				// 	// 	Expect(backupState.Results[0]).To(MatchFields(IgnoreExtras, Fields{
+				// 	// 		// "IsManaged": Equal(sp.BackupEnable),
+				// 	// 		"StateName": Equal("ACTIVE"),//ACTIVE
+				// 	// 		"TypeName": Equal("BACKUP"),
+				// 	// 	}))
+				// 	// },
 				// ),
 			}
 
@@ -303,10 +300,11 @@ var _ = Describe("MongoDB Service", func() {
 	}
 
 	Context("for each plan", func() {
-		mongodbConfig.ValidateMongodbTestConfig()
+		mongodbConfig.SetDefaultForNonDefinedParameters()
 		cases := generateTestServiceParameters(mongodbConfig)
 		printGeneratedServiceParameters(cases)
 		for _, oneCase := range cases {
+			planName = oneCase.PlanName
 			AssertLifeCycleBehavior(oneCase)
 		}
 	})
@@ -314,12 +312,4 @@ var _ = Describe("MongoDB Service", func() {
 
 func randomName() string {
 	return uuid.NewRandom().String()
-}
-
-func GetConfig() *adapter.Config {
-	config, err := adapter.LoadConfig("../mongo-ops.json")
-	if err != nil {
-		return nil
-	}
-	return config
 }
