@@ -33,6 +33,52 @@ resources:
     secret_access_key: ((aws-secret-access-key))
     initial_version: 1.0.34
 
+- name: on-demand-service-broker-release
+  type: s3
+  source:
+    bucket: ((aws-bucket))
+    region_name: eu-west-1
+    regexp: on-demand-service-broker-(.*).tgz
+    access_key_id: ((aws-access-key))
+    secret_access_key: ((aws-secret-access-key))
+
+- name: mongodb
+  type: s3
+  source:
+    bucket: ((aws-bucket))
+    region_name: eu-west-1
+    regexp: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
+
+    access_key_id: ((aws-access-key))
+    secret_access_key: ((aws-secret-access-key))
+
+- name: pcf-mongodb-helpers
+  type: s3
+  source:
+    bucket: ((aws-bucket))
+    region_name: eu-west-1
+    regexp: pcf-mongodb-helpers-(.*).tgz
+    access_key_id: ((aws-access-key))
+    secret_access_key: ((aws-secret-access-key))
+
+- name: syslog-migration-release
+  type: s3
+  source:
+    bucket: ((aws-bucket))
+    region_name: eu-west-1
+    regexp: syslog-migration-(.*).tgz
+    access_key_id: ((aws-access-key))
+    secret_access_key: ((aws-secret-access-key))
+
+- name: bpm-release
+  type: s3
+  source:
+    bucket: ((aws-bucket))
+    region_name: eu-west-1
+    regexp: bpm-release-(.*).tgz
+    access_key_id: ((aws-access-key))
+    secret_access_key: ((aws-secret-access-key))
+
 - name: artifacts
   type: s3
   source:
