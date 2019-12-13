@@ -2,6 +2,8 @@ module smoke-tests
 
 go 1.12
 
+replace github.com/mongodb-labs/pcgc v0.0.3 => /home/exploser/go/src/github.com/vasilevp/pcgc
+
 replace mongodb-service-adapter => ../mongodb-service-adapter
 
 require (

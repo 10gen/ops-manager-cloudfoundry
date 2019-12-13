@@ -1,3 +1,17 @@
+// Copyright 2019 MongoDB Inc
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package opsmanager
 
 // AutomationConfig represents a cluster definition within an automation config object
@@ -70,13 +84,13 @@ type Role struct {
 
 // Member configs
 type Member struct {
-	ID          int    `json:"_id"`
-	ArbiterOnly bool   `json:"arbiterOnly"`
-	Hidden      bool   `json:"hidden"`
-	Host        string `json:"host"`
-	Priority    int    `json:"priority"`
-	SlaveDelay  int    `json:"slaveDelay"`
-	Votes       int    `json:"votes"`
+	ID          int     `json:"_id"`
+	ArbiterOnly bool    `json:"arbiterOnly"`
+	Hidden      bool    `json:"hidden"`
+	Host        string  `json:"host"`
+	Priority    float64 `json:"priority"`
+	SlaveDelay  int     `json:"slaveDelay"`
+	Votes       float64 `json:"votes"`
 }
 
 // ReplicaSet configs
