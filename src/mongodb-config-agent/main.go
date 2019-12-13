@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"mongodb-service-adapter/adapter"
 	"mongodb-service-adapter/adapter/config"
@@ -103,17 +104,17 @@ func main() {
 
 	logger.Printf("Configured group %s", cfg.GroupID)
 
-	// for {
-	// 	logger.Printf("Checking group %s", cfg.GroupID)
-	// 	groupHosts, err := omClient.GetHosts(cfg.GroupID)
-	// 	if err != nil {
-	// 		logger.Fatal(err)
-	// 	}
-	// 	if groupHosts.TotalCount == 0 {
-	// 		logger.Fatalf("Host count for %s is 0...", cfg.GroupID)
-	// 	}
-	// 	time.Sleep(30 * time.Second)
-	// }
+	for {
+		logger.Printf("Checking group %s", cfg.GroupID)
+		groupHosts, err := omClient.GetHosts(cfg.GroupID)
+		if err != nil {
+			logger.Fatal(err)
+		}
+		if groupHosts.TotalCount == 0 {
+			logger.Fatalf("Host count for %s is 0...", cfg.GroupID)
+		}
+		time.Sleep(30 * time.Second)
+	}
 }
 
 func printConfig(logger *log.Logger, cfg interface{}) {
