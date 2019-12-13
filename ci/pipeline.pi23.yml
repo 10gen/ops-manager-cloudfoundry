@@ -2,7 +2,6 @@
 groups:
   - name: mongodb-on-demand
     jobs:
-      - build-tile
       - deploy-tile
       - delete-tile
       - smoke-tests
