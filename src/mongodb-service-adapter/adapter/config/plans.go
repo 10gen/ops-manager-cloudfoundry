@@ -118,7 +118,7 @@ func (r *AutomationConfig) ToShardedCluster(ctx *DocContext) {
 		})
 
 		r.ReplicaSets[0].Members = append(r.ReplicaSets[0].Members, opsmanager.Member{
-			ID:          fmt.Sprint(i),
+			ID:          i,
 			ArbiterOnly: false,
 			Hidden:      false,
 			Host:        node,
@@ -156,7 +156,7 @@ func (r *AutomationConfig) ToShardedCluster(ctx *DocContext) {
 			})
 
 			rs.Members = append(rs.Members, opsmanager.Member{
-				ID:          fmt.Sprint(i),
+				ID:          i,
 				ArbiterOnly: false,
 				Hidden:      false,
 				Host:        node,
@@ -242,7 +242,7 @@ func (r *AutomationConfig) ToReplicaSet(ctx *DocContext) {
 		})
 
 		r.ReplicaSets[0].Members = append(r.ReplicaSets[0].Members, opsmanager.Member{
-			ID:          fmt.Sprint(i),
+			ID:          i,
 			ArbiterOnly: false,
 			Hidden:      false,
 			Host:        node,

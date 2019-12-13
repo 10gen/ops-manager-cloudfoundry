@@ -84,7 +84,7 @@ type Role struct {
 
 // Member configs
 type Member struct {
-	ID          string  `json:"_id"`
+	ID          int     `json:"_id"`
 	ArbiterOnly bool    `json:"arbiterOnly"`
 	Hidden      bool    `json:"hidden"`
 	Host        string  `json:"host"`
