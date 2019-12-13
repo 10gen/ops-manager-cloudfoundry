@@ -64,9 +64,9 @@ func (r *AutomationConfig) ToShardedCluster(ctx *DocContext) {
 
 	r.MongoDBVersions, r.BackupVersions, r.MonitoringVersions = getDefaultVersions(ctx.Version, ctx.Cluster.ConfigServers[0])
 
-	protocolVersion := 0
+	protocolVersion := "0"
 	if ctx.CompatibilityVersion == "4.0" {
-		protocolVersion = 1
+		protocolVersion = "1"
 	}
 
 	r.ReplicaSets = []opsmanager.ReplicaSet{{
@@ -118,7 +118,7 @@ func (r *AutomationConfig) ToShardedCluster(ctx *DocContext) {
 		})
 
 		r.ReplicaSets[0].Members = append(r.ReplicaSets[0].Members, opsmanager.Member{
-			ID:          i,
+			ID:          fmt.Sprint(i),
 			ArbiterOnly: false,
 			Hidden:      false,
 			Host:        node,
@@ -156,7 +156,7 @@ func (r *AutomationConfig) ToShardedCluster(ctx *DocContext) {
 			})
 
 			rs.Members = append(rs.Members, opsmanager.Member{
-				ID:          i,
+				ID:          fmt.Sprint(i),
 				ArbiterOnly: false,
 				Hidden:      false,
 				Host:        node,
@@ -208,9 +208,9 @@ func (r *AutomationConfig) ToReplicaSet(ctx *DocContext) {
 
 	r.MongoDBVersions, r.BackupVersions, r.MonitoringVersions = getDefaultVersions(ctx.Version, ctx.Nodes[0])
 
-	protocolVersion := 0
+	protocolVersion := "0"
 	if ctx.CompatibilityVersion == "4.0" {
-		protocolVersion = 1
+		protocolVersion = "1"
 	}
 
 	r.ReplicaSets = []opsmanager.ReplicaSet{{
@@ -242,7 +242,7 @@ func (r *AutomationConfig) ToReplicaSet(ctx *DocContext) {
 		})
 
 		r.ReplicaSets[0].Members = append(r.ReplicaSets[0].Members, opsmanager.Member{
-			ID:          i,
+			ID:          fmt.Sprint(i),
 			ArbiterOnly: false,
 			Hidden:      false,
 			Host:        node,

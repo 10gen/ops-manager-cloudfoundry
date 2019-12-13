@@ -84,7 +84,7 @@ type Role struct {
 
 // Member configs
 type Member struct {
-	ID          int     `json:"_id"`
+	ID          string  `json:"_id"`
 	ArbiterOnly bool    `json:"arbiterOnly"`
 	Hidden      bool    `json:"hidden"`
 	Host        string  `json:"host"`
@@ -96,7 +96,7 @@ type Member struct {
 // ReplicaSet configs
 type ReplicaSet struct {
 	ID              string   `json:"_id"`
-	ProtocolVersion int      `json:"protocolVersion,omitempty"`
+	ProtocolVersion string   `json:"protocolVersion,omitempty"`
 	Members         []Member `json:"members"`
 }
 
