@@ -205,6 +205,7 @@ jobs:
 
 - name: deploy-tile
   serial: true
+  serial_groups: [same-deployment]
   build_logs_to_retain: 50
   plan:
   - get: ops-manager-cloudfoundry
@@ -252,6 +253,7 @@ jobs:
 
 - name: smoke-tests
   serial: true
+  serial_groups: [same-deployment]
   build_logs_to_retain: 50
   plan:
   - get: ops-manager-cloudfoundry
@@ -261,16 +263,37 @@ jobs:
     params:
       state: "pending"
       commit: "ops-manager-cloudfoundry"
-  - task: smoke-tests
-    file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
-    params:
-      PCF_URL: ((pcf-url))
-      PCF_USERNAME: ((pcf-username))
-      PCF_PASSWORD: ((pcf-password))
-      PLAN_NAMES: '["standalone_small", "replica_set_small" , "sharded_cluster_small"]'
-      BACKUP_ENABLED: '["false", "true"]'
-      SSL_ENABLED: '["false"]'
-      CONFIG: ((env-config))
+  - in_parallel:
+    - task: standalone_small
+      file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
+      params:
+        PCF_URL: ((pcf-url))
+        PCF_USERNAME: ((pcf-username))
+        PCF_PASSWORD: ((pcf-password))
+        PLAN_NAMES: '["standalone_small"]'
+        BACKUP_ENABLED: '["false", "true"]'
+        SSL_ENABLED: '["false"]'
+        CONFIG: ((env-config))
+    - task: replica_set_small
+      file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
+      params:
+        PCF_URL: ((pcf-url))
+        PCF_USERNAME: ((pcf-username))
+        PCF_PASSWORD: ((pcf-password))
+        PLAN_NAMES: '["replica_set_small"]'
+        BACKUP_ENABLED: '["false", "true"]'
+        SSL_ENABLED: '["false"]'
+        CONFIG: ((env-config))
+    - task: sharded_cluster_small
+      file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
+      params:
+        PCF_URL: ((pcf-url))
+        PCF_USERNAME: ((pcf-username))
+        PCF_PASSWORD: ((pcf-password))
+        PLAN_NAMES: '["sharded_cluster_small"]'
+        BACKUP_ENABLED: '["false", "true"]'
+        SSL_ENABLED: '["false"]'
+        CONFIG: ((env-config))
     on_failure:
       put: "test-status"
       params:
