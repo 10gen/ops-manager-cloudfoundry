@@ -2,10 +2,11 @@ package digest_test
 
 import (
 	"fmt"
-	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/adapter"
-	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/digest"
 	"net/http"
 	"testing"
+
+	"mongodb-service-adapter/adapter"
+	"mongodb-service-adapter/digest"
 )
 
 func TestApplyDigestAuth(t *testing.T) {

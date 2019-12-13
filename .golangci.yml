@@ -1,0 +1,35 @@
+linters:
+  enable:
+    - bodyclose
+    - dupl
+    - gocritic
+    - godox
+    - goimports
+    - golint
+    - gosec
+    - interfacer
+    - maligned
+    - misspell
+    - nakedret
+    - prealloc
+    - scopelint
+    - unconvert
+    - unparam
+    - whitespace
+  disable:
+    - errcheck
+
+linters-settings:
+  gosec:
+    exclude:
+      - G501
+      - G401
+
+issues:
+  exclude-rules:
+    - linters:
+        - gosec
+      text: "G501:"
+    - linters:
+        - gosec
+      text: "G401:"

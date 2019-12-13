@@ -2,4 +2,6 @@
 name: mongodb-smoke-tests
 
 files:
-- smoke-tests/**/*
+  - smoke-tests/**/*
+  - mongodb-service-adapter/**/*
+  - mongodb-config-agent/**/*

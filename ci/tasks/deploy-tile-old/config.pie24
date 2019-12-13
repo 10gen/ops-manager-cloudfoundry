@@ -29,11 +29,11 @@ product-properties:
     - public_ip
 network-properties:
   network:
-    name: patterson-pas-subnet
+    name: brussels-pas-subnet
   other_availability_zones:
   - name: "us-central1-f"
   service_network:
-    name: patterson-services-subnet
+    name: brussels-services-subnet
   singleton_availability_zone:
     name: "us-central1-f"
 resource-config:

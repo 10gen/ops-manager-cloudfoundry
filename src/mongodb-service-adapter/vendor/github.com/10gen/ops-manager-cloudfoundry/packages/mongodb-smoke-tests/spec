@@ -1,5 +1,0 @@
----
-name: mongodb-smoke-tests
-
-files:
-- smoke-tests/**/*

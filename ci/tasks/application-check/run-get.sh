@@ -15,3 +15,4 @@ else
     echo "FAILED. Application doesn't work"
     exit 1
 fi
+cf logout

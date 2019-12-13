@@ -1,7 +1,7 @@
 package adapter_test
 
 import (
-	"github.com/10gen/ops-manager-cloudfoundry/src/mongodb-service-adapter/adapter"
+	"mongodb-service-adapter/adapter"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"reflect"

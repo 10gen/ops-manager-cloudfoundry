@@ -5,9 +5,10 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/10gen/ops-manager-cloudfoundry/src/smoke-tests/retry"
 	"github.com/onsi/gomega/gexec"
 	"github.com/pivotal-cf-experimental/cf-test-helpers/runner"
+
+	"smoke-tests/retry"
 )
 
 type App struct {

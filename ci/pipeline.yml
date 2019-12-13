@@ -17,7 +17,7 @@ resources:
 - name: ops-manager-cloudfoundry
   type: git
   source:
-    branch: master
+    branch: feature/CFTILE-35
     uri: git@github.com:10gen/ops-manager-cloudfoundry.git
     private_key: ((git-private-key))
 
@@ -26,7 +26,7 @@ resources:
   source:
     api_token: ((pivnet-token))
     product_slug: stemcells-ubuntu-xenial
-    product_version: '170.69'
+    product_version: 170.*
 
 - name: version
   type: semver
@@ -147,28 +147,29 @@ jobs:
   plan:
   - get: ops-manager-cloudfoundry
     trigger: true
-  - get: on-demand-service-broker-release
-    params:
-      filename: on-demand-service-broker-(.*).tgz
-  - get: syslog-migration-release
-    params:
-      filename: syslog-migration-(.*).tgz
-  - get: pcf-mongodb-helpers
-    params:
-      filename: pcf-mongodb-helpers-(.*).tgz
-  - get: bpm-release
-    params:
-      filename: bpm-release-(.*).tgz
-  - get: mongodb
-    params:
-      filename: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
-  - get: version
-    params:
-      pre: rc
-  - put: "build-status"
-    params:
-      state: "pending"
-      commit: "ops-manager-cloudfoundry"
+  - in_parallel:
+    - get: on-demand-service-broker-release
+      params:
+        filename: on-demand-service-broker-(.*).tgz
+    - get: syslog-migration-release
+      params:
+        filename: syslog-migration-(.*).tgz
+    - get: pcf-mongodb-helpers
+      params:
+        filename: pcf-mongodb-helpers-(.*).tgz
+    - get: bpm-release
+      params:
+        filename: bpm-release-(.*).tgz
+    - get: mongodb
+      params:
+        filename: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
+    - get: version
+      params:
+        pre: rc
+    - put: "build-status"
+      params:
+        state: "pending"
+        commit: "ops-manager-cloudfoundry"
   - task: build-tile
     file: ops-manager-cloudfoundry/ci/tasks/build-tile/task.yml
     on_failure:
@@ -190,46 +191,45 @@ jobs:
     params:
       AWS_KEY: ((aws-access-key))
       AWS_SECRET_KEY: ((aws-secret-access-key))
-  - put: artifacts
-    params:
-      file: artifacts/mongodb-on-demand-*.pivotal
-  - put: version
-    params:
-      pre: rc
-  - put: "build-status"
-    params:
-      state: "success"
-      commit: "ops-manager-cloudfoundry"
+  - in_parallel:
+    - put: artifacts
+      params:
+        file: artifacts/mongodb-on-demand-*.pivotal
+    - put: version
+      params:
+        pre: rc
+    - put: "build-status"
+      params:
+        state: "success"
+        commit: "ops-manager-cloudfoundry"
 
 - name: deploy-tile
   serial: true
+  serial_groups: [same-deployment]
   build_logs_to_retain: 50
   plan:
   - get: ops-manager-cloudfoundry
     trigger: true
     passed: [ build-tile ]
-  - get: artifacts
-    params:
-      file: artifacts/mongodb-on-demand-*.pivotal
-  - get: version
-  - get: stemcell
-    params:
-      globs: ["*azure*"]
-  - put: "deploy-status"
-    params:
-      state: "pending"
-      commit: "ops-manager-cloudfoundry"
+  - in_parallel:
+    - get: artifacts
+      params:
+        file: artifacts/mongodb-on-demand-*.pivotal
+    - get: version
+    - get: stemcell
+      params:
+        globs: [((globs-param))]
+    - put: "deploy-status"
+      params:
+        state: "pending"
+        commit: "ops-manager-cloudfoundry"
   - task: deploy-tile
     file: ops-manager-cloudfoundry/ci/tasks/deploy-tile/task.yml
     params:
       PCF_URL: ((pcf-url))
       PCF_USERNAME: ((pcf-username))
       PCF_PASSWORD: ((pcf-password))
-      OM_API_KEY: ((om-api-key))
-      OM_API_USER: ((om-api-user))
-      PRODUCT_PROPERTIES: ((product_properties))
-      PRODUCT_NETWORK_AZS: ((product_network_azs))
-      CONFIG: config
+      CONFIG: ((env-config))
     on_failure:
       put: "deploy-status"
       params:
@@ -253,6 +253,7 @@ jobs:
 
 - name: smoke-tests
   serial: true
+  serial_groups: [same-deployment]
   build_logs_to_retain: 50
   plan:
   - get: ops-manager-cloudfoundry
@@ -262,12 +263,37 @@ jobs:
     params:
       state: "pending"
       commit: "ops-manager-cloudfoundry"
-  - task: smoke-tests
-    file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
-    params:
-      PCF_URL: ((pcf-url))
-      PCF_USERNAME: ((pcf-username))
-      PCF_PASSWORD: ((pcf-password))
+  - in_parallel:
+    - task: standalone_small
+      file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
+      params:
+        PCF_URL: ((pcf-url))
+        PCF_USERNAME: ((pcf-username))
+        PCF_PASSWORD: ((pcf-password))
+        PLAN_NAMES: '["standalone_small"]'
+        BACKUP_ENABLED: '["false", "true"]'
+        SSL_ENABLED: '["false"]'
+        CONFIG: ((env-config))
+    - task: replica_set_small
+      file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
+      params:
+        PCF_URL: ((pcf-url))
+        PCF_USERNAME: ((pcf-username))
+        PCF_PASSWORD: ((pcf-password))
+        PLAN_NAMES: '["replica_set_small"]'
+        BACKUP_ENABLED: '["false", "true"]'
+        SSL_ENABLED: '["false"]'
+        CONFIG: ((env-config))
+    - task: sharded_cluster_small
+      file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
+      params:
+        PCF_URL: ((pcf-url))
+        PCF_USERNAME: ((pcf-username))
+        PCF_PASSWORD: ((pcf-password))
+        PLAN_NAMES: '["sharded_cluster_small"]'
+        BACKUP_ENABLED: '["false", "true"]'
+        SSL_ENABLED: '["false"]'
+        CONFIG: ((env-config))
     on_failure:
       put: "test-status"
       params:
