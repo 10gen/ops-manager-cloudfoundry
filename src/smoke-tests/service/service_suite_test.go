@@ -22,10 +22,11 @@ type ServiceParameters struct {
 	PlanName     string
 	BackupEnable string
 	SSLEnable    string
+	MongoDBVersion string
 }
 
 func (sp ServiceParameters) PrintParameters() string {
-	return fmt.Sprintf("%s ( Backup: %s, SSL: %s)", strings.ToUpper(sp.PlanName), sp.BackupEnable, sp.SSLEnable)
+	return fmt.Sprintf("%s ( Backup: %s, SSL: %s, version: %s)", strings.ToUpper(sp.PlanName), sp.BackupEnable, sp.SSLEnable, sp.MongoDBVersion)
 }
 
 //generate different service config for test
@@ -34,8 +35,10 @@ func generateTestServiceParameters(testConfig mongodbTestConfig) []ServiceParame
 	for _, planName := range testConfig.PlanNames {
 		for _, backup := range testConfig.Backup {
 			for _, ssl := range testConfig.SSL {
-				testServiceParameters = append(testServiceParameters,
-					ServiceParameters{testConfig.ServiceName, planName, backup, ssl})
+				for _, version := range testConfig.MongoDBVersion {
+					testServiceParameters = append(testServiceParameters,
+						ServiceParameters{testConfig.ServiceName, planName, backup, ssl, version})
+				}
 			}
 		}
 	}
@@ -46,10 +49,11 @@ func generateTestServiceParameters(testConfig mongodbTestConfig) []ServiceParame
 func printGeneratedServiceParameters(testConfig []ServiceParameters) {
 	for i, element := range testConfig {
 		fmt.Printf("==== Case %d ====\n", i+1)
-		fmt.Printf("Service Name %s \n", element.ServiceName)
-		fmt.Printf("PlanName is %s \n", element.PlanName)
-		fmt.Printf("Backup %s \n", element.BackupEnable)
-		fmt.Printf("SSL enabled %s \n", element.SSLEnable)
+		fmt.Printf("Service Name: %s \n", element.ServiceName)
+		fmt.Printf("PlanName: %s \n", element.PlanName)
+		fmt.Printf("Backup: %s \n", element.BackupEnable)
+		fmt.Printf("SSL enabled: %s \n", element.SSLEnable)
+		fmt.Printf("Version MongoDB: %s \n", element.MongoDBVersion)
 		fmt.Println("=================")
 	}
 }
@@ -80,26 +84,33 @@ func (rc retryConfig) MaxRetries() int {
 }
 
 type mongodbTestConfig struct {
+	URL string `json:"url"`
+	UserName string `json:"username"`
+	UserAPIKey string `json:"api_key"`
 	ServiceName string      `json:"service_name"`
 	PlanNames   []string    `json:"plan_names"`
 	Retry       retryConfig `json:"retry"`
 	Backup      []string    `json:"backup_enabled"`
-	SSL         []string    `json:"ssl_enabled"`
+	SSL         []string	`json:"ssl_enabled"`
+	MongoDBVersion []string `json:"mongodb_version"`
 }
 
 //test if all parameters in pipeline was provided
-func (testConfig mongodbTestConfig) ValidateMongodbTestConfig() {
+func (testConfig *mongodbTestConfig) SetDefaultForNonDefinedParameters() {
 	if testConfig.ServiceName == "" {
-		panic("Parameter Service name is not define at pipeline")
+		testConfig.ServiceName = "mongodb-odb"
 	}
 	if testConfig.PlanNames == nil || len(testConfig.PlanNames) == 0 {
-		panic("Parameter \"PLAN_NAMES\" is not define at pipeline")
+		testConfig.PlanNames = []string{"standalone_small", "replica_set_small", "sharded_cluster_small"}
 	}
 	if testConfig.Backup == nil || len(testConfig.Backup) == 0 {
-		panic("Parameter \"BACKUP_ENABLED\" is not define at pipeline")
+		testConfig.Backup = []string{"false", "true"}
 	}
 	if testConfig.SSL == nil || len(testConfig.SSL) == 0 {
-		panic("Parameter \"SSL_ENABLED\" is not define at pipeline")
+		testConfig.SSL = []string{"false"}
+	}
+	if testConfig.MongoDBVersion == nil || len(testConfig.MongoDBVersion) == 0 {
+		testConfig.MongoDBVersion = []string{"4.0.9-ent"}
 	}
 }
 
@@ -139,7 +150,6 @@ var (
 	configPath    = os.Getenv("CONFIG_PATH")
 	cfTestConfig  = loadCFTestConfig(configPath)
 	mongodbConfig = loadMongodbTestConfig(configPath)
-
 	smokeTestReporter *reporter.SmokeTestReport
 )
 

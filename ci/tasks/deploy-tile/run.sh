@@ -39,6 +39,7 @@ echo "Product " $PRODUCT
 # if [ -z "${PRODUCT}" ]; then
 # 	PRODUCT=mongodb-on-demand
 # fi
+
 om="om -t $PCF_URL -u $PCF_USERNAME -p $PCF_PASSWORD -k"
 cf_version=$(${om} available-products -f json | jq -j '.[] | select(.name == "cf").version')
 

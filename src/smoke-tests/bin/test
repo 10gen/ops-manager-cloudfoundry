@@ -2,7 +2,7 @@ set -e
 set -x
 
 export GOPATH=$GOPATH:$(pwd)
-go get -v github.com/onsi/ginkgo/ginkgo
+go get -u -v github.com/onsi/ginkgo/ginkgo
 
 export GO111MODULE=on
 CF_COLOR=false CF_VERBOSE_OUTPUT=true ginkgo -r -v -noColor=true -keepGoing=true -trace=true -slowSpecThreshold=300 service

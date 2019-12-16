@@ -2,10 +2,6 @@ package mongodb
 
 import (
 
-	// helpersCF "github.com/pivotal-cf-experimental/cf-test-helpers/cf"
-	// "github.com/onsi/gomega/gexec"
-	//CF "smoke-tests/cf"
-	"mongodb-service-adapter/adapter"
 )
 
 type OpsManager struct {
@@ -25,12 +21,4 @@ type Service struct {
 	Message       string
 	Started       string
 	Update        string
-}
-
-func GetConfig() *adapter.Config {
-	config, err := adapter.LoadConfig("../../mongodb-service-adapter/testdata/manifest.json")
-	if err != nil {
-		return nil
-	}
-	return config
 }

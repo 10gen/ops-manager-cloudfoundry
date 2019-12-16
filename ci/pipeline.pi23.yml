@@ -2,8 +2,6 @@
 groups:
   - name: mongodb-on-demand
     jobs:
-      - build-tile
-      - deploy-tile-old
       - deploy-tile
       - delete-tile
       - smoke-tests
@@ -88,12 +86,7 @@ resources:
     regexp: mongodb-on-demand-(.*).pivotal
     access_key_id: ((aws-access-key))
     secret_access_key: ((aws-secret-access-key))
-- name: tileold
-  type: pivnet
-  source:
-    api_token: ((pivnet-token))
-    product_slug: mongodb-on-demand
-    product_version: '1.1.1'
+
 
 resource_types:
 - name: pivnet
@@ -107,11 +100,12 @@ resource_types:
     repository: cfcommunity/slack-notification-resource
 
 jobs:
+
 - name: build-tile
   serial: true
   build_logs_to_retain: 50
   plan:
-  - in_parallel:
+  - aggregate:
     - get: ops-manager-cloudfoundry
       trigger: true
     - get: on-demand-service-broker-release
@@ -144,34 +138,6 @@ jobs:
     params:
       pre: rc
 
-
-- name: deploy-tile-old
-  serial: true
-  build_logs_to_retain: 50
-  plan:
-  - in_parallel:
-    - get: ops-manager-cloudfoundry
-      trigger: true
-      passed: [ build-tile ]
-    - get: artifacts
-      params:
-        file: artifacts/mongodb-on-demand-1.1.1.pivotal
-    - get: stemcell
-      params:
-        globs: ["*google*"]
-    - get: tileold
-  - task: deploy-tile-old
-    file: ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/task.yml
-    params:
-      PCF_URL: ((pcf-url))
-      PCF_USERNAME: ((pcf-username))
-      PCF_PASSWORD: ((pcf-password))
-      OM_API_USER: ((om-api-user))
-      OM_API_KEY: ((om-api-key))
-      PRODUCT_PROPERTIES: ((product_properties))
-      PRODUCT_NETWORK_AZS: ((product_network_azs))
-      CONFIG: config.pie22
-
 - name: deploy-tile
   serial: true
   build_logs_to_retain: 50
@@ -179,7 +145,6 @@ jobs:
   - aggregate:
     - get: ops-manager-cloudfoundry
       trigger: true
-      passed: [ deploy-tile-old ]
     - get: artifacts
       params:
         file: artifacts/mongodb-on-demand-*.pivotal
@@ -197,13 +162,14 @@ jobs:
       OM_API_KEY: ((om-api-key))
       PRODUCT_PROPERTIES: ((product_properties))
       PRODUCT_NETWORK_AZS: ((product_network_azs))
-      CONFIG: config.pie22
+      CONFIG: config.pie23
+
 
 - name: smoke-tests
   serial: true
   build_logs_to_retain: 50
   plan:
-  - in_parallel:
+  - aggregate:
     - get: ops-manager-cloudfoundry
       trigger: true
       passed: [ deploy-tile ]
