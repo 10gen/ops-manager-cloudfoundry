@@ -33,7 +33,7 @@ cat >config.json <<EOF
   "admin_user": "$(pcf cf-info | grep admin_username | cut -d' ' -f 3)",
   "admin_password": "$(pcf cf-info | grep admin_password | cut -d' ' -f 3)",
   "skip_ssl_validation": true,
-  "create_permissive_security_group": false
+  "create_permissive_security_group": false,
   "mongo_ops": {
     "url": "$(yq r $config_path product-properties[.properties.url].value)",
     "username": "$(yq r $config_path product-properties[.properties.username].value)",
