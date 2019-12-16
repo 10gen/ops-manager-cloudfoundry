@@ -190,9 +190,9 @@ jobs:
   - task: use application
     file: ops-manager-cloudfoundry/ci/tasks/application-check/task-put.yml
     params:
-      CF_APP_URL: ((cf-app-url))
-      CF_APP_USER: ((cf-app-username))
-      CF_APP_PASSWORD: ((cf-app-password))
+      PCF_URL: ((pcf-url))
+      PCF_USERNAME: ((pcf-username))
+      PCF_PASSWORD: ((pcf-password))
     on_failure:
       put: "check-service-status"
       params:
@@ -267,9 +267,9 @@ jobs:
   - task: check application
     file: ops-manager-cloudfoundry/ci/tasks/application-check/task-get.yml
     params:
-      CF_APP_URL: ((cf-app-url))
-      CF_APP_USER: ((cf-app-username))
-      CF_APP_PASSWORD: ((cf-app-password))
+      PCF_URL: ((pcf-url))
+      PCF_USERNAME: ((pcf-username))
+      PCF_PASSWORD: ((pcf-password))
     on_failure:
       put: "check-app-status"
       params:
@@ -301,9 +301,9 @@ jobs:
   - task: cleaning - delete service and application
     file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task-delete-service.yml
     params:
-      CF_APP_URL: ((cf-app-url))
-      CF_APP_USER: ((cf-app-username))
-      CF_APP_PASSWORD: ((cf-app-password))
+      PCF_URL: ((pcf-url))
+      PCF_USERNAME: ((pcf-username))
+      PCF_PASSWORD: ((pcf-password))
     on_failure:
       put: "cleanup-status"
       params:
@@ -335,12 +335,13 @@ jobs:
   - task: deploy-mongodb-service
     file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task-create-service.yml
     params:
-      CF_APP_URL: ((cf-app-url))
-      CF_APP_USER: ((cf-app-username))
-      CF_APP_PASSWORD: ((cf-app-password))
+      PCF_URL: ((pcf-url))
+      PCF_USERNAME: ((pcf-username))
+      PCF_PASSWORD: ((pcf-password))
       INSTALL_TIMEOUT: 120
       SET_PLAN: replica_set_small
       BACKUP_ENABLED: true
+      MONGO_VERSION: 4.0.9-ent
     on_failure:
       put: "deploy-service-status"
       params:
@@ -369,16 +370,40 @@ jobs:
   - get: ops-manager-cloudfoundry
     trigger: true
     passed: [ check-application ]
-  - task: smoke-tests
-    file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
-    params:
-      PCF_URL: ((pcf-url))
-      PCF_USERNAME: ((pcf-username))
-      PCF_PASSWORD: ((pcf-password))
-      PLAN_NAMES: '["standalone_small", "replica_set_small" , "sharded_cluster_small"]'
-      BACKUP_ENABLED: '["false", "true"]'
-      SSL_ENABLED: '["false"]'
-      CONFIG: ((env-config))
+  - in_parallel:
+    - task: smoke-tests standalone
+      file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
+      params:
+        PCF_URL: ((pcf-url))
+        PCF_USERNAME: ((pcf-username))
+        PCF_PASSWORD: ((pcf-password))
+        PLAN_NAMES: '["standalone_small"]'
+        BACKUP_ENABLED: '["false", "true"]'
+        SSL_ENABLED: '["false"]'
+        MONGO_VERSION: '["4.0.9-ent"]'
+        CONFIG: ((env-config))
+    - task: smoke-tests replica set
+      file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
+      params:
+        PCF_URL: ((pcf-url))
+        PCF_USERNAME: ((pcf-username))
+        PCF_PASSWORD: ((pcf-password))
+        PLAN_NAMES: '["replica_set_small"]'
+        BACKUP_ENABLED: '["false", "true"]'
+        SSL_ENABLED: '["false"]'
+        MONGO_VERSION: '["4.0.9-ent"]'
+        CONFIG: ((env-config))
+    - task: smoke-tests sharded
+      file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
+      params:
+        PCF_URL: ((pcf-url))
+        PCF_USERNAME: ((pcf-username))
+        PCF_PASSWORD: ((pcf-password))
+        PLAN_NAMES: '["sharded_cluster_small"]'
+        BACKUP_ENABLED: '["false", "true"]'
+        SSL_ENABLED: '["false"]'
+        MONGO_VERSION: '["4.0.9-ent"]'
+        CONFIG: ((env-config))
     on_failure:
       put: "test-status"
       params:

@@ -2,8 +2,14 @@
 set -eo pipefail
 [[ ${DEBUG:-} = true ]] && set -x
 base=$PWD
-cf login -a $CF_APP_URL -u $CF_APP_USER -p $CF_APP_PASSWORD --skip-ssl-validation -o system -s system
-host=$(echo $(cf apps | grep app-ruby-sample | awk '{print $6}'))
+app_name="app-ruby-sample"
+. "$base/ops-manager-cloudfoundry/ci/tasks/helpers/cf-helper.sh"
+. "$base/ops-manager-cloudfoundry/ci/tasks/helpers/tmp-helper.sh"
+make_pcf_metadata
+
+cf_login
+check_app_started $instance_name $app_name
+host=$(echo $(cf apps | grep $app_name | awk '{print $6}'))
 url="http://${host}/service/mongo/test3"
 result=$(echo $(curl -X GET ${url}))
 if [ "${result}" = '{"data":"sometest130"}' ]; then

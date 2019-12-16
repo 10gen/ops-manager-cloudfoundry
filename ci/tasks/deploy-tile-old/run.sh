@@ -34,11 +34,13 @@ PRODUCT="$(yq r $base/ops-manager-cloudfoundry/tile/tile.yml name)"
 echo "Product: " $PRODUCT
 
 om="om -t $PCF_URL -u $PCF_USERNAME -p $PCF_PASSWORD -k"
+cf_version=$(${om} available-products -f json | jq -j '.[] | select(.name == "cf").version')
 echo ${om} $TILE_FILE
 ${om} upload-product --product "tileold/$TILE_FILE"
 ${om} upload-stemcell --stemcell "stemcell/$STEMCELL_FILE"
 ${om} available-products
 ${om} stage-product --product-name "$PRODUCT" --product-version "$VERSION"
+${om} stage-product --product-name cf --product-version "$cf_version"
 
 # if ${VERSION} = '1.0.5'; then
 # 	${om} delete-product --product-name "$PRODUCT"
@@ -64,11 +66,12 @@ export OM_API_KEY=$(yq r $config_path product-properties[.properties.api_key].va
 ${om} configure-product --config "$config_path" --vars-env OM_API
 
 STAGED=$(${om} curl --path /api/v0/staged/products)
-RESULT=$(echo "$STAGED" | jq --arg product_name "$PRODUCT" 'map(select(.type == $product_name)) | .[].guid')
-echo $RESULT
-DATA=$(echo '{"deploy_products": []}' | jq ".deploy_products += [$RESULT]")
-echo $DATA
+# get GUIDs of cf and $PRODUCT
+RESULT=$(echo "$STAGED" | jq --arg product_name "$PRODUCT" '.[] | select(.type == $product_name or .type == "cf") | .guid')
+# merge GUIDs
+RESULT=$(echo "$RESULT" | jq --slurp)
+DATA=$(echo '{"deploy_products": []}' | jq ".deploy_products += $RESULT")
 
 ${om} curl --path /api/v0/installations --request POST --data "$DATA"
-${om} apply-changes --skip-deploy-products="true" --reattach
+${om} apply-changes --reattach -n cf,"$PRODUCT"
 ${om} delete-unused-products
