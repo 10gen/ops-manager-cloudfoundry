@@ -219,8 +219,9 @@ jobs:
   build_logs_to_retain: 50
   plan:
   - get: ops-manager-cloudfoundry
-      
-    
+    trigger: true
+    passed: [ deploy-mongodb-service ]
+  - get: deploy-service-status
   - get: artifacts
     params:
       file: artifacts/mongodb-on-demand-*.pivotal
@@ -430,7 +431,7 @@ jobs:
   plan:
   - get: version
   - get: ops-manager-cloudfoundry
-
+    trigger: true
   - task: delete-tile
     file: ops-manager-cloudfoundry/ci/tasks/delete-tile/task.yml
     params:

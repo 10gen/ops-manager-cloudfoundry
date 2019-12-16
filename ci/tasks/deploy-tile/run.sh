@@ -39,6 +39,7 @@ echo "Product " $PRODUCT
 # if [ -z "${PRODUCT}" ]; then
 # 	PRODUCT=mongodb-on-demand
 # fi
+
 om="om -t $PCF_URL -u $PCF_USERNAME -p $PCF_PASSWORD -k"
 cf_version=$(${om} available-products -f json | jq -j '.[] | select(.name == "cf").version')
 
@@ -48,8 +49,7 @@ ${om} available-products
 ${om} stage-product --product-name "$PRODUCT" --product-version "$VERSION"
 ${om} stage-product --product-name cf --product-version "$cf_version"
 
-echo "CONFIG=${CONFIG}"
-config_path=$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config
+config_path=$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config.pie
 make_env_config $config_path
 export OM_API_USER=$(yq r $config_path product-properties[.properties.username].value)
 export OM_API_KEY=$(yq r $config_path product-properties[.properties.api_key].value.secret)
