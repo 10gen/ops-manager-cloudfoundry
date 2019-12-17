@@ -50,7 +50,7 @@ func main() {
 
 	if ctx.Password == "" {
 		var err error
-		ctx.Password, err = adapter.GenerateString(32)
+		ctx.Password, err = adapter.GeneratePassword(32)
 		if err != nil {
 			logger.Fatal(err)
 		}
