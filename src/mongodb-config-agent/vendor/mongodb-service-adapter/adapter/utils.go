@@ -2,8 +2,10 @@ package adapter
 
 import (
 	"crypto/rand"
+	"encoding/base64"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net"
@@ -21,24 +23,17 @@ const (
 	versionsManifest2 = "../../mongodb_versions/versions.json"
 )
 
-// GenerateString generates a random string or panics
-// if something goes wrong.
+// GenerateString generates a random base64 string of a given length
 func GenerateString(l int) (string, error) {
-	b := make([]byte, l)
-
-	for i := l; i != 0; {
-		n, err := rand.Read(b)
-		if err != nil {
-			return "", err
-		}
-		if n == 0 {
-			return "", errors.New("couldn't read from crypto/rand")
-		}
-
-		i -= n
+	enc := base64.URLEncoding
+	entropy := enc.DecodedLen(l) + 2
+	b := make([]byte, entropy)
+	_, err := io.ReadAtLeast(rand.Reader, b, entropy)
+	if err != nil {
+		return "", fmt.Errorf("cannot read random bytes: %v", err)
 	}
 
-	return fmt.Sprintf("%x", b)[:l], nil
+	return enc.EncodeToString(b)[:l], nil
 }
 
 // TODO: validate input
