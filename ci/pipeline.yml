@@ -17,7 +17,7 @@ resources:
 - name: ops-manager-cloudfoundry
   type: git
   source:
-    branch: feature/CFTILE-35
+    branch: master
     uri: git@github.com:10gen/ops-manager-cloudfoundry.git
     private_key: ((git-private-key))
 
@@ -143,7 +143,7 @@ resource_types:
 jobs:
 - name: build-tile
   serial: true
-  build_logs_to_retain: 50
+  build_logs_to_retain: 5
   plan:
   - get: ops-manager-cloudfoundry
     trigger: true
@@ -206,7 +206,7 @@ jobs:
 - name: deploy-tile
   serial: true
   serial_groups: [same-deployment]
-  build_logs_to_retain: 50
+  build_logs_to_retain: 5
   plan:
   - get: ops-manager-cloudfoundry
     trigger: true
@@ -293,6 +293,7 @@ jobs:
         PLAN_NAMES: '["sharded_cluster_small"]'
         BACKUP_ENABLED: '["false", "true"]'
         SSL_ENABLED: '["false"]'
+        MONGO_VERSION: '["4.0.9-ent"]'
         CONFIG: ((env-config))
     on_failure:
       put: "test-status"
