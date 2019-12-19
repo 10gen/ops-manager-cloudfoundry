@@ -33,7 +33,7 @@ var (
 func (b Binder) CreateBinding(params serviceadapter.CreateBindingParams) (serviceadapter.Binding, error) {
 	// create an admin level user
 	username := mkUsername(params.BindingID)
-	password, err := GenerateString(32)
+	password, err := GeneratePassword(32)
 	if err != nil {
 		return serviceadapter.Binding{}, err
 	}

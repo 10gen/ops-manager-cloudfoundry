@@ -1,10 +1,12 @@
 package adapter_test
 
 import (
-	"mongodb-service-adapter/adapter"
+	"reflect"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"reflect"
+
+	"mongodb-service-adapter/adapter"
 )
 
 var _ = Describe("Utils", func() {
@@ -22,15 +24,15 @@ var _ = Describe("Utils", func() {
 
 	})
 
-	Describe("GenerateString", func() {
+	Describe("GeneratePassword", func() {
 
 		It("returns without error", func() {
-			_, err := adapter.GenerateString(10)
+			_, err := adapter.GeneratePassword(10)
 			Expect(err).ToNot(HaveOccurred())
 		})
 
 		It("should return length equal to 10", func() {
-			res, _ := adapter.GenerateString(10)
+			res, _ := adapter.GeneratePassword(10)
 			Expect(len(res) == 10).To(BeTrue())
 		})
 	})

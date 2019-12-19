@@ -2,8 +2,10 @@ package adapter
 
 import (
 	"crypto/rand"
+	"encoding/base64"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net"
@@ -21,24 +23,26 @@ const (
 	versionsManifest2 = "../../mongodb_versions/versions.json"
 )
 
-// GenerateString generates a random string or panics
-// if something goes wrong.
-func GenerateString(l int) (string, error) {
-	b := make([]byte, l)
-
-	for i := l; i != 0; {
-		n, err := rand.Read(b)
-		if err != nil {
-			return "", err
-		}
-		if n == 0 {
-			return "", errors.New("couldn't read from crypto/rand")
-		}
-
-		i -= n
+// GeneratePassword generates a random BOSH-safe string of a given length
+func GeneratePassword(l int) (string, error) {
+	enc := base64.StdEncoding
+	entropy := enc.DecodedLen(l) + 2
+	b := make([]byte, entropy)
+	_, err := io.ReadAtLeast(rand.Reader, b, entropy)
+	if err != nil {
+		return "", fmt.Errorf("cannot read random bytes: %v", err)
 	}
 
-	return fmt.Sprintf("%x", b)[:l], nil
+	result := make([]byte, enc.EncodedLen(entropy))
+	enc.Encode(result, b)
+
+	// BOSH stores data in YAML, so we need to make sure the password won't be mistaken for a number
+	// if the first symbol is a number or plus sign, we replace it with a letter
+	if shift := result[0] - '0'; shift < 10 || result[0] == '+' {
+		result[0] = 'o' + shift
+	}
+
+	return string(result[:l]), nil
 }
 
 // TODO: validate input

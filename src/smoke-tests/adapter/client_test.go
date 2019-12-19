@@ -2,10 +2,12 @@ package adapter_test
 
 import (
 	"encoding/json"
-	"mongodb-service-adapter/adapter"
+	"reflect"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"reflect"
+
+	"mongodb-service-adapter/adapter"
 )
 
 var _ = Describe("Client", func() {
@@ -136,7 +138,7 @@ var _ = Describe("Client", func() {
 	Describe("GetGroupByName", func() {
 
 		It("returns error when group name is not defined ", func() {
-			name, _ := adapter.GenerateString(5)
+			name, _ := adapter.GeneratePassword(5)
 			group, _ := c.GetGroupByName("Why" + name)
 			Expect(group.Name == "").To(BeTrue())
 		})
@@ -149,14 +151,14 @@ var _ = Describe("Client", func() {
 
 	Describe("CreateGroup", func() {
 		It("returns no error when GroupCreateRequest is nil ", func() {
-			id, _ := adapter.GenerateString(10)
+			id, _ := adapter.GeneratePassword(10)
 			request := adapter.GroupCreateRequest{}
 			_, err = c.CreateGroup(id, request)
 			Expect(err).ToNot(HaveOccurred())
 		})
 
 		It("returns error when group name not exists", func() {
-			id, _ := adapter.GenerateString(10)
+			id, _ := adapter.GeneratePassword(10)
 			request := adapter.GroupCreateRequest{
 				Name: "PCF" + id[0:(len(id)/2)],
 			}

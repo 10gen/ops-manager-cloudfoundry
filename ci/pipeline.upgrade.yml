@@ -12,449 +12,449 @@ groups:
       - smoke-tests
 
 resources:
-- name: ops-manager-cloudfoundry
-  type: git
-  source:
-    branch: ((git-branch-name))
-    uri: git@github.com:10gen/ops-manager-cloudfoundry.git
-    private_key: ((git-private-key))
+  - name: ops-manager-cloudfoundry
+    type: git
+    source:
+      branch: ((git-branch-name))
+      uri: git@github.com:10gen/ops-manager-cloudfoundry.git
+      private_key: ((git-private-key))
 
-- name: stemcell
-  type: pivnet
-  source:
-    api_token: ((pivnet-token))
-    product_slug: stemcells-ubuntu-xenial
-    product_version: '170.*'
+  - name: stemcell
+    type: pivnet
+    source:
+      api_token: ((pivnet-token))
+      product_slug: stemcells-ubuntu-xenial
+      product_version: "170.*"
 
-- name: tileold
-  type: pivnet
-  source:
-    api_token: ((pivnet-token))
-    product_slug: mongodb-on-demand
-    product_version: '1.1.1'
+  - name: tileold
+    type: pivnet
+    source:
+      api_token: ((pivnet-token))
+      product_slug: mongodb-on-demand
+      product_version: "1.1.1"
 
-- name: version
-  type: semver
-  source:
-    driver: s3
-    bucket: ((aws-bucket))
-    key: version
-    region_name: eu-west-1
-    access_key_id: ((aws-access-key))
-    secret_access_key: ((aws-secret-access-key))
-    initial_version: 1.1.1
+  - name: version
+    type: semver
+    source:
+      driver: s3
+      bucket: ((aws-bucket))
+      key: version
+      region_name: eu-west-1
+      access_key_id: ((aws-access-key))
+      secret_access_key: ((aws-secret-access-key))
+      initial_version: 1.1.1
 
-- name: versionold
-  type: semver
-  source:
-    driver: s3
-    bucket: ((aws-bucket))
-    key: versionold
-    region_name: eu-west-1
-    access_key_id: ((aws-access-key))
-    secret_access_key: ((aws-secret-access-key))
-    initial_version: 1.1.1
+  - name: versionold
+    type: semver
+    source:
+      driver: s3
+      bucket: ((aws-bucket))
+      key: versionold
+      region_name: eu-west-1
+      access_key_id: ((aws-access-key))
+      secret_access_key: ((aws-secret-access-key))
+      initial_version: 1.1.1
 
-- name: artifacts
-  type: s3
-  source:
-    bucket: ((aws-bucket))
-    region_name: eu-west-1
-    regexp: mongodb-on-demand-(1.*).pivotal
-    access_key_id: ((aws-access-key))
-    secret_access_key: ((aws-secret-access-key))
+  - name: artifacts
+    type: s3
+    source:
+      bucket: ((aws-bucket))
+      region_name: eu-west-1
+      regexp: mongodb-on-demand-(1.*).pivotal
+      access_key_id: ((aws-access-key))
+      secret_access_key: ((aws-secret-access-key))
 
-- name: "check-service-status"
-  type: "github-status"
-  source:
-    repository: 10gen/ops-manager-cloudfoundry
-    access_token: ((repo-github-token))
-    context: check-application-
+  - name: "check-service-status"
+    type: "github-status"
+    source:
+      repository: 10gen/ops-manager-cloudfoundry
+      access_token: ((repo-github-token))
+      context: check-application-
 
-- name: "update-tile-status"
-  type: "github-status"
-  source:
-    repository: 10gen/ops-manager-cloudfoundry
-    access_token: ((repo-github-token))
-    context: update-tile
+  - name: "update-tile-status"
+    type: "github-status"
+    source:
+      repository: 10gen/ops-manager-cloudfoundry
+      access_token: ((repo-github-token))
+      context: update-tile
 
-- name: "deploy-status"
-  type: "github-status"
-  source:
-    repository: 10gen/ops-manager-cloudfoundry
-    access_token: ((repo-github-token))
-    context: deploy-tile
+  - name: "deploy-status"
+    type: "github-status"
+    source:
+      repository: 10gen/ops-manager-cloudfoundry
+      access_token: ((repo-github-token))
+      context: deploy-tile
 
-- name: "check-app-status"
-  type: "github-status"
-  source:
-    repository: 10gen/ops-manager-cloudfoundry
-    access_token: ((repo-github-token))
-    context: application-check
+  - name: "check-app-status"
+    type: "github-status"
+    source:
+      repository: 10gen/ops-manager-cloudfoundry
+      access_token: ((repo-github-token))
+      context: application-check
 
-- name: "cleanup-status"
-  type: "github-status"
-  source:
-    repository: 10gen/ops-manager-cloudfoundry
-    access_token: ((repo-github-token))
-    context: cleanup
+  - name: "cleanup-status"
+    type: "github-status"
+    source:
+      repository: 10gen/ops-manager-cloudfoundry
+      access_token: ((repo-github-token))
+      context: cleanup
 
-- name: "deploy-service-status"
-  type: "github-status"
-  source:
-    repository: 10gen/ops-manager-cloudfoundry
-    access_token: ((repo-github-token))
-    context: deploy-service
+  - name: "deploy-service-status"
+    type: "github-status"
+    source:
+      repository: 10gen/ops-manager-cloudfoundry
+      access_token: ((repo-github-token))
+      context: deploy-service
 
-- name: "delete-tile-status"
-  type: "github-status"
-  source:
-    repository: 10gen/ops-manager-cloudfoundry
-    access_token: ((repo-github-token))
-    context: delete-tile
+  - name: "delete-tile-status"
+    type: "github-status"
+    source:
+      repository: 10gen/ops-manager-cloudfoundry
+      access_token: ((repo-github-token))
+      context: delete-tile
 
-- name: "test-status"
-  type: "github-status"
-  source:
-    repository: 10gen/ops-manager-cloudfoundry
-    access_token: ((repo-github-token))
-    context: smoke-tests
+  - name: "test-status"
+    type: "github-status"
+    source:
+      repository: 10gen/ops-manager-cloudfoundry
+      access_token: ((repo-github-token))
+      context: smoke-tests
 resource_types:
-- name: pivnet
-  type: docker-image
-  source:
-    repository: pivotalcf/pivnet-resource
-    tag: latest-final
-- name: slack
-  type: docker-image
-  source:
-    repository: cfcommunity/slack-notification-resource
-- name: "github-status"
-  type: "docker-image"
-  source:
-    repository: "dpb587/github-status-resource"
-    tag: "master"
+  - name: pivnet
+    type: docker-image
+    source:
+      repository: pivotalcf/pivnet-resource
+      tag: latest-final
+  - name: slack
+    type: docker-image
+    source:
+      repository: cfcommunity/slack-notification-resource
+  - name: "github-status"
+    type: "docker-image"
+    source:
+      repository: "dpb587/github-status-resource"
+      tag: "master"
 
 jobs:
-- name: deploy-tile-old
-  serial: true
-  build_logs_to_retain: 50
-  plan:
-  - get: ops-manager-cloudfoundry
-    trigger: true
-    passed: [ delete-tile ]
-  - get: artifacts
-    params:
-      file: artifacts/mongodb-on-demand-*.pivotal
-  - get: version
-  - get: versionold
-  - get: stemcell
-    params:
-      globs: [((globs-param))]
-  - get: tileold
-  - task: deploy-tile-old
-    file: ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/task.yml
-    params:
-      PCF_URL: ((pcf-url))
-      PCF_USERNAME: ((pcf-username))
-      PCF_PASSWORD: ((pcf-password))
-      CONFIG: ((env-config))
-    on_failure:
-      put: "deploy-status"
-      params:
-        state: "failure"
-        commit: "ops-manager-cloudfoundry"
-    on_error:
-      put: "deploy-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-    on_abort:
-      put: "deploy-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-        description: aborted
-  - put: "deploy-status"
-    params:
-      state: "success"
-      commit: "ops-manager-cloudfoundry"
+  - name: deploy-tile-old
+    serial: true
+    build_logs_to_retain: 50
+    plan:
+      - get: ops-manager-cloudfoundry
+        trigger: true
+        passed: [delete-tile]
+      - get: artifacts
+        params:
+          file: artifacts/mongodb-on-demand-*.pivotal
+      - get: version
+      - get: versionold
+      - get: stemcell
+        params:
+          globs: [((globs-param))]
+      - get: tileold
+      - task: deploy-tile-old
+        file: ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/task.yml
+        params:
+          PCF_URL: ((pcf-url))
+          PCF_USERNAME: ((pcf-username))
+          PCF_PASSWORD: ((pcf-password))
+          CONFIG: ((env-config))
+        on_failure:
+          put: "deploy-status"
+          params:
+            state: "failure"
+            commit: "ops-manager-cloudfoundry"
+        on_error:
+          put: "deploy-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+        on_abort:
+          put: "deploy-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+            description: aborted
+      - put: "deploy-status"
+        params:
+          state: "success"
+          commit: "ops-manager-cloudfoundry"
 
-- name: use-application
-  serial: true
-  build_logs_to_retain: 50
-  plan:
-  - get: ops-manager-cloudfoundry
-    trigger: true
-    passed: [ deploy-mongodb-service ]
-  - task: use application
-    file: ops-manager-cloudfoundry/ci/tasks/application-check/task-put.yml
-    params:
-      PCF_URL: ((pcf-url))
-      PCF_USERNAME: ((pcf-username))
-      PCF_PASSWORD: ((pcf-password))
-    on_failure:
-      put: "check-service-status"
-      params:
-        state: "failure"
-        commit: "ops-manager-cloudfoundry"
-    on_error:
-      put: "check-service-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-    on_abort:
-      put: "check-service-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-        description: aborted
-  - put: "check-service-status"
-    params:
-      state: "success"
-      commit: "ops-manager-cloudfoundry"
-  
-- name: update-tile-version
-  serial: true
-  build_logs_to_retain: 50
-  plan:
-  - get: ops-manager-cloudfoundry
-    trigger: true
-    passed: [ deploy-mongodb-service ]
-  - get: deploy-service-status
-  - get: artifacts
-    params:
-      file: artifacts/mongodb-on-demand-*.pivotal
-  - get: version
-  - get: stemcell
-    params:
-      globs: [((globs-param))]
-  - task: deploy-tile
-    file: ops-manager-cloudfoundry/ci/tasks/deploy-tile/task.yml
-    params:
-      PCF_URL: ((pcf-url))
-      PCF_USERNAME: ((pcf-username))
-      PCF_PASSWORD: ((pcf-password))
-      CONFIG: ((env-config))
-    on_failure:
-      put: "update-tile-status"
-      params:
-        state: "failure"
-        commit: "ops-manager-cloudfoundry"
-    on_error:
-      put: "update-tile-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-    on_abort:
-      put: "update-tile-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-        description: aborted
-  - put: "update-tile-status"
-    params:
-      state: "success"
-      commit: "ops-manager-cloudfoundry"
+  - name: use-application
+    serial: true
+    build_logs_to_retain: 50
+    plan:
+      - get: ops-manager-cloudfoundry
+        trigger: true
+        passed: [deploy-mongodb-service]
+      - task: use application
+        file: ops-manager-cloudfoundry/ci/tasks/application-check/task-put.yml
+        params:
+          PCF_URL: ((pcf-url))
+          PCF_USERNAME: ((pcf-username))
+          PCF_PASSWORD: ((pcf-password))
+        on_failure:
+          put: "check-service-status"
+          params:
+            state: "failure"
+            commit: "ops-manager-cloudfoundry"
+        on_error:
+          put: "check-service-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+        on_abort:
+          put: "check-service-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+            description: aborted
+      - put: "check-service-status"
+        params:
+          state: "success"
+          commit: "ops-manager-cloudfoundry"
 
-- name: check-application
-  serial: true
-  build_logs_to_retain: 50
-  plan:
-  - get: ops-manager-cloudfoundry
-    trigger: true
-    passed: [ update-tile-version ]
-  - task: check application
-    file: ops-manager-cloudfoundry/ci/tasks/application-check/task-get.yml
-    params:
-      PCF_URL: ((pcf-url))
-      PCF_USERNAME: ((pcf-username))
-      PCF_PASSWORD: ((pcf-password))
-    on_failure:
-      put: "check-app-status"
-      params:
-        state: "failure"
-        commit: "ops-manager-cloudfoundry"
-    on_error:
-      put: "check-app-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-    on_abort:
-      put: "check-app-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-        description: aborted
-  - put: "check-app-status"
-    params:
-      state: "success"
-      commit: "ops-manager-cloudfoundry"
+  - name: update-tile-version
+    serial: true
+    build_logs_to_retain: 50
+    plan:
+      - get: ops-manager-cloudfoundry
+        trigger: true
+        passed: [deploy-mongodb-service]
+      - get: deploy-service-status
+      - get: artifacts
+        params:
+          file: artifacts/mongodb-on-demand-*.pivotal
+      - get: version
+      - get: stemcell
+        params:
+          globs: [((globs-param))]
+      - task: deploy-tile
+        file: ops-manager-cloudfoundry/ci/tasks/deploy-tile/task.yml
+        params:
+          PCF_URL: ((pcf-url))
+          PCF_USERNAME: ((pcf-username))
+          PCF_PASSWORD: ((pcf-password))
+          CONFIG: ((env-config))
+        on_failure:
+          put: "update-tile-status"
+          params:
+            state: "failure"
+            commit: "ops-manager-cloudfoundry"
+        on_error:
+          put: "update-tile-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+        on_abort:
+          put: "update-tile-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+            description: aborted
+      - put: "update-tile-status"
+        params:
+          state: "success"
+          commit: "ops-manager-cloudfoundry"
 
-- name: cleanup
-  serial: true
-  build_logs_to_retain: 50
-  plan:
-  - get: ops-manager-cloudfoundry
-    trigger: true
-    passed: [ check-application ]
-  - task: cleaning - delete service and application
-    file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task-delete-service.yml
-    params:
-      PCF_URL: ((pcf-url))
-      PCF_USERNAME: ((pcf-username))
-      PCF_PASSWORD: ((pcf-password))
-    on_failure:
-      put: "cleanup-status"
-      params:
-        state: "failure"
-        commit: "ops-manager-cloudfoundry"
-    on_error:
-      put: "cleanup-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-    on_abort:
-      put: "cleanup-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-        description: aborted
-  - put: "cleanup-status"
-    params:
-      state: "success"
-      commit: "ops-manager-cloudfoundry"
-  
-- name: deploy-mongodb-service
-  serial: true
-  build_logs_to_retain: 50
-  plan:
-  - get: ops-manager-cloudfoundry
-    trigger: true
-    passed: [ deploy-tile-old ]
-  - task: deploy-mongodb-service
-    file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task-create-service.yml
-    params:
-      PCF_URL: ((pcf-url))
-      PCF_USERNAME: ((pcf-username))
-      PCF_PASSWORD: ((pcf-password))
-      INSTALL_TIMEOUT: 120
-      SET_PLAN: replica_set_small
-      BACKUP_ENABLED: true
-      MONGO_VERSION: 4.0.9-ent
-    on_failure:
-      put: "deploy-service-status"
-      params:
-        state: "failure"
-        commit: "ops-manager-cloudfoundry"
-    on_error:
-      put: "deploy-service-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-    on_abort:
-      put: "deploy-service-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-        description: aborted
-  - put: "deploy-service-status"
-    params:
-      state: "success"
-      commit: "ops-manager-cloudfoundry"
+  - name: check-application
+    serial: true
+    build_logs_to_retain: 50
+    plan:
+      - get: ops-manager-cloudfoundry
+        trigger: true
+        passed: [update-tile-version]
+      - task: check application
+        file: ops-manager-cloudfoundry/ci/tasks/application-check/task-get.yml
+        params:
+          PCF_URL: ((pcf-url))
+          PCF_USERNAME: ((pcf-username))
+          PCF_PASSWORD: ((pcf-password))
+        on_failure:
+          put: "check-app-status"
+          params:
+            state: "failure"
+            commit: "ops-manager-cloudfoundry"
+        on_error:
+          put: "check-app-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+        on_abort:
+          put: "check-app-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+            description: aborted
+      - put: "check-app-status"
+        params:
+          state: "success"
+          commit: "ops-manager-cloudfoundry"
 
-- name: smoke-tests
-  serial: true
-  build_logs_to_retain: 50
-  plan:
-  - get: ops-manager-cloudfoundry
-    trigger: true
-    passed: [ check-application ]
-  - in_parallel:
-    - task: smoke-tests standalone
-      file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
-      params:
-        PCF_URL: ((pcf-url))
-        PCF_USERNAME: ((pcf-username))
-        PCF_PASSWORD: ((pcf-password))
-        PLAN_NAMES: '["standalone_small"]'
-        BACKUP_ENABLED: '["false", "true"]'
-        SSL_ENABLED: '["false"]'
-        MONGO_VERSION: '["4.0.9-ent"]'
-        CONFIG: ((env-config))
-    - task: smoke-tests replica set
-      file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
-      params:
-        PCF_URL: ((pcf-url))
-        PCF_USERNAME: ((pcf-username))
-        PCF_PASSWORD: ((pcf-password))
-        PLAN_NAMES: '["replica_set_small"]'
-        BACKUP_ENABLED: '["false", "true"]'
-        SSL_ENABLED: '["false"]'
-        MONGO_VERSION: '["4.0.9-ent"]'
-        CONFIG: ((env-config))
-    - task: smoke-tests sharded
-      file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
-      params:
-        PCF_URL: ((pcf-url))
-        PCF_USERNAME: ((pcf-username))
-        PCF_PASSWORD: ((pcf-password))
-        PLAN_NAMES: '["sharded_cluster_small"]'
-        BACKUP_ENABLED: '["false", "true"]'
-        SSL_ENABLED: '["false"]'
-        MONGO_VERSION: '["4.0.9-ent"]'
-        CONFIG: ((env-config))
-    on_failure:
-      put: "test-status"
-      params:
-        state: "failure"
-        commit: "ops-manager-cloudfoundry"
-    on_error:
-      put: "test-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-    on_abort:
-      put: "test-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-        description: aborted
-  - put: "test-status"
-    params:
-      state: "success"
-      commit: "ops-manager-cloudfoundry"
+  - name: cleanup
+    serial: true
+    build_logs_to_retain: 50
+    plan:
+      - get: ops-manager-cloudfoundry
+        trigger: true
+        passed: [check-application]
+      - task: cleaning - delete service and application
+        file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task-delete-service.yml
+        params:
+          PCF_URL: ((pcf-url))
+          PCF_USERNAME: ((pcf-username))
+          PCF_PASSWORD: ((pcf-password))
+        on_failure:
+          put: "cleanup-status"
+          params:
+            state: "failure"
+            commit: "ops-manager-cloudfoundry"
+        on_error:
+          put: "cleanup-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+        on_abort:
+          put: "cleanup-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+            description: aborted
+      - put: "cleanup-status"
+        params:
+          state: "success"
+          commit: "ops-manager-cloudfoundry"
 
-- name: delete-tile
-  serial: true
-  build_logs_to_retain: 50
-  plan:
-  - get: version
-  - get: ops-manager-cloudfoundry
-    trigger: true
-  - task: delete-tile
-    file: ops-manager-cloudfoundry/ci/tasks/delete-tile/task.yml
-    params:
-      PCF_URL: ((pcf-url))
-      PCF_USERNAME: ((pcf-username))
-      PCF_PASSWORD: ((pcf-password))
-    on_failure:
-      put: "delete-tile-status"
-      params:
-        state: "failure"
-        commit: "ops-manager-cloudfoundry"
-    on_error:
-      put: "delete-tile-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-    on_abort:
-      put: "delete-tile-status"
-      params:
-        state: "error"
-        commit: "ops-manager-cloudfoundry"
-        description: aborted
-  - put: "delete-tile-status"
-    params:
-      state: "success"
-      commit: "ops-manager-cloudfoundry"
+  - name: deploy-mongodb-service
+    serial: true
+    build_logs_to_retain: 50
+    plan:
+      - get: ops-manager-cloudfoundry
+        trigger: true
+        passed: [deploy-tile-old]
+      - task: deploy-mongodb-service
+        file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task-create-service.yml
+        params:
+          PCF_URL: ((pcf-url))
+          PCF_USERNAME: ((pcf-username))
+          PCF_PASSWORD: ((pcf-password))
+          INSTALL_TIMEOUT: 120
+          SET_PLAN: replica_set_small
+          BACKUP_ENABLED: true
+          MONGO_VERSION: 4.0.9-ent
+        on_failure:
+          put: "deploy-service-status"
+          params:
+            state: "failure"
+            commit: "ops-manager-cloudfoundry"
+        on_error:
+          put: "deploy-service-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+        on_abort:
+          put: "deploy-service-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+            description: aborted
+      - put: "deploy-service-status"
+        params:
+          state: "success"
+          commit: "ops-manager-cloudfoundry"
+
+  - name: smoke-tests
+    serial: true
+    build_logs_to_retain: 50
+    plan:
+      - get: ops-manager-cloudfoundry
+        trigger: true
+        passed: [check-application]
+      - in_parallel:
+          - task: smoke-tests standalone
+            file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
+            params:
+              PCF_URL: ((pcf-url))
+              PCF_USERNAME: ((pcf-username))
+              PCF_PASSWORD: ((pcf-password))
+              PLAN_NAMES: '["standalone_small"]'
+              BACKUP_ENABLED: '["false", "true"]'
+              SSL_ENABLED: '["false"]'
+              MONGO_VERSION: '["4.0.9-ent"]'
+              CONFIG: ((env-config))
+          - task: smoke-tests replica set
+            file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
+            params:
+              PCF_URL: ((pcf-url))
+              PCF_USERNAME: ((pcf-username))
+              PCF_PASSWORD: ((pcf-password))
+              PLAN_NAMES: '["replica_set_small"]'
+              BACKUP_ENABLED: '["false", "true"]'
+              SSL_ENABLED: '["false"]'
+              MONGO_VERSION: '["4.0.9-ent"]'
+              CONFIG: ((env-config))
+          - task: smoke-tests sharded
+            file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
+            params:
+              PCF_URL: ((pcf-url))
+              PCF_USERNAME: ((pcf-username))
+              PCF_PASSWORD: ((pcf-password))
+              PLAN_NAMES: '["sharded_cluster_small"]'
+              BACKUP_ENABLED: '["false", "true"]'
+              SSL_ENABLED: '["false"]'
+              MONGO_VERSION: '["4.0.9-ent"]'
+              CONFIG: ((env-config))
+        on_failure:
+          put: "test-status"
+          params:
+            state: "failure"
+            commit: "ops-manager-cloudfoundry"
+        on_error:
+          put: "test-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+        on_abort:
+          put: "test-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+            description: aborted
+      - put: "test-status"
+        params:
+          state: "success"
+          commit: "ops-manager-cloudfoundry"
+
+  - name: delete-tile
+    serial: true
+    build_logs_to_retain: 50
+    plan:
+      - get: version
+      - get: ops-manager-cloudfoundry
+        trigger: true
+      - task: delete-tile
+        file: ops-manager-cloudfoundry/ci/tasks/delete-tile/task.yml
+        params:
+          PCF_URL: ((pcf-url))
+          PCF_USERNAME: ((pcf-username))
+          PCF_PASSWORD: ((pcf-password))
+        on_failure:
+          put: "delete-tile-status"
+          params:
+            state: "failure"
+            commit: "ops-manager-cloudfoundry"
+        on_error:
+          put: "delete-tile-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+        on_abort:
+          put: "delete-tile-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+            description: aborted
+      - put: "delete-tile-status"
+        params:
+          state: "success"
+          commit: "ops-manager-cloudfoundry"

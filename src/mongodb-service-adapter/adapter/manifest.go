@@ -226,11 +226,10 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 		}
 	}
 
-	// TODO: what is this? there's no 'autoPwd' field in ProjectResponse!
 	agentPassword := ""
 	if params.PreviousManifest == nil {
 		var err error
-		agentPassword, err = GenerateString(32)
+		agentPassword, err = GeneratePassword(32)
 		if err != nil {
 			panic(err)
 		}
@@ -434,7 +433,7 @@ func passwordForMongoServer(previousManifestProperties map[interface{}]interface
 		return previousManifestProperties["admin_password"].(string), nil
 	}
 
-	return GenerateString(20)
+	return GeneratePassword(20)
 }
 
 func idForMongoServer(previousManifestProperties map[interface{}]interface{}) (string, error) {
@@ -442,7 +441,7 @@ func idForMongoServer(previousManifestProperties map[interface{}]interface{}) (s
 		return previousManifestProperties["id"].(string), nil
 	}
 
-	return GenerateString(8)
+	return GeneratePassword(8)
 }
 
 func authKeyForMongoServer(previousManifestProperties map[interface{}]interface{}) (string, error) {
@@ -450,7 +449,7 @@ func authKeyForMongoServer(previousManifestProperties map[interface{}]interface{
 		return previousManifestProperties["auth_key"].(string), nil
 	}
 
-	return GenerateString(8)
+	return GeneratePassword(8)
 }
 
 func groupForMongoServer(
