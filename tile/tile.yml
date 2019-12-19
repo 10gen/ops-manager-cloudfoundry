@@ -421,7 +421,7 @@ packages:
     path: resources/pcf-mongodb-helpers-0.0.1.tgz
   - name: on-demand-service-broker
     type: bosh-release
-    path: resources/on-demand-service-broker-0.31.0.tgz
+    path: resources/on-demand-service-broker-0.35.0.tgz
   - name: syslog
     type: bosh-release
     path: resources/syslog-migration-11.1.1.tgz
