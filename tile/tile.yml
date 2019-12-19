@@ -827,8 +827,6 @@ packages:
           metadata:
             display_name: Sharded Cluster Small
             bullets: []
-          quotas:
-            service_instance_limit: 10
           instance_groups:
           - name: mongod_node
             vm_type: (( .properties.vm_type_sharded_cluster_small.value ))
@@ -874,8 +872,6 @@ packages:
           metadata:
             display_name: Sharded Cluster Medium
             bullets: []
-          quotas:
-            service_instance_limit: 10
           instance_groups:
           - name: mongod_node
             vm_type: (( .properties.vm_type_sharded_cluster_medium.value ))
@@ -921,8 +917,6 @@ packages:
           metadata:
             display_name: Sharded Cluster Large
             bullets: []
-          quotas:
-            service_instance_limit: 10
           instance_groups:
           - name: mongod_node
             vm_type: (( .properties.vm_type_sharded_cluster_large.value ))
