@@ -346,6 +346,7 @@ runtime_configs:
       include:
         deployments:
         - mongodb-on-demand-*
+        - service-instance_*
         jobs:
         - name: broker
           release: on-demand-service-broker
