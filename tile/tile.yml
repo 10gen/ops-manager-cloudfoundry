@@ -355,7 +355,7 @@ runtime_configs:
           include:
             jobs:
               - name: broker
-                release: on-demand-service-broker
+                release: mongodb
               - name: mongodb_config_agent
                 release: mongodb
               - name: mongod_node
