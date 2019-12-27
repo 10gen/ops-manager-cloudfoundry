@@ -318,82 +318,82 @@ jobs:
           state: "success"
           commit: "ops-manager-cloudfoundry"
 
-      - name: shipit
-        serial: true
-        build_logs_to_retain: 50
-        plan:
-          - get: ops-manager-cloudfoundry
-            passed: [smoke-tests]
-          - get: on-demand-service-broker-release
-            params:
-              filename: on-demand-service-broker-(.*).tgz
-          - get: syslog-migration-release
-            params:
-              filename: syslog-migration-(.*).tgz
-          - get: pcf-mongodb-helpers
-            params:
-              filename: pcf-mongodb-helpers-(.*).tgz
-          - get: bpm-release
-            params:
-              filename: bpm-release-(.*).tgz
-          - get: mongodb
-            params:
-              filename: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
+  - name: shipit
+    serial: true
+    build_logs_to_retain: 50
+    plan:
+      - get: ops-manager-cloudfoundry
+        passed: [smoke-tests]
+      - get: on-demand-service-broker-release
+        params:
+          filename: on-demand-service-broker-(.*).tgz
+      - get: syslog-migration-release
+        params:
+          filename: syslog-migration-(.*).tgz
+      - get: pcf-mongodb-helpers
+        params:
+          filename: pcf-mongodb-helpers-(.*).tgz
+      - get: bpm-release
+        params:
+          filename: bpm-release-(.*).tgz
+      - get: mongodb
+        params:
+          filename: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
+      - get: version
+        params:
+          bump: final
+      - task: shipit
+        file: ops-manager-cloudfoundry/ci/tasks/shipit/task.yml
+        params:
+          RELEASE_BUCKET_NAME: ((release-bucket))
+          AWS_KEY: ((aws-access-key))
+          AWS_SECRET_KEY: ((aws-secret-access-key))
+      - put: release
+        params:
+          file: release/mongodb-on-demand-*.pivotal
+          acl: public-read
+
+  - name: delete-tile
+    serial: true
+    build_logs_to_retain: 50
+    plan:
+      - get: ops-manager-cloudfoundry
+      - task: delete-tile
+        file: ops-manager-cloudfoundry/ci/tasks/delete-tile/task.yml
+        params:
+          PCF_URL: ((pcf-url))
+          PCF_USERNAME: ((pcf-username))
+          PCF_PASSWORD: ((pcf-password))
+
+  - name: minor
+    plan:
+      - do:
           - get: version
+            trigger: false
             params:
-              bump: final
-          - task: shipit
-            file: ops-manager-cloudfoundry/ci/tasks/shipit/task.yml
+              bump: minor
+          - put: version
             params:
-              RELEASE_BUCKET_NAME: ((release-bucket))
-              AWS_KEY: ((aws-access-key))
-              AWS_SECRET_KEY: ((aws-secret-access-key))
-          - put: release
+              file: version/number
+
+  - name: patch
+    plan:
+      - do:
+          - get: version
+            trigger: false
             params:
-              file: release/mongodb-on-demand-*.pivotal
-              acl: public-read
-
-      - name: delete-tile
-        serial: true
-        build_logs_to_retain: 50
-        plan:
-          - get: ops-manager-cloudfoundry
-          - task: delete-tile
-            file: ops-manager-cloudfoundry/ci/tasks/delete-tile/task.yml
+              bump: patch
+          - put: version
             params:
-              PCF_URL: ((pcf-url))
-              PCF_USERNAME: ((pcf-username))
-              PCF_PASSWORD: ((pcf-password))
+              file: version/number
 
-      - name: minor
-        plan:
-          - do:
-              - get: version
-                trigger: false
-                params:
-                  bump: minor
-              - put: version
-                params:
-                  file: version/number
-
-      - name: patch
-        plan:
-          - do:
-              - get: version
-                trigger: false
-                params:
-                  bump: patch
-              - put: version
-                params:
-                  file: version/number
-
-      - name: major
-        plan:
-          - do:
-              - get: version
-                trigger: false
-                params:
-                  bump: major
-              - put: version
-                params:
-                  file: version/number
+  - name: major
+    plan:
+      - do:
+          - get: version
+            trigger: false
+            params:
+              bump: major
+          - put: version
+            params:
+              file: version/number
