@@ -271,7 +271,7 @@ jobs:
               PCF_USERNAME: ((pcf-username))
               PCF_PASSWORD: ((pcf-password))
               PLAN_NAMES: '["standalone_small"]'
-              BACKUP_ENABLED: '["false", "true"]'
+              BACKUP_ENABLED: '["false"]'
               SSL_ENABLED: '["false"]'
               MONGO_VERSION: '["4.0.9-ent"]'
               CONFIG: ((env-config))
@@ -282,7 +282,7 @@ jobs:
               PCF_USERNAME: ((pcf-username))
               PCF_PASSWORD: ((pcf-password))
               PLAN_NAMES: '["replica_set_small"]'
-              BACKUP_ENABLED: '["false", "true"]'
+              BACKUP_ENABLED: '["false"]'
               SSL_ENABLED: '["false"]'
               MONGO_VERSION: '["4.0.9-ent"]'
               CONFIG: ((env-config))
@@ -293,7 +293,7 @@ jobs:
               PCF_USERNAME: ((pcf-username))
               PCF_PASSWORD: ((pcf-password))
               PLAN_NAMES: '["sharded_cluster_small"]'
-              BACKUP_ENABLED: '["false", "true"]'
+              BACKUP_ENABLED: '["false"]'
               SSL_ENABLED: '["false"]'
               MONGO_VERSION: '["4.0.9-ent"]'
               CONFIG: ((env-config))
