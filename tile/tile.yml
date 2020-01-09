@@ -432,7 +432,7 @@ packages:
       - name: mongodb_broker
         label: MongoDB-ODB
         templates:
-          - name: mongodb_broker
+          - name: broker
             release: on-demand-service-broker
           - name: mongodb_service_adapter
             release: mongodb
