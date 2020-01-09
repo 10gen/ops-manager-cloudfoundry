@@ -2,7 +2,7 @@
 code.cloudfoundry.org/lager
 # github.com/Sectorbob/mlab-ns2 v0.0.0-20171030222938-d3aa0c295a8a
 github.com/Sectorbob/mlab-ns2/gae/ns/digest
-# github.com/google/uuid v1.0.0
+# github.com/google/uuid v1.1.1
 github.com/google/uuid
 # github.com/gorilla/mux v1.7.3
 github.com/gorilla/mux
@@ -12,15 +12,15 @@ github.com/mongodb-labs/pcgc/pkg/opsmanager
 github.com/mongodb-labs/pcgc/pkg/useful
 # github.com/pborman/uuid v1.2.0
 github.com/pborman/uuid
-# github.com/pivotal-cf/brokerapi v6.4.2+incompatible
-github.com/pivotal-cf/brokerapi
-github.com/pivotal-cf/brokerapi/auth
-github.com/pivotal-cf/brokerapi/domain
-github.com/pivotal-cf/brokerapi/domain/apiresponses
-github.com/pivotal-cf/brokerapi/handlers
-github.com/pivotal-cf/brokerapi/middlewares
-github.com/pivotal-cf/brokerapi/utils
-# github.com/pivotal-cf/on-demand-services-sdk v0.33.1
+# github.com/pivotal-cf/brokerapi/v7 v7.0.0
+github.com/pivotal-cf/brokerapi/v7
+github.com/pivotal-cf/brokerapi/v7/auth
+github.com/pivotal-cf/brokerapi/v7/domain
+github.com/pivotal-cf/brokerapi/v7/domain/apiresponses
+github.com/pivotal-cf/brokerapi/v7/handlers
+github.com/pivotal-cf/brokerapi/v7/middlewares
+github.com/pivotal-cf/brokerapi/v7/utils
+# github.com/pivotal-cf/on-demand-services-sdk v0.35.0
 github.com/pivotal-cf/on-demand-services-sdk/bosh
 github.com/pivotal-cf/on-demand-services-sdk/serviceadapter
 # github.com/pkg/errors v0.8.1
