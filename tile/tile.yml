@@ -354,7 +354,7 @@ runtime_configs:
               release: bpm
           include:
             jobs:
-              - name: broker
+              - name: mongodb-broker
                 release: on-demand-service-broker
               - name: mongodb_config_agent
                 release: mongodb
@@ -429,7 +429,7 @@ packages:
     type: bosh-release
     path: resources/mongodb-1.0.33.tgz
     jobs:
-      - name: broker
+      - name: mongodb-broker
         label: MongoDB-ODB
         templates:
           - name: broker
