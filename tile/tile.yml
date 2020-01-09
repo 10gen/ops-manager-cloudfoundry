@@ -442,7 +442,7 @@ packages:
             post_deploy: true
             run_default: true
             instances:
-              - broker/first
+              - mongodb-broker/first
             label: On Demand Service Broker Registrar
           - name: upgrade-all-service-instances
             release: on-demand-service-broker
@@ -450,7 +450,7 @@ packages:
             post_deploy: true
             run_default: true
             instances:
-              - broker/first
+              - mongodb-broker/first
             label: Upgrade all instances deployed by the On Demand Service Broker
           - name: delete-all-service-instances
             release: on-demand-service-broker
@@ -458,7 +458,7 @@ packages:
             pre_delete: true
             run_default: true
             instances:
-              - broker/first
+              - mongodb-broker/first
             label: Delete all instances deployed by the On Demand Service Broker
           - name: deregister-broker
             release: on-demand-service-broker
@@ -466,7 +466,7 @@ packages:
             pre_delete: true
             run_default: true
             instances:
-              - broker/first
+              - mongodb-broker/first
             label: On Demand Service Broker Deregistrar
         max_in_flight: 1
         memory: 1024
