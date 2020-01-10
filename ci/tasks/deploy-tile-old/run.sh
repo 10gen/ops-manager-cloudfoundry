@@ -9,6 +9,7 @@ PCF_PASSWORD="$PCF_PASSWORD"
 . "$base/ops-manager-cloudfoundry/ci/tasks/helpers/tmp-helper.sh"
 
 VERSION=1.1.1
+VERSION=1.2.0
 ls "$base"
 TILE_FILE=$(
 	cd tileold
