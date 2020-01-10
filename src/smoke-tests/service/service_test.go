@@ -277,7 +277,7 @@ var _ = Describe("MongoDB Service", func() {
 						Expect(err).NotTo(HaveOccurred())
 						for _, config := range backupConfigs.BackupResults {
 							Expect(config).To(MatchFields(IgnoreExtras, Fields{
-								"StatusName": Equal(convertedBackupStatus(true)),
+								"StatusName": Equal(convertedBackupStatus(sp.BackupEnable)),
 							}))
 						}
 					},
