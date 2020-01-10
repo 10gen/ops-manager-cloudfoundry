@@ -346,16 +346,20 @@ runtime_configs:
         - name: mongodb
           version: 1.0.33
         - name: bpm
-          version: 1.1.1
+          version: latest
       addons:
         - name: bpm
           jobs:
             - name: bpm
               release: bpm
+          exclude:
+            jobs:
+              - name: bpm
+                release: bpm
           include:
             jobs:
-              - name: mongodb_broker
-                release: mongodb
+              - name: broker
+                release: on-demand-service-broker
               - name: mongodb_config_agent
                 release: mongodb
               - name: mongod_node
