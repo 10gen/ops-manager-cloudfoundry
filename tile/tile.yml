@@ -352,14 +352,8 @@ runtime_configs:
           jobs:
             - name: bpm
               release: bpm
-          exclude:
-            jobs:
-              - name: bpm
-                release: bpm
           include:
             jobs:
-              - name: broker
-                release: on-demand-service-broker
               - name: mongodb_config_agent
                 release: mongodb
               - name: mongod_node
@@ -436,6 +430,8 @@ packages:
       - name: mongodb_broker
         label: MongoDB-ODB
         templates:
+          - name: bpm
+            release: bpm
           - name: broker
             release: on-demand-service-broker
           - name: mongodb_service_adapter
@@ -515,6 +511,10 @@ packages:
             path: /var/vcap/packages/mongodb-service-adapter/bin/mongodb-service-adapter
           service_deployment:
             releases:
+              - name: bpm
+                version: 1.1.1
+                jobs:
+                  - bpm
               - name: mongodb
                 version: 1.0.33
                 jobs:
