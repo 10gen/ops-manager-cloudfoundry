@@ -4,7 +4,7 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: leori/ci
+    repository: leori/test
 
 inputs:
 - name: ops-manager-cloudfoundry
@@ -21,6 +21,7 @@ params:
   OM_API_USER:
   OM_API_KEY:
   CONFIG:
+  VERSION:
 
 run:
   path: ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/run.sh
