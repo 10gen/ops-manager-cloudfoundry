@@ -511,10 +511,6 @@ packages:
             path: /var/vcap/packages/mongodb-service-adapter/bin/mongodb-service-adapter
           service_deployment:
             releases:
-              - name: bpm
-                version: 1.1.1
-                jobs:
-                  - bpm
               - name: mongodb
                 version: 1.0.33
                 jobs:
@@ -523,6 +519,10 @@ packages:
                   - mongodb-dns-aliases
                   - cleanup_service
                   - post_setup
+              - name: bpm
+                version: 1.1.1
+                jobs:
+                  - bpm
               - name: pcf-mongodb-helpers
                 version: 0.0.1
                 jobs:
