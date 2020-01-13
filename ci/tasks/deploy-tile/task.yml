@@ -7,10 +7,10 @@ image_resource:
     repository: leori/ci
 
 inputs:
-- name: ops-manager-cloudfoundry
-- name: stemcell
-- name: version
-- name: artifacts
+  - name: ops-manager-cloudfoundry
+  - name: stemcell
+  - name: version
+  - name: artifacts
 
 params:
   PCF_URL:
@@ -22,6 +22,7 @@ params:
   OM_API_USER:
   CONFIG:
   MONGO_VERSION:
+  UPDATE_PAS:
 
 run:
   path: ops-manager-cloudfoundry/ci/tasks/deploy-tile/run.sh

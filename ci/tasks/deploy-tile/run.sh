@@ -6,6 +6,8 @@ base=$PWD
 PCF_URL="$PCF_URL"
 PCF_USERNAME="$PCF_USERNAME"
 PCF_PASSWORD="$PCF_PASSWORD"
+UPDATE_PAS="$UPDATE_PAS"
+
 . "$base/ops-manager-cloudfoundry/ci/tasks/helpers/tmp-helper.sh"
 
 VERSION=$(cat "$base"/version/number)
@@ -57,7 +59,12 @@ ${om} configure-product --config "$config_path" --vars-env OM_API
 
 STAGED=$(${om} curl --path /api/v0/staged/products)
 # get GUIDs of cf and $PRODUCT
-RESULT=$(echo "$STAGED" | jq --arg product_name "$PRODUCT" '.[] | select(.type == $product_name or .type == "cf") | .guid')
+if [ "${UPDATE_PAS}" == "true" ]; then
+	RESULT=$(echo "$STAGED" | jq --arg product_name "$PRODUCT" '.[] | select(.type == $product_name or .type == "cf") | .guid')
+else
+	RESULT=$(echo "$STAGED" | jq --arg product_name "$PRODUCT" '.[] | select(.type == $product_name) | .guid')
+fi
+
 # merge GUIDs
 RESULT=$(echo "$RESULT" | jq --slurp)
 DATA=$(echo '{"deploy_products": []}' | jq ".deploy_products += $RESULT")
