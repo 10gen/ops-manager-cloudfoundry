@@ -8,11 +8,9 @@ PCF_USERNAME="$PCF_USERNAME"
 PCF_PASSWORD="$PCF_PASSWORD"
 . "$base/ops-manager-cloudfoundry/ci/tasks/helpers/tmp-helper.sh"
 
-
-
 if [ -z "${VERSION:-}" ]; then
-	echo "missing tile version number. set to 1.1.1"
-	VERSION=1.1.1
+	echo "missing version number"
+	exit 1
 fi
 
 ls "$base"
