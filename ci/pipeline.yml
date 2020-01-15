@@ -2,6 +2,7 @@
 groups:
   - name: mongodb-on-demand
     jobs:
+      - lint
       - build-tile
       - deploy-tile
       - delete-tile
@@ -103,6 +104,13 @@ resources:
       access_key_id: ((aws-access-key))
       secret_access_key: ((aws-secret-access-key))
 
+  - name: "lint-status"
+    type: "github-status"
+    source:
+      repository: 10gen/ops-manager-cloudfoundry
+      access_token: ((repo-github-token))
+      context: lint
+
   - name: "build-status"
     type: "github-status"
     source:
@@ -141,12 +149,47 @@ resource_types:
       tag: "master"
 
 jobs:
+  - name: lint
+    serial: true
+    build_logs_to_retain: 5
+    plan:
+      - get: ops-manager-cloudfoundry
+        trigger: true
+      - in_parallel:
+          - put: "lint-status"
+            params:
+              state: "pending"
+              commit: "ops-manager-cloudfoundry"
+          - task: lint
+            file: ops-manager-cloudfoundry/ci/tasks/lint/task.yml
+        on_failure:
+          put: "lint-status"
+          params:
+            state: "failure"
+            commit: "ops-manager-cloudfoundry"
+        on_error:
+          put: "lint-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+        on_abort:
+          put: "lint-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+            description: aborted
+      - put: "lint-status"
+        params:
+          state: "success"
+          commit: "ops-manager-cloudfoundry"
+
   - name: build-tile
     serial: true
     build_logs_to_retain: 5
     plan:
       - get: ops-manager-cloudfoundry
         trigger: true
+        passed: [lint]
       - in_parallel:
           - get: on-demand-service-broker-release
             params:
