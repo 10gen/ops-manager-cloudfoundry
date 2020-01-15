@@ -7,19 +7,15 @@ image_resource:
     repository: leori/ci
 
 inputs:
-- name: ops-manager-cloudfoundry
-- name: stemcell
-- name: artifacts
-- name: tileold
+  - name: ops-manager-cloudfoundry
+  - name: stemcell
+  - name: artifacts
+  - name: tileold
 
 params:
   PCF_URL:
   PCF_USERNAME:
   PCF_PASSWORD:
-  PRODUCT_PROPERTIES:
-  PRODUCT_NETWORK_AZS:
-  OM_API_USER:
-  OM_API_KEY:
   CONFIG:
 
 run:

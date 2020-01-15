@@ -477,6 +477,8 @@ packages:
         dynamic_ip: 1
         single_az_only: true
         instances: 1
+        migrated_from:
+          - name: broker
         properties:
           broker_name: mongodb-odb
           port: 8080
