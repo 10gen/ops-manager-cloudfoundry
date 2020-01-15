@@ -11,7 +11,7 @@ for module in ops-manager-cloudfoundry/src/{mongodb-config-agent,mongodb-service
     golangci-lint run --modules-download-mode vendor --timeout 15m
 
     # fix whitespace
-    find vendor -type f -exec grep -Iq . {} \; -print0 | xargs -0 sed -i 's/\r\n$/\n/'
+    find vendor -type f -exec grep -Iq . {} \; -print0 | xargs -0 sed -i 's/\r$//'
 
     # get folder hash before running go mod vendor
     OLDHASHES=$(find vendor -type f -print0 | sort -z | xargs -0 sha1sum)
@@ -20,7 +20,7 @@ for module in ops-manager-cloudfoundry/src/{mongodb-config-agent,mongodb-service
     go mod vendor
 
     # fix whitespace again (we don't care if it's wrong)
-    find vendor -type f -exec grep -Iq . {} \; -print0 | xargs -0 sed -i 's/\r\n$/\n/'
+    find vendor -type f -exec grep -Iq . {} \; -print0 | xargs -0 sed -i 's/\r$//'
 
     # get folder hash after go mod vendor
     NEWHASHES=$(find vendor -type f -print0 | sort -z | xargs -0 sha1sum)

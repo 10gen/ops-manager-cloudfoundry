@@ -10,7 +10,7 @@ import (
 	"github.com/onsi/gomega/gexec"
 )
 
-type retryCheck struct {
+type Check struct {
 	sessionProvider sessionProvider
 	sessionTimeout  time.Duration
 	failHandler     failHandler
@@ -18,8 +18,8 @@ type retryCheck struct {
 	maxRetries      int
 }
 
-func Session(sp sessionProvider) *retryCheck {
-	return &retryCheck{
+func Session(sp sessionProvider) *Check {
+	return &Check{
 		sessionProvider: sp,
 		sessionTimeout:  time.Second,
 		failHandler:     ginkgo.Fail,
@@ -28,43 +28,43 @@ func Session(sp sessionProvider) *retryCheck {
 	}
 }
 
-func (rc *retryCheck) WithFailHandler(handler failHandler) *retryCheck {
+func (rc *Check) WithFailHandler(handler failHandler) *Check {
 	rc.failHandler = handler
 	return rc
 }
 
-func (rc *retryCheck) AndFailHandler(handler failHandler) *retryCheck {
+func (rc *Check) AndFailHandler(handler failHandler) *Check {
 	return rc.WithFailHandler(handler)
 }
 
-func (rc *retryCheck) WithSessionTimeout(timeout time.Duration) *retryCheck {
+func (rc *Check) WithSessionTimeout(timeout time.Duration) *Check {
 	rc.sessionTimeout = timeout
 	return rc
 }
 
-func (rc *retryCheck) AndSessionTimeout(timeout time.Duration) *retryCheck {
+func (rc *Check) AndSessionTimeout(timeout time.Duration) *Check {
 	return rc.WithSessionTimeout(timeout)
 }
 
-func (rc *retryCheck) WithMaxRetries(max int) *retryCheck {
+func (rc *Check) WithMaxRetries(max int) *Check {
 	rc.maxRetries = max
 	return rc
 }
 
-func (rc *retryCheck) AndMaxRetries(max int) *retryCheck {
+func (rc *Check) AndMaxRetries(max int) *Check {
 	return rc.WithMaxRetries(max)
 }
 
-func (rc *retryCheck) WithBackoff(b Backoff) *retryCheck {
+func (rc *Check) WithBackoff(b Backoff) *Check {
 	rc.backoff = b
 	return rc
 }
 
-func (rc *retryCheck) AndBackoff(b Backoff) *retryCheck {
+func (rc *Check) AndBackoff(b Backoff) *Check {
 	return rc.WithBackoff(b)
 }
 
-func (rc *retryCheck) Until(c Condition, msg ...string) {
+func (rc *Check) Until(c Condition, msg ...string) {
 	if rc.check(c) {
 		return
 	}
@@ -76,7 +76,7 @@ func (rc *retryCheck) Until(c Condition, msg ...string) {
 	rc.failHandler(msg[0])
 }
 
-func (rc *retryCheck) UntilAny(c []Condition, msg ...string) {
+func (rc *Check) UntilAny(c []Condition, msg ...string) {
 	if len(c) < 1 {
 		rc.failHandler("Provide at least one condition to match")
 		return
@@ -93,7 +93,7 @@ func (rc *retryCheck) UntilAny(c []Condition, msg ...string) {
 	rc.failHandler(msg[0])
 }
 
-func (rc *retryCheck) UntilAll(c []Condition, msg ...string) {
+func (rc *Check) UntilAll(c []Condition, msg ...string) {
 	if len(c) < 1 {
 		rc.failHandler("Provide at least one condition to match")
 		return
@@ -110,7 +110,7 @@ func (rc *retryCheck) UntilAll(c []Condition, msg ...string) {
 	rc.failHandler(msg[0])
 }
 
-func (rc *retryCheck) check(c Condition) bool {
+func (rc *Check) check(c Condition) bool {
 	for retry := 0; retry <= rc.maxRetries; retry++ {
 		time.Sleep(rc.backoff(uint(retry)))
 
@@ -124,7 +124,7 @@ func (rc *retryCheck) check(c Condition) bool {
 	return false
 }
 
-func (rc *retryCheck) checkAny(conditions ...Condition) bool {
+func (rc *Check) checkAny(conditions ...Condition) bool {
 	for retry := 0; retry <= rc.maxRetries; retry++ {
 		time.Sleep(rc.backoff(uint(retry)))
 
@@ -139,7 +139,7 @@ func (rc *retryCheck) checkAny(conditions ...Condition) bool {
 	return false
 }
 
-func (rc *retryCheck) checkAll(conditions ...Condition) bool {
+func (rc *Check) checkAll(conditions ...Condition) bool {
 RetryLoop:
 	for retry := 0; retry <= rc.maxRetries; retry++ {
 		time.Sleep(rc.backoff(uint(retry)))

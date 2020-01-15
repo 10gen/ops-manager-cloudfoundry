@@ -1,9 +1,5 @@
 package mongodb
 
-import (
-
-)
-
 type OpsManager struct {
 	BaseURL string
 }

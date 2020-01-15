@@ -2,11 +2,13 @@ package adapter_test
 
 import (
 	"fmt"
-	"mongodb-service-adapter/adapter"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/on-demand-services-sdk/bosh"
 	"github.com/pivotal-cf/on-demand-services-sdk/serviceadapter"
+
+	"mongodb-service-adapter/adapter"
 )
 
 var _ = Describe("Manifest", func() {

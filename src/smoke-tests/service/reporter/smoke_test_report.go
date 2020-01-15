@@ -76,7 +76,6 @@ func (report *SmokeTestReport) BeforeSuiteDidRun(summary *types.SetupSummary) {
 	if summary.State == types.SpecStateFailed ||
 		summary.State == types.SpecStatePanicked ||
 		summary.State == types.SpecStateTimedOut {
-
 		report.failures = append(report.failures, failure{
 			title:   "Suite setup",
 			message: summary.Failure.Message,
@@ -137,11 +136,7 @@ func (report *SmokeTestReport) SpecSuiteDidEnd(summary *types.SuiteSummary) {
 	if ginkgo.GinkgoParallelNode() != 1 {
 		return
 	}
-	matchJSON, err := regexp.Compile(`{"FailReason":\s"(.*)"}`)
-	if err != nil {
-		fmt.Printf("\nSkipping \"Summarising failure reasons\": %s\n", err.Error())
-		return
-	}
+	matchJSON := regexp.MustCompile(`{"FailReason":\s"(.*)"}`)
 
 	if summary.NumberOfFailedSpecs > 0 {
 		report.printMessageTitle("Summarising Failures")

@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	"mongodb-service-adapter/adapter"
+	"mongodb-service-adapter/adapter/config"
 )
 
 var _ = Describe("Utils", func() {
@@ -16,7 +17,7 @@ var _ = Describe("Utils", func() {
 		routers       int
 		configServers int
 		shards        int
-		cluster       *adapter.Cluster
+		cluster       *config.Cluster
 		err           error
 	)
 
@@ -74,7 +75,7 @@ var _ = Describe("Utils", func() {
 
 		It("Cluster should match ", func() {
 
-			want := &adapter.Cluster{
+			want := &config.Cluster{
 				Routers:       []string{"192.168.1.10", "192.168.1.11"},
 				ConfigServers: []string{"192.168.1.12", "192.168.1.13"},
 				Shards: [][]string{
