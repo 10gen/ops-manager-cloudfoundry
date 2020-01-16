@@ -16,7 +16,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/onsi/gomega/gstruct"
-	
+
 	"github.com/pborman/uuid"
 	"github.com/pivotal-cf-experimental/cf-test-helpers/services"
 )
@@ -312,13 +312,14 @@ var _ = Describe("MongoDB Service", func() {
 })
 
 //TODO move somewhere
-func convertedBackupStatus(backupEnable bool) string {
-	if backupEnable == true {
+func convertedBackupStatus(backupEnable string) string {
+	if backupEnable == "true" {
 		return "STARTED"
 	} else {
 		return "INACTIVE"
 	}
 }
+
 func randomName() string {
 	return uuid.NewRandom().String()
 }

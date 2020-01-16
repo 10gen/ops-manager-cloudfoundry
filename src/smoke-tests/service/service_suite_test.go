@@ -92,6 +92,7 @@ type mongodbTestConfig struct {
 	MongoDBVersion []string          `json:"mongodb_version"`
 	OpsMan         mongoDBOpsManCred `json:"mongo_ops"`
 }
+
 type mongoDBOpsManCred struct {
 	URL        string `json:"url"`
 	UserName   string `json:"username"`
