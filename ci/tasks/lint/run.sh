@@ -35,10 +35,10 @@ for module in ops-manager-cloudfoundry/src/{mongodb-config-agent,mongodb-service
         echo "$OLDHASHES" >$LEFT
         echo "$NEWHASHES" >$RIGHT
         echo Hash diff:
-        # diff --context=0 $LEFT $RIGHT | grep -E "^\+ |^\- "
         diff $LEFT $RIGHT
         echo $OLDSUM
         echo $NEWSUM
-        # exit 1
+        rm -f $LEFT $RIGHT
+        exit 1
     fi
 done
