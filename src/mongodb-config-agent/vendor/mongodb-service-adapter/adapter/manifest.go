@@ -69,7 +69,7 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 		return serviceadapter.GenerateManifestOutput{}, err
 	}
 
-	group, err := groupForMongoServer(id, oc, oc404, params.Plan.Properties, previousMongoProperties, arbitraryParams)
+	group, err := groupForMongoServer(id, oc, oc404, arbitraryParams)
 	if err != nil {
 		return serviceadapter.GenerateManifestOutput{}, fmt.Errorf("could not create new group (%s)", err.Error())
 	}
@@ -456,8 +456,6 @@ func groupForMongoServer(
 	mongoID string,
 	oc opsmanager.Client,
 	oc404 opsmanager.Client,
-	planProperties map[string]interface{},
-	previousMongoProperties map[interface{}]interface{},
 	arbitraryParams map[string]interface{},
 ) (opsmanager.ProjectResponse, error) {
 	name := ""

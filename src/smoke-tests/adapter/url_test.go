@@ -2,11 +2,13 @@ package adapter_test
 
 import (
 	"fmt"
-	"mongodb-service-adapter/adapter"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/on-demand-services-sdk/bosh"
 	"github.com/pivotal-cf/on-demand-services-sdk/serviceadapter"
+
+	"mongodb-service-adapter/adapter"
 )
 
 var _ = Describe("Url", func() {
@@ -16,7 +18,7 @@ var _ = Describe("Url", func() {
 		exp                adapter.DashboardURLGenerator
 		plan               serviceadapter.Plan
 		manifest           bosh.BoshManifest
-		dashboardUrlParams serviceadapter.DashboardUrlParams
+		dashboardURLParams serviceadapter.DashboardUrlParams
 		instanceID         string
 	)
 
@@ -37,10 +39,10 @@ var _ = Describe("Url", func() {
 			},
 		}
 
-		exp = adapter.DashboardURLGenerator{}
+		// exp = adapter.DashboardURLGenerator{}
 		plan = serviceadapter.Plan{}
 		instanceID = "id1"
-		dashboardUrlParams = serviceadapter.DashboardUrlParams{
+		dashboardURLParams = serviceadapter.DashboardUrlParams{
 			InstanceID: instanceID,
 			Plan:       plan,
 			Manifest:   manifest,
@@ -52,7 +54,7 @@ var _ = Describe("Url", func() {
 		When("When nothing is missing", func() {
 
 			It("calls DashboardUrl without error", func() {
-				_, err = exp.DashboardUrl(dashboardUrlParams)
+				_, err = exp.DashboardUrl(dashboardURLParams)
 				Expect(err).ToNot(HaveOccurred())
 			})
 		})

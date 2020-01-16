@@ -6,9 +6,6 @@ check process mongod_node
   stop program "/var/vcap/jobs/bpm/bin/bpm stop mongod_node"
   group vcap
 
-check process mongod
-  matching "/mongod "
-
 <% else %>
 
 check process mongod_node
@@ -16,8 +13,5 @@ check process mongod_node
   start program "/var/vcap/jobs/mongod_node/bin/mongod_agent_ctl start"
   stop program "/var/vcap/jobs/mongod_node/bin/mongod_agent_ctl stop"
   group vcap
-
-check process mongod
-  with pidfile /var/vcap/store/mongodb-data/mongod.lock
 
 <% end %>

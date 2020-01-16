@@ -1,0 +1,14 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: golangci/golangci-lint
+    tag: "v1.22.2"
+
+inputs:
+  - name: ops-manager-cloudfoundry
+
+run:
+  path: ops-manager-cloudfoundry/ci/tasks/lint/run.sh

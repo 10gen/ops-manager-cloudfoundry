@@ -28,17 +28,16 @@ func FailingSession() *gexec.Session {
 }
 
 var (
-	maxRetries int
 	attempts   int
 	failed     bool
 	conditions []retry.Condition
 	fn         func() *gexec.Session
 	successFn  = func() *gexec.Session {
-		attempts += 1
+		attempts++
 		return SucceedingSession()
 	}
 	failureFn = func() *gexec.Session {
-		attempts += 1
+		attempts++
 		return FailingSession()
 	}
 	failHandler = func(msg string, i ...int) {
@@ -52,7 +51,7 @@ var _ = Describe("retry", func() {
 			BeforeEach(func() {
 				attempts = 0
 				fn = func() *gexec.Session {
-					attempts += 1
+					attempts++
 					return SucceedingSession()
 				}
 			})
@@ -89,7 +88,7 @@ var _ = Describe("retry", func() {
 				backoffCalls := 0
 
 				backoff := func(count uint) time.Duration {
-					backoffCalls += 1
+					backoffCalls++
 					return time.Millisecond
 				}
 
@@ -105,7 +104,7 @@ var _ = Describe("retry", func() {
 				failCount = 3
 
 				fn = func() *gexec.Session {
-					attempts += 1
+					attempts++
 
 					if attempts <= failCount {
 						return FailingSession()

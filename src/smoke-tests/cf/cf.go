@@ -1,16 +1,14 @@
 package cf
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"regexp"
-	"strings"
 	"time"
 
-	. "github.com/onsi/gomega"
+	. "github.com/onsi/gomega" // nolint
 	"github.com/onsi/gomega/gexec"
 	helpersCF "github.com/pivotal-cf-experimental/cf-test-helpers/cf"
 
@@ -31,12 +29,12 @@ func (cf *CF) API(endpoint string, skipSSLValidation bool) func() {
 		apiCmd = append(apiCmd, "--skip-ssl-validation")
 	}
 
-	cfApiFn := func() *gexec.Session {
+	cfAPIFn := func() *gexec.Session {
 		return helpersCF.Cf(apiCmd...)
 	}
 
 	return func() {
-		retry.Session(cfApiFn).WithSessionTimeout(cf.ShortTimeout).AndMaxRetries(cf.MaxRetries).AndBackoff(cf.RetryBackoff).Until(
+		retry.Session(cfAPIFn).WithSessionTimeout(cf.ShortTimeout).AndMaxRetries(cf.MaxRetries).AndBackoff(cf.RetryBackoff).Until(
 			retry.Succeeds,
 			`{"FailReason": "Failed to target Cloud Foundry"}`,
 		)
@@ -211,7 +209,6 @@ func (cf *CF) DeleteSecurityGroup(securityGroup string) func() {
 
 // CreateUser is equivalent to `cf create-user {name} {password}`
 func (cf *CF) CreateUser(name, password string) func() {
-
 	createUserFn := func() *gexec.Session {
 		return helpersCF.Cf("create-user", name, password)
 	}
@@ -487,6 +484,7 @@ func (cf CF) DeleteServiceKey(serviceInstanceName, serviceKeyName string) func()
 	}
 }
 
+/*
 func (cf *CF) getServiceInstanceGuid(serviceInstanceName string) string {
 	session := helpersCF.Cf("service", "--guid", serviceInstanceName)
 	Eventually(session, cf.ShortTimeout).Should(gexec.Exit(0), `{"FailReason": "Failed to retrieve GUID for service instance"}`)
@@ -494,8 +492,8 @@ func (cf *CF) getServiceInstanceGuid(serviceInstanceName string) string {
 	return strings.Trim(string(session.Out.Contents()), " \n")
 }
 
-func (cf *CF) getServiceKeyCredentials(serviceGuid string) []string {
-	session := helpersCF.Cf("curl", fmt.Sprintf("/v2/service_keys?q=service_instance_guid:%s", serviceGuid))
+func (cf *CF) getServiceKeyCredentials(serviceGUID string) []string {
+	session := helpersCF.Cf("curl", fmt.Sprintf("/v2/service_keys?q=service_instance_guid:%s", serviceGUID))
 	Eventually(session, cf.ShortTimeout).Should(gexec.Exit(0), `{"FailReason": "Failed to retrieve service bindings for app"}`)
 
 	var resp = new(struct {
@@ -521,12 +519,13 @@ func (cf *CF) getServiceKeyCredentials(serviceGuid string) []string {
 	Expect(uri).NotTo(BeEmpty(), `{"FailReason": "Invalid service key, missing uri"}`)
 	return servers
 }
+*/
 
 //GetGroupID with use of `cf` tool get projectID/groupIP
 func (cf *CF) GetGroupID(serviceInstanceName string) string {
 	session := helpersCF.Cf("service", serviceInstanceName)
 	Eventually(session, cf.ShortTimeout).Should(gexec.Exit(0), `{"FailReason": "Failed to get service information"}`)
-	projectID := string(regexp.MustCompile("v\\d/(.*)").FindSubmatch(session.Out.Contents())[1])
+	projectID := string(regexp.MustCompile(`v\d/(.*)`).FindSubmatch(session.Out.Contents())[1])
 	Eventually(projectID).ShouldNot(BeEmpty())
 	return projectID
 }

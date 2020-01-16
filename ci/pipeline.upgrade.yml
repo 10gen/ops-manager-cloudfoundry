@@ -240,6 +240,7 @@ jobs:
           PCF_USERNAME: ((pcf-username))
           PCF_PASSWORD: ((pcf-password))
           CONFIG: ((env-config))
+          UPDATE_PAS: true
         on_failure:
           put: "update-tile-status"
           params:

@@ -12,6 +12,6 @@ require (
 	github.com/onsi/gomega v1.8.1
 	github.com/pborman/uuid v1.2.0
 	github.com/pivotal-cf-experimental/cf-test-helpers v0.0.0-20170428144005-e56b6ec41da9
-	github.com/pivotal-cf/on-demand-services-sdk v0.33.1
+	github.com/pivotal-cf/on-demand-services-sdk v0.35.0
 	mongodb-service-adapter v0.0.0-00010101000000-000000000000
 )
