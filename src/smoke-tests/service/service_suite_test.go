@@ -18,10 +18,10 @@ import (
 
 //ServiceParameters is the model of req. parameters for creating services
 type ServiceParameters struct {
-	ServiceName  string
-	PlanName     string
-	BackupEnable string
-	SSLEnable    string
+	ServiceName    string
+	PlanName       string
+	BackupEnable   string
+	SSLEnable      string
 	MongoDBVersion string
 }
 
@@ -84,15 +84,15 @@ func (rc retryConfig) MaxRetries() int {
 }
 
 type mongodbTestConfig struct {
-	URL string `json:"url"`
-	UserName string `json:"username"`
-	UserAPIKey string `json:"api_key"`
-	ServiceName string      `json:"service_name"`
-	PlanNames   []string    `json:"plan_names"`
-	Retry       retryConfig `json:"retry"`
-	Backup      []string    `json:"backup_enabled"`
-	SSL         []string	`json:"ssl_enabled"`
-	MongoDBVersion []string `json:"mongodb_version"`
+	URL            string      `json:"url"`
+	UserName       string      `json:"username"`
+	UserAPIKey     string      `json:"api_key"`
+	ServiceName    string      `json:"service_name"`
+	PlanNames      []string    `json:"plan_names"`
+	Retry          retryConfig `json:"retry"`
+	Backup         []string    `json:"backup_enabled"`
+	SSL            []string    `json:"ssl_enabled"`
+	MongoDBVersion []string    `json:"mongodb_version"`
 }
 
 //test if all parameters in pipeline was provided
@@ -147,9 +147,9 @@ func loadMongodbTestConfig(path string) mongodbTestConfig {
 }
 
 var (
-	configPath    = os.Getenv("CONFIG_PATH")
-	cfTestConfig  = loadCFTestConfig(configPath)
-	mongodbConfig = loadMongodbTestConfig(configPath)
+	configPath        = os.Getenv("CONFIG_PATH")
+	cfTestConfig      = loadCFTestConfig(configPath)
+	mongodbConfig     = loadMongodbTestConfig(configPath)
 	smokeTestReporter *reporter.SmokeTestReport
 )
 

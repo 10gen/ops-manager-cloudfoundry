@@ -10,7 +10,6 @@ import (
 )
 
 func TestApplyDigestAuth(t *testing.T) {
-
 	config, err := adapter.LoadConfig("../../mongodb-service-adapter/testdata/manifest.json")
 
 	if err != nil {

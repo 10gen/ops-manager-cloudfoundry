@@ -2,17 +2,19 @@ package adapter_test
 
 import (
 	"fmt"
-	"mongodb-service-adapter/adapter"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/on-demand-services-sdk/bosh"
 	"github.com/pivotal-cf/on-demand-services-sdk/serviceadapter"
+
+	"mongodb-service-adapter/adapter"
 )
 
 var _ = Describe("Binding", func() {
 
 	var (
-		bindingId              string
+		bindingID              string
 		deploymentTopology     bosh.BoshVMs
 		manifest               bosh.BoshManifest
 		requestParams          serviceadapter.RequestParameters
@@ -38,7 +40,7 @@ var _ = Describe("Binding", func() {
 			fmt.Print("Error opening manifest file ")
 		}
 
-		bindingId = "id1"
+		bindingID = "id1"
 		adminPassword = "admin"
 		addrs = []string{config.NodeAddresses + ":28000"}
 
@@ -70,7 +72,7 @@ var _ = Describe("Binding", func() {
 		dnsAddresses = serviceadapter.DNSAddresses{}
 		binder = &adapter.Binder{}
 		createBindingParams = serviceadapter.CreateBindingParams{
-			BindingID:          bindingId,
+			BindingID:          bindingID,
 			DeploymentTopology: deploymentTopology,
 			Manifest:           manifest,
 			RequestParams:      requestParams,
@@ -78,7 +80,7 @@ var _ = Describe("Binding", func() {
 			DNSAddresses:       dnsAddresses,
 		}
 		deleteBindingParams = serviceadapter.DeleteBindingParams{
-			BindingID:          bindingId,
+			BindingID:          bindingID,
 			DeploymentTopology: deploymentTopology,
 			Manifest:           manifest,
 			RequestParams:      requestParams,
@@ -101,9 +103,9 @@ var _ = Describe("Binding", func() {
 			})
 		})
 
-		Context("when bindingId is missing", func() {
+		Context("when bindingID is missing", func() {
 			BeforeEach(func() {
-				bindingId = ""
+				bindingID = ""
 			})
 
 			It("returns no error", func() {
@@ -198,7 +200,7 @@ var _ = Describe("Binding", func() {
 			})
 		})
 
-		Context("when bindingId is different ", func() {
+		Context("when bindingID is different ", func() {
 			BeforeEach(func() {
 				deleteBindingParams.BindingID = "qwerty"
 			})

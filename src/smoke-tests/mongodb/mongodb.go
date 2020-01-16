@@ -49,7 +49,7 @@ func (app *App) Write(key, value string) func() {
 	return func() {
 		curlFn := func() *gexec.Session {
 			fmt.Println("Posting to url: ", app.keyURI(key))
-			return runner.Curl("-d", fmt.Sprintf("%s", value), "-X", "PUT", app.keyURI(key), "-k")
+			return runner.Curl("-d", value, "-X", "PUT", app.keyURI(key), "-k")
 		}
 
 		retry.Session(curlFn).WithSessionTimeout(app.timeout).AndBackoff(app.retryBackoff).Until(

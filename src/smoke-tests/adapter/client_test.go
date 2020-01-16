@@ -1,5 +1,7 @@
 package adapter_test
 
+// TODO: remove this file?
+/*
 import (
 	"encoding/json"
 	"reflect"
@@ -427,3 +429,4 @@ var _ = Describe("Client", func() {
 	})
 
 })
+*/

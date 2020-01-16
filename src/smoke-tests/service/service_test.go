@@ -7,15 +7,13 @@ import (
 	"os"
 	"time"
 
-	// "mongodb-service-adapter/adapter"
-
 	smokeTestCF "smoke-tests/cf"
 	"smoke-tests/mongodb"
 	"smoke-tests/service/reporter"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	// . "github.com/onsi/gomega/gstruct"
+
 	"github.com/pborman/uuid"
 	"github.com/pivotal-cf-experimental/cf-test-helpers/services"
 )

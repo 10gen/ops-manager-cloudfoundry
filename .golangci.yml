@@ -3,7 +3,6 @@ linters:
     - bodyclose
     - dupl
     - gocritic
-    - godox
     - goimports
     - golint
     - gosec

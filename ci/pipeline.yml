@@ -170,8 +170,14 @@ jobs:
             params:
               state: "pending"
               commit: "ops-manager-cloudfoundry"
-      - task: build-tile
-        file: ops-manager-cloudfoundry/ci/tasks/build-tile/task.yml
+      - in_parallel:
+          - task: lint
+            file: ops-manager-cloudfoundry/ci/tasks/lint/task.yml
+          - task: build-tile
+            file: ops-manager-cloudfoundry/ci/tasks/build-tile/task.yml
+            params:
+              AWS_KEY: ((aws-access-key))
+              AWS_SECRET_KEY: ((aws-secret-access-key))
         on_failure:
           put: "build-status"
           params:
@@ -188,9 +194,6 @@ jobs:
             state: "error"
             commit: "ops-manager-cloudfoundry"
             description: aborted
-        params:
-          AWS_KEY: ((aws-access-key))
-          AWS_SECRET_KEY: ((aws-secret-access-key))
       - in_parallel:
           - put: artifacts
             params:
