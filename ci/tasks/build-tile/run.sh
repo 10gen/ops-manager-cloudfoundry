@@ -44,10 +44,11 @@ EOF
 (
   cd ops-manager-cloudfoundry/tile
 
-  yq w -i tile.yml build_parameters.mongodb_path "$(ls resources/mongodb-${VERSION}.tgz)"
-  yq w -i tile.yml build_parameters.mongodb_version "${VERSION}"
+  yq w -i tile.yml packages.[4].path "$(ls resources/mongodb-*.tgz)"
+  yq w -i tile.yml packages.[4].jobs[0].properties.service_deployment.releases[0].version "${VERSION}"
+  yq w -i tile.yml runtime_configs[0].runtime_config.releases[0].version "${VERSION}"
+  yq w -i tile.yml runtime_configs[1].runtime_config.releases[0].version "${VERSION}"
   tile build "${VERSION}"
 )
-
 mkdir -p "$base"/artifacts
 cp "$base"/ops-manager-cloudfoundry/tile/product/mongodb-on-demand-*.pivotal "$base"/artifacts/

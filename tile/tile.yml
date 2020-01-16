@@ -1,9 +1,3 @@
-build_parameters:
-  - &mongodb_version 1.0.33
-  - &mongodb_path resources/mongodb-1.0.33.tgz
-  - &bpm_version 1.1.1
-  - &bpm_path resources/bpm-release-1.1.1.tgz
-
 name: mongodb-on-demand
 icon_file: resources/icon.png
 label: MongoDB-On-Demand
@@ -350,9 +344,9 @@ runtime_configs:
     runtime_config:
       releases:
         - name: mongodb
-          version: *mongodb_version
+          version: 1.0.33
         - name: bpm
-          version: *bpm_version
+          version: 1.1.1
       addons:
         - name: bpm
           jobs:
@@ -390,7 +384,7 @@ runtime_configs:
     runtime_config:
       releases:
         - name: mongodb
-          version: *mongodb_version
+          version: 1.0.33
       addons:
         - name: mongodb-dns-aliases
           include:
@@ -419,7 +413,7 @@ runtime_configs:
 packages:
   - name: bpm
     type: bosh-release
-    path: *bpm_path
+    path: resources/bpm-release-1.1.1.tgz
   - name: pcf-mongodb-helpers
     type: bosh-release
     path: resources/pcf-mongodb-helpers-0.0.1.tgz
@@ -431,7 +425,7 @@ packages:
     path: resources/syslog-migration-11.1.1.tgz
   - name: mongodb
     type: bosh-release
-    path: *mongodb_path
+    path: resources/mongodb-1.0.33.tgz
     jobs:
       - name: mongodb_broker
         label: MongoDB-ODB
@@ -520,7 +514,7 @@ packages:
           service_deployment:
             releases:
               - name: mongodb
-                version: *mongodb_version
+                version: 1.0.33
                 jobs:
                   - mongod_node
                   - mongodb_config_agent
@@ -528,7 +522,7 @@ packages:
                   - cleanup_service
                   - post_setup
               - name: bpm
-                version: *bpm_version
+                version: 1.1.1
                 jobs:
                   - bpm
               - name: pcf-mongodb-helpers
