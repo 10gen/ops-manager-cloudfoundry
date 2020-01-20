@@ -59,6 +59,15 @@ cd ops-manager-cloudfoundry
 # ${om} configure-product --product-name "$PRODUCT" --product-network "$network_config" --product-properties "$properties_config"
 config_path=$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config.pie
 make_env_config $config_path
+
+# replace "mongodb_broker" with "broker" for old tile versions
+# TODO: remove after switching to 1.2.1+
+(
+	config_tmp=$(mktemp)
+	yq r -j $config_path | jq '."resource-config".broker = ."resource-config".mongodb_broker | del(."resource-config".mongodb_broker)' >$config_tmp
+	mv $config_tmp $config_path
+)
+
 export OM_API_USER=$(yq r $config_path product-properties[.properties.username].value)
 export OM_API_KEY=$(yq r $config_path product-properties[.properties.api_key].value.secret)
 #${om} configure-product  --config "$config_path" -l "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/vars.yml"
