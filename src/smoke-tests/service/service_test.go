@@ -315,7 +315,7 @@ var _ = Describe("MongoDB Service", func() {
 func convertedBackupStatus(backupEnable string) string {
 	if backupEnable == "true" {
 		return "STARTED"
-	} 
+	}
 	return "INACTIVE"
 }
 
