@@ -7,7 +7,6 @@ replace github.com/mongodb-labs/pcgc v0.0.3 => github.com/vasilevp/pcgc v0.0.6
 replace mongodb-service-adapter => ../mongodb-service-adapter
 
 require (
-	github.com/mongodb-labs/pcgc v0.0.3
 	github.com/onsi/ginkgo v1.11.0
 	github.com/onsi/gomega v1.8.1
 	github.com/pborman/uuid v1.2.0
