@@ -108,8 +108,6 @@ type Client interface {
 	UpdateMonitoringConfig(projectID string, config AgentAttributes) error
 	// https://docs.opsmanager.mongodb.com/master/reference/api/automation-config/index.html#update-the-monitoring-or-backup
 	UpdateBackupConfig(projectID string, config AgentAttributes) error
-	// https://docs.opsmanager.mongodb.com/master/reference/api/backup/get-all-backup-configs-for-group/
-	GetBackupConfigs(projectID string) (BackupConfigs, error)
 }
 
 // NewClient builds a new API client for connecting to Ops Manager
