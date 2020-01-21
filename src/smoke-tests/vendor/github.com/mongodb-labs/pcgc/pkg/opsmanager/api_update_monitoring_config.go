@@ -30,8 +30,8 @@ type AgentAttributes struct {
 	KerberosKeytab          string     `json:"kerberosKeytab,omitempty"`
 	KerberowWindowsUsername string     `json:"kerberosWindowsUsername,omitempty"`
 	KerberowWindowsPassword string     `json:"kerberosWindowsPassword,omitempty"`
-	SSLPEMKeyfile           string     `json:"sslPEMKeyfile,omitempty"`
-	SSLPEMKeyfileWindows    string     `json:"sslPEMKeyfileWindows,omitempty"`
+	SSLPEMKeyFile           string     `json:"sslPEMKeyFile,omitempty"`
+	SSLPEMKeyFileWindows    string     `json:"sslPEMKeyFileWindows,omitempty"`
 	SSLPEMKeyPwd            string     `json:"sslPEMKeyPwd,omitempty"`
 }
 
