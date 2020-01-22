@@ -7,12 +7,15 @@ import (
 	"os"
 	"time"
 
+	"mongodb-service-adapter/adapter"
+
 	smokeTestCF "smoke-tests/cf"
 	"smoke-tests/mongodb"
 	"smoke-tests/service/reporter"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	. "github.com/onsi/gomega/gstruct"
 
 	"github.com/pborman/uuid"
 	"github.com/pivotal-cf-experimental/cf-test-helpers/services"
@@ -265,21 +268,21 @@ var _ = Describe("MongoDB Service", func() {
 					"Read from MongoDB",
 					app.ReadAssert("testkey", testValue),
 				),
-				// TODO: implement in pcgc?
-				// reporter.NewStep(
-				// 	"Check backup Agent",
-				// 	func() {
-				// 	// 	groupID := testCF.GetGroupID(serviceInstanceName)
-				// 	// 	fmt.Printf("Got groupID/ProjectID: %s", groupID)
-				// 	// 	backupState, err := client.GetAgentsByType(groupID, "BACKUP")
-				// 	// 	Expect(err).NotTo(HaveOccurred())
-				// 	// 	Expect(backupState.Results[0]).To(MatchFields(IgnoreExtras, Fields{
-				// 	// 		// "IsManaged": Equal(sp.BackupEnable),
-				// 	// 		"StateName": Equal("ACTIVE"),//ACTIVE
-				// 	// 		"TypeName": Equal("BACKUP"),
-				// 	// 	}))
-				// 	// },
-				// ),
+				reporter.NewStep(
+					"Backup configuration",
+					func() {
+						client := adapter.NewPCGCClient(mongodbConfig.OpsMan.URL, mongodbConfig.OpsMan.UserName, mongodbConfig.OpsMan.UserAPIKey)
+						groupID := testCF.GetGroupID(serviceInstanceName)
+						fmt.Printf("Got groupID/ProjectID: %s", groupID)
+						backupConfigs, err := client.GetBackupConfigs(groupID)
+						Expect(err).NotTo(HaveOccurred())
+						for _, config := range backupConfigs.BackupResults {
+							Expect(config).To(MatchFields(IgnoreExtras, Fields{
+								"StatusName": Equal(convertedBackupStatus(sp.BackupEnable)),
+							}))
+						}
+					},
+				),
 			}
 
 			smokeTestReporter.RegisterSpecSteps(specSteps)
@@ -307,6 +310,14 @@ var _ = Describe("MongoDB Service", func() {
 		}
 	})
 })
+
+//TODO move somewhere
+func convertedBackupStatus(backupEnable string) string {
+	if backupEnable == "true" {
+		return "STARTED"
+	}
+	return "INACTIVE"
+}
 
 func randomName() string {
 	return uuid.NewRandom().String()
