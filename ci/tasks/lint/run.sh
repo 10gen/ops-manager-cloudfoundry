@@ -11,19 +11,19 @@ for module in ops-manager-cloudfoundry/src/{mongodb-config-agent,mongodb-service
     golangci-lint run --modules-download-mode vendor --timeout 15m
 
     # fix whitespace
-    find vendor -type f -exec grep -Iq . {} \; -print0 | xargs -0 sed -i 's/\r$//'
+    find vendor go.mod go.sum -type f -exec grep -Iq . {} \; -print0 | xargs -0 sed -i 's/\r$//'
 
     # get folder hash before running go mod vendor
-    OLDHASHES=$(find vendor -type f -print0 | sort -z | xargs -0 sha1sum)
+    OLDHASHES=$(find vendor go.mod go.sum -type f -print0 | sort -z | xargs -0 sha1sum)
     OLDSUM=$(echo "$OLDHASHES" | sha1sum)
 
     go mod vendor
 
     # fix whitespace again (we don't care if it's wrong)
-    find vendor -type f -exec grep -Iq . {} \; -print0 | xargs -0 sed -i 's/\r$//'
+    find vendor go.mod go.sum -type f -exec grep -Iq . {} \; -print0 | xargs -0 sed -i 's/\r$//'
 
     # get folder hash after go mod vendor
-    NEWHASHES=$(find vendor -type f -print0 | sort -z | xargs -0 sha1sum)
+    NEWHASHES=$(find vendor go.mod go.sum -type f -print0 | sort -z | xargs -0 sha1sum)
     NEWSUM=$(echo "$NEWHASHES" | sha1sum)
 
     popd
