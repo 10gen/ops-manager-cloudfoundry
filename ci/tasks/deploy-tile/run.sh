@@ -10,9 +10,10 @@ UPDATE_PAS="$UPDATE_PAS"
 
 . "$base/ops-manager-cloudfoundry/ci/tasks/helpers/tmp-helper.sh"
 
+#Pipeline without VERSION parameter will install latest build
 tile_folder="tileold"
 match_version="*.pivotal"
-if [ -z "${VERSION:-}" ]; then
+if [ -z "${VERSION:-}" ]; then #install latest build
 	echo "INFO: Pipeline without VERSION parameter will install latest build"
 	VERSION=$(cat "$base"/version/number)
 	tile_folder="artifacts"
@@ -52,7 +53,7 @@ echo "Product " $PRODUCT
 om="om -t $PCF_URL -u $PCF_USERNAME -p $PCF_PASSWORD -k"
 cf_version=$(${om} available-products -f json | jq -j '.[] | select(.name == "cf").version')
 
-${om} upload-product --product "artifacts/$TILE_FILE"
+${om} upload-product --product "$tile_folder/$TILE_FILE"
 ${om} upload-stemcell --stemcell "stemcell/$STEMCELL_FILE"
 ${om} available-products
 ${om} stage-product --product-name "$PRODUCT" --product-version "$VERSION"
