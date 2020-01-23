@@ -26,14 +26,8 @@ var _ = Describe("Utils", func() {
 	})
 
 	Describe("GeneratePassword", func() {
-
-		It("returns without error", func() {
-			_, err := adapter.GeneratePassword(10)
-			Expect(err).ToNot(HaveOccurred())
-		})
-
 		It("should return length equal to 10", func() {
-			res, _ := adapter.GeneratePassword(10)
+			res := adapter.GenerateString(10, false)
 			Expect(len(res) == 10).To(BeTrue())
 		})
 	})

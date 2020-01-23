@@ -49,11 +49,7 @@ func main() {
 	}
 
 	if ctx.Password == "" {
-		var err error
-		ctx.Password, err = adapter.GeneratePassword(32)
-		if err != nil {
-			logger.Fatal(err)
-		}
+		ctx.Password = adapter.GenerateString(32, false)
 	}
 
 	switch c := ctx.Version[:3]; c {
