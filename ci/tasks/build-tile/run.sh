@@ -44,11 +44,13 @@ EOF
 (
   cd ops-manager-cloudfoundry/tile
 
-  yq w -i tile.yml packages.[4].path "$(ls resources/mongodb-*.tgz)"
-  yq w -i tile.yml packages.[4].jobs[0].properties.service_deployment.releases[0].version "${VERSION}"
-  yq w -i tile.yml runtime_configs[0].runtime_config.releases[0].version "${VERSION}"
-  yq w -i tile.yml runtime_configs[1].runtime_config.releases[0].version "${VERSION}"
+  yq r -j tile.yml >step1.json
+  jq --arg v "${VERSION}" '(.. | objects | select(has("releases")).releases[] | select(.name == "mongodb").version) = $v' step1.json >step2.json
+  jq --arg p "$(ls resources/mongodb-${VERSION}.tgz)" '(.packages[] | select(.name == "mongodb").path) = $p' step2.json >step3.json
+
+  mv step3.json tile.yml
   tile build "${VERSION}"
 )
+
 mkdir -p "$base"/artifacts
 cp "$base"/ops-manager-cloudfoundry/tile/product/mongodb-on-demand-*.pivotal "$base"/artifacts/
