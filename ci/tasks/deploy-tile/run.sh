@@ -11,10 +11,12 @@ UPDATE_PAS="$UPDATE_PAS"
 . "$base/ops-manager-cloudfoundry/ci/tasks/helpers/tmp-helper.sh"
 
 tile_folder="tileold"
+match_version="*.pivotal"
 if [ -z "${VERSION:-}" ]; then
 	echo "INFO: Pipeline without VERSION parameter will install latest build"
 	VERSION=$(cat "$base"/version/number)
 	tile_folder="artifacts"
+	match_version="*-${VERSION}.pivotal"
 	if [ -z "${VERSION:-}" ]; then
 		echo "missing version number"
 		exit 1
@@ -23,10 +25,10 @@ fi
 
 TILE_FILE=$(
 	cd $tile_folder
-	ls *-${VERSION}.pivotal
+	ls $match_version
 )
 if [ -z "${TILE_FILE}" ]; then
-	echo "No files matching $tile_folder/*.pivotal"
+	echo "No files matching $tile_folder/$match_version"
 	ls -lR $tile_folder
 	exit 1
 fi
