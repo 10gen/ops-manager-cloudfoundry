@@ -233,7 +233,7 @@ jobs:
           PCF_USERNAME: ((pcf-username))
           PCF_PASSWORD: ((pcf-password))
           CONFIG: ((env-config))
-          UPDATE_PAS: true
+          UPDATE_PAS: false
         on_failure:
           put: "deploy-status"
           params:
