@@ -23,26 +23,30 @@ const (
 	versionsManifest2 = "../../mongodb_versions/versions.json"
 )
 
-// GeneratePassword generates a random BOSH-safe string of a given length
-func GeneratePassword(l int) (string, error) {
-	enc := base64.URLEncoding
+// GenerateString generates a random BOSH-safe string of a given length
+func GenerateString(l int, urlSafe bool) string {
+	enc := base64.StdEncoding
+	if urlSafe {
+		enc = base64.URLEncoding
+	}
+
 	entropy := enc.DecodedLen(l) + 2
 	b := make([]byte, entropy)
 	_, err := io.ReadAtLeast(rand.Reader, b, entropy)
 	if err != nil {
-		return "", fmt.Errorf("cannot read random bytes: %v", err)
+		panic(fmt.Sprintf("cannot read random bytes: %v", err))
 	}
 
 	result := make([]byte, enc.EncodedLen(entropy))
 	enc.Encode(result, b)
 
 	// BOSH stores data in YAML, so we need to make sure the password won't be mistaken for a number
-	// if the first symbol is a number or minus sign, we replace it with a letter
-	if shift := result[0] - '0'; shift < 10 || result[0] == '-' {
+	// if the first symbol is a number or plus/minus sign, we replace it with a letter
+	if shift := result[0] - '0'; shift < 10 || result[0] == '-' || result[0] == '+' {
 		result[0] = 'o' + shift
 	}
 
-	return string(result[:l]), nil
+	return string(result[:l])
 }
 
 // TODO: validate input
