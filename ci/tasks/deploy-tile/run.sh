@@ -12,11 +12,11 @@ if [ -z "${VERSION:-}" ]; then
 	exit 1
 fi
 
-TILE_FILE=$(
-	cd artifacts
-	ls *-${VERSION}.pivotal
-)
-if [ -z "${TILE_FILE}" ]; then
+if [ ! -z "ls tileold/*.pivotal"]; then
+	TILE_FILE=$(
+		ls artifacts/*.pivotal
+	)
+else
 	echo "No files matching artifacts/*.pivotal"
 	ls -lR artifacts
 	exit 1

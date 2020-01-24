@@ -23,7 +23,7 @@ install_product() {
 	om="om -t $PCF_URL -u $PCF_USERNAME -p $PCF_PASSWORD -k"
 	cf_version=$(${om} available-products -f json | jq -j '.[] | select(.name == "cf").version')
 
-	${om} upload-product --product "artifacts/$TILE_FILE"
+	${om} upload-product --product "$TILE_FILE"
 	${om} upload-stemcell --stemcell "stemcell/$STEMCELL_FILE"
 	${om} available-products
 	${om} stage-product --product-name "$PRODUCT" --product-version "$VERSION"
