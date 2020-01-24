@@ -14,7 +14,7 @@ if [ -z "${VERSION:-}" ]; then
 	exit 1
 fi
 
-if [ ! -z "ls tileold/*.pivotal"]; then
+if [ ! -z "ls tileold/*.pivotal" ]; then
 	TILE_FILE=$(
 		ls tileold/*.pivotal
 	)
