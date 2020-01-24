@@ -7,7 +7,7 @@ base=$PWD
 # PCF_USERNAME="$PCF_USERNAME"
 # PCF_PASSWORD="$PCF_PASSWORD"
 . "$base/ops-manager-cloudfoundry/ci/tasks/helpers/tmp-helper.sh"
-. "$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/run.sh"
+. "$base/ops-manager-cloudfoundry/ci/tasks/helpers/deploy.sh"
 
 if [ -z "${VERSION:-}" ]; then
 	echo "missing version number"
