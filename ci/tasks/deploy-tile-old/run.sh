@@ -3,9 +3,6 @@ set -euo pipefail
 [[ ${DEBUG:-} == true ]] && set -x
 
 base=$PWD
-# PCF_URL="$PCF_URL"
-# PCF_USERNAME="$PCF_USERNAME"
-# PCF_PASSWORD="$PCF_PASSWORD"
 . "$base/ops-manager-cloudfoundry/ci/tasks/helpers/tmp-helper.sh"
 . "$base/ops-manager-cloudfoundry/ci/tasks/helpers/deploy.sh"
 
