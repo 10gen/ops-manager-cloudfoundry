@@ -149,7 +149,7 @@ jobs:
           PCF_USERNAME: ((pcf-username))
           PCF_PASSWORD: ((pcf-password))
           CONFIG: ((env-config))
-          UPDATE_PAS: false
+          UPDATE_PAS: true
           VERSION: *tile-version
         on_failure:
           put: "deploy-status"
