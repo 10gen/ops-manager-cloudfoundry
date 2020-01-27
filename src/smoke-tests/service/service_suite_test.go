@@ -84,15 +84,19 @@ func (rc retryConfig) MaxRetries() int {
 }
 
 type mongodbTestConfig struct {
-	URL            string      `json:"url"`
-	UserName       string      `json:"username"`
-	UserAPIKey     string      `json:"api_key"`
-	ServiceName    string      `json:"service_name"`
-	PlanNames      []string    `json:"plan_names"`
-	Retry          retryConfig `json:"retry"`
-	Backup         []string    `json:"backup_enabled"`
-	SSL            []string    `json:"ssl_enabled"`
-	MongoDBVersion []string    `json:"mongodb_version"`
+	ServiceName    string            `json:"service_name"`
+	PlanNames      []string          `json:"plan_names"`
+	Retry          retryConfig       `json:"retry"`
+	Backup         []string          `json:"backup_enabled"`
+	SSL            []string          `json:"ssl_enabled"`
+	MongoDBVersion []string          `json:"mongodb_version"`
+	OpsMan         mongoDBOpsManCred `json:"mongo_ops"`
+}
+
+type mongoDBOpsManCred struct {
+	URL        string `json:"url"`
+	UserName   string `json:"username"`
+	UserAPIKey string `json:"api_key"`
 }
 
 //test if all parameters in pipeline was provided

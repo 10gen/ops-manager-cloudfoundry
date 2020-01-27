@@ -59,16 +59,8 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 		previousMongoProperties = mongoPlanProperties(*params.PreviousManifest)
 	}
 
-	adminPassword, err := passwordForMongoServer(previousMongoProperties)
-	if err != nil {
-		return serviceadapter.GenerateManifestOutput{}, err
-	}
-
-	id, err := idForMongoServer(previousMongoProperties)
-	if err != nil {
-		return serviceadapter.GenerateManifestOutput{}, err
-	}
-
+	adminPassword := passwordForMongoServer(previousMongoProperties)
+	id := idForMongoServer(previousMongoProperties)
 	group, err := groupForMongoServer(id, oc, oc404, arbitraryParams)
 	if err != nil {
 		return serviceadapter.GenerateManifestOutput{}, fmt.Errorf("could not create new group (%s)", err.Error())
@@ -203,10 +195,8 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 	default:
 		return serviceadapter.GenerateManifestOutput{}, fmt.Errorf("unknown plan: %s", planID)
 	}
-	authKey, err := authKeyForMongoServer(previousMongoProperties)
-	if err != nil {
-		return serviceadapter.GenerateManifestOutput{}, err
-	}
+
+	authKey := authKeyForMongoServer(previousMongoProperties)
 	backupEnabled := false
 	if planID != PlanStandalone {
 		e := getArbitraryParam("backup_enabled", "backup_enabled", arbitraryParams, previousMongoProperties)
@@ -228,11 +218,7 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 
 	agentPassword := ""
 	if params.PreviousManifest == nil {
-		var err error
-		agentPassword, err = GeneratePassword(32)
-		if err != nil {
-			panic(err)
-		}
+		agentPassword = GenerateString(32, false)
 	}
 
 	// if manifest updates we should use password from previous manifest
@@ -428,28 +414,28 @@ func mongoPlanProperties(manifest bosh.BoshManifest) map[interface{}]interface{}
 	return manifest.InstanceGroups[1].Properties["mongo_ops"].(map[interface{}]interface{})
 }
 
-func passwordForMongoServer(previousManifestProperties map[interface{}]interface{}) (string, error) {
+func passwordForMongoServer(previousManifestProperties map[interface{}]interface{}) string {
 	if previousManifestProperties != nil {
-		return previousManifestProperties["admin_password"].(string), nil
+		return previousManifestProperties["admin_password"].(string)
 	}
 
-	return GeneratePassword(20)
+	return GenerateString(20, false)
 }
 
-func idForMongoServer(previousManifestProperties map[interface{}]interface{}) (string, error) {
+func idForMongoServer(previousManifestProperties map[interface{}]interface{}) string {
 	if previousManifestProperties != nil {
-		return previousManifestProperties["id"].(string), nil
+		return previousManifestProperties["id"].(string)
 	}
 
-	return GeneratePassword(8)
+	return GenerateString(8, true)
 }
 
-func authKeyForMongoServer(previousManifestProperties map[interface{}]interface{}) (string, error) {
+func authKeyForMongoServer(previousManifestProperties map[interface{}]interface{}) string {
 	if previousManifestProperties != nil {
-		return previousManifestProperties["auth_key"].(string), nil
+		return previousManifestProperties["auth_key"].(string)
 	}
 
-	return GeneratePassword(8)
+	return GenerateString(8, false)
 }
 
 func groupForMongoServer(

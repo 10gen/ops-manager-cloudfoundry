@@ -65,3 +65,4 @@ cat > "$base"/release/notification <<EOF
 You can download build at https://s3.amazonaws.com/${RELEASE_BUCKET_NAME}/${TILE_FILE}
 Build SHA256: ${SHA256}
 EOF
+echo "SHA256 " $SHA256

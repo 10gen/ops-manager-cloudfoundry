@@ -16,7 +16,7 @@ github.com/hpcloud/tail/winfile
 github.com/mongodb-labs/pcgc/pkg/httpclient
 github.com/mongodb-labs/pcgc/pkg/opsmanager
 github.com/mongodb-labs/pcgc/pkg/useful
-# github.com/onsi/ginkgo v1.10.3
+# github.com/onsi/ginkgo v1.11.0
 github.com/onsi/ginkgo
 github.com/onsi/ginkgo/config
 github.com/onsi/ginkgo/internal/codelocation
@@ -35,11 +35,13 @@ github.com/onsi/ginkgo/reporters/stenographer
 github.com/onsi/ginkgo/reporters/stenographer/support/go-colorable
 github.com/onsi/ginkgo/reporters/stenographer/support/go-isatty
 github.com/onsi/ginkgo/types
-# github.com/onsi/gomega v1.7.1
+# github.com/onsi/gomega v1.8.1
 github.com/onsi/gomega
 github.com/onsi/gomega/format
 github.com/onsi/gomega/gbytes
 github.com/onsi/gomega/gexec
+github.com/onsi/gomega/gstruct
+github.com/onsi/gomega/gstruct/errors
 github.com/onsi/gomega/internal/assertion
 github.com/onsi/gomega/internal/asyncassertion
 github.com/onsi/gomega/internal/oraclematcher
@@ -99,6 +101,9 @@ golang.org/x/text/internal/utf8internal
 golang.org/x/text/language
 golang.org/x/text/runes
 golang.org/x/text/transform
+# golang.org/x/xerrors v0.0.0-20190717185122-a985d3407aa7
+golang.org/x/xerrors
+golang.org/x/xerrors/internal
 # gopkg.in/fsnotify.v1 v1.4.7
 gopkg.in/fsnotify.v1
 # gopkg.in/go-playground/validator.v8 v8.18.2
