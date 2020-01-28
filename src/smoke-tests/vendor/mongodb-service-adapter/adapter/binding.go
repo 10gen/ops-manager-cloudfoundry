@@ -33,7 +33,7 @@ var (
 func (b Binder) CreateBinding(params serviceadapter.CreateBindingParams) (serviceadapter.Binding, error) {
 	// create an admin level user
 	username := mkUsername(params.BindingID)
-	password := GenerateString(32, false)
+	password := GenerateString(32, true)
 
 	properties := params.Manifest.Properties["mongo_ops"].(map[interface{}]interface{})
 	adminPassword := properties["admin_password"].(string)
