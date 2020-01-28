@@ -61,7 +61,7 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 
 	adminPassword := passwordForMongoServer(previousMongoProperties)
 	id := idForMongoServer(previousMongoProperties)
-	group, err := groupForMongoServer(id, oc, oc404, arbitraryParams)
+	group, err := groupForMongoServer(id, oc, oc404, previousMongoProperties, arbitraryParams)
 	if err != nil {
 		return serviceadapter.GenerateManifestOutput{}, fmt.Errorf("could not create new group (%s)", err.Error())
 	}
@@ -442,6 +442,7 @@ func groupForMongoServer(
 	mongoID string,
 	oc opsmanager.Client,
 	oc404 opsmanager.Client,
+	previousMongoProperties map[interface{}]interface{},
 	arbitraryParams map[string]interface{},
 ) (opsmanager.ProjectResponse, error) {
 	name := ""
@@ -454,23 +455,21 @@ func groupForMongoServer(
 		orgID = p.(string)
 	}
 
-	// TODO: tags are never used when creating a group - investigate?
-	tags := []string{}
-	if p := planProperties["mongo_ops"].(map[string]interface{})["tags"]; p != nil {
-		t := p.([]interface{})
-		for _, tag := range t {
-			tags = append(tags, tag.(map[string]interface{})["tag_name"].(string))
-		}
-	}
+	// TODO: investigate the use of tags
+	// tags := []string{}
+	// if p := planProperties["mongo_ops"].(map[string]interface{})["tags"]; p != nil {
+	// 	t := p.([]interface{})
+	// 	for _, tag := range t {
+	// 		tags = append(tags, tag.(map[string]interface{})["tag_name"].(string))
+	// 	}
+	// }
 
 	if previousMongoProperties != nil {
-		group, err := oc.SetProjectTags(previousMongoProperties["group_id"].(string), tags)
-		if err != nil {
-			return opsmanager.ProjectResponse{}, err
-		}
+		group, err := oc.GetProjectByID(previousMongoProperties["group_id"].(string))
+
 		// AgentAPIKey is empty for PATCH and GET requests in OM 3.6, taking the value from previous manifest instead
 		group.AgentAPIKey = previousMongoProperties["agent_api_key"].(string)
-		return group, nil
+		return group, err
 	}
 
 	// CreateGroup(mongoID, req)
