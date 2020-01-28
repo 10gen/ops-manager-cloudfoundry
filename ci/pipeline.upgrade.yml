@@ -148,7 +148,7 @@ jobs:
           PCF_URL: ((pcf-url))
           PCF_USERNAME: ((pcf-username))
           PCF_PASSWORD: ((pcf-password))
-          CONFIG: ((env-config))
+          CONFIG: ((env-config-old))
           UPDATE_PAS: true
           VERSION: *tile-version
         on_failure:
