@@ -12,7 +12,7 @@ groups:
       - smoke-tests
 
 constant:
-  &tile-version "1.2.2"
+  &tile-version "1.1.3"
 
 resources:
   - name: ops-manager-cloudfoundry
