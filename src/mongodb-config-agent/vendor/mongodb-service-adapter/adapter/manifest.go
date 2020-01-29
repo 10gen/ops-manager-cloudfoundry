@@ -218,7 +218,7 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 
 	agentPassword := ""
 	if params.PreviousManifest == nil {
-		agentPassword = GenerateString(32, false)
+		agentPassword = GenerateString(32, true)
 	}
 
 	// if manifest updates we should use password from previous manifest
@@ -419,7 +419,7 @@ func passwordForMongoServer(previousManifestProperties map[interface{}]interface
 		return previousManifestProperties["admin_password"].(string)
 	}
 
-	return GenerateString(20, false)
+	return GenerateString(20, true)
 }
 
 func idForMongoServer(previousManifestProperties map[interface{}]interface{}) string {
