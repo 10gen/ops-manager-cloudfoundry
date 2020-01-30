@@ -1,4 +1,8 @@
 #!/usr/local/bin/dumb-init /bin/bash
+# shellcheck shell=bash
+# shellcheck source=ci/tasks/helpers/tmp-helper.sh
+source "ops-manager-cloudfoundry/ci/tasks/helpers/tmp-helper.sh"
+
 install_product() {
 	VERSION=$1
 	TILE_FILE=$2
@@ -9,16 +13,16 @@ install_product() {
 
 	STEMCELL_FILE=$(
 		cd stemcell
-		ls *bosh-stemcell-*.tgz
+		ls -- *bosh-stemcell-*.tgz
 	)
 	if [ -z "${STEMCELL_FILE}" ]; then
-		echo "No files matching stemcell/*.tgz"
+		echo "No files matching stemcell/*bosh-stemcell-*.tgz"
 		ls -lR stemcell
 		exit 1
 	fi
 
-	PRODUCT="$(cat $base/ops-manager-cloudfoundry/tile/tile.yml | grep '^name' | cut -d' ' -f 2)"
-	echo "Product " $PRODUCT
+	PRODUCT="$(yq r ops-manager-cloudfoundry/tile/tile.yml name)"
+	echo "Product $PRODUCT"
 
 	om="om -t $PCF_URL -u $PCF_USERNAME -p $PCF_PASSWORD -k"
 	cf_version=$(${om} available-products -f json | jq -j '.[] | select(.name == "cf").version')
@@ -29,16 +33,17 @@ install_product() {
 	${om} stage-product --product-name "$PRODUCT" --product-version "$VERSION"
 	${om} stage-product --product-name cf --product-version "$cf_version"
 
-	config_path=$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config.pie
-	make_env_config $config_path
+	config_path=ops-manager-cloudfoundry/ci/tasks/deploy-tile/config.pie
+	make_env_config "$config_path"
 	# replace "mongodb_broker" with "broker" for tile versions before 1.2
 	if [ "$VERSION" = "$(echo -e "$VERSION\n1.2" | sort -V | head -n1)" ]; then
 		config_tmp=$(mktemp)
 		yq r -j $config_path | jq '."resource-config".broker = ."resource-config".mongodb_broker | del(."resource-config".mongodb_broker)' >$config_tmp
 		mv $config_tmp $config_path
 	fi
-	export OM_API_USER=$(yq r $config_path product-properties[.properties.username].value)
-	export OM_API_KEY=$(yq r $config_path product-properties[.properties.api_key].value.secret)
+	OM_API_USER=$(yq r "$config_path" 'product-properties[.properties.username].value')
+	OM_API_KEY=$(yq r "$config_path" 'product-properties[.properties.api_key].value.secret')
+	export OM_API_KEY OM_API_USER
 	${om} configure-product --config "$config_path" --vars-env OM_API
 
 	STAGED=$(${om} curl --path /api/v0/staged/products)

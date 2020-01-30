@@ -11,8 +11,7 @@ groups:
       - cleanup
       - smoke-tests
 
-constant:
-  &tile-version "1.2.2"
+constant: &tile-version "1.2.2"
 
 resources:
   - name: ops-manager-cloudfoundry

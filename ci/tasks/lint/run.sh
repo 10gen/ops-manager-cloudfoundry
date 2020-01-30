@@ -15,7 +15,6 @@ for module in ops-manager-cloudfoundry/src/{mongodb-config-agent,mongodb-service
 
     # get folder hash before running go mod vendor
     OLDHASHES=$(find vendor -type f -print0 | sort -z | xargs -0 sha1sum)
-    OLDSUM=$(echo "$OLDHASHES" | sha1sum)
 
     go mod vendor
 
@@ -24,21 +23,18 @@ for module in ops-manager-cloudfoundry/src/{mongodb-config-agent,mongodb-service
 
     # get folder hash after go mod vendor
     NEWHASHES=$(find vendor -type f -print0 | sort -z | xargs -0 sha1sum)
-    NEWSUM=$(echo "$NEWHASHES" | sha1sum)
 
     popd
 
-    if [[ $OLDSUM != $NEWSUM ]]; then
+    if [[ "$OLDHASHES" != "$NEWHASHES" ]]; then
         echo Vendor is out of date!
         LEFT=$(mktemp)
         RIGHT=$(mktemp)
-        echo "$OLDHASHES" >$LEFT
-        echo "$NEWHASHES" >$RIGHT
+        echo "$OLDHASHES" >"$LEFT"
+        echo "$NEWHASHES" >"$RIGHT"
         echo Hash diff:
-        diff $LEFT $RIGHT
-        echo $OLDSUM
-        echo $NEWSUM
-        rm -f $LEFT $RIGHT
+        diff "$LEFT" "$RIGHT"
+        rm -f "$LEFT" "$RIGHT"
         exit 1
     fi
 done

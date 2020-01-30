@@ -1,24 +1,25 @@
 #!/usr/local/bin/dumb-init /bin/bash
+# shellcheck shell=bash
+
 set -euo pipefail
 [[ ${DEBUG:-} == true ]] && set -x
 
-base=$PWD
-. "$base/ops-manager-cloudfoundry/ci/tasks/helpers/tmp-helper.sh"
-. "$base/ops-manager-cloudfoundry/ci/tasks/helpers/deploy.sh"
+# shellcheck source=ci/tasks/helpers/deploy.sh
+source "ops-manager-cloudfoundry/ci/tasks/helpers/deploy.sh"
 
 if [ -z "${VERSION:-}" ]; then
 	echo "missing version number"
 	exit 1
 fi
 
-if [ ! -z "ls tileold/*.pivotal" ]; then
-	TILE_FILE=$(
-		ls tileold/*.pivotal
-	)
-else
-	echo "No files matching tileold/*.pivotal"
+TILE_FILE=$(
+	cd tileold
+	ls -- *-"${VERSION}".pivotal
+)
+if [ -z "${TILE_FILE}" ]; then
+	echo "No files matching tileold/*-${VERSION}.pivotal"
 	ls -lR tileold
 	exit 1
 fi
 
-install_product $VERSION $TILE_FILE
+install_product "$VERSION" "$TILE_FILE"
