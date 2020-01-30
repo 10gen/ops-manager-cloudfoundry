@@ -25,13 +25,4 @@ if [ -z "${TILE_FILE}" ]; then
 	exit 1
 fi
 
-if [ ! -z "ls artifacts/*.pivotal" ]; then
-	TILE_FILE=$(
-		ls -- artifacts/*-"${VERSION}".pivotal
-	)
-else
-	echo "No files matching artifacts/*-${VERSION}.pivotal"
-	ls -lR artifacts
-	exit 1
-fi
 install_product "$VERSION" "$TILE_FILE"
