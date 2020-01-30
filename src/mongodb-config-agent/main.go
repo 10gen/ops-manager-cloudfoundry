@@ -49,7 +49,7 @@ func main() {
 	}
 
 	if ctx.Password == "" {
-		ctx.Password = adapter.GenerateString(32, false)
+		ctx.Password = adapter.GenerateString(32, true)
 	}
 
 	switch c := ctx.Version[:3]; c {
