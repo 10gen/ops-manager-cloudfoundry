@@ -13,8 +13,7 @@ if [ -z "${VERSION:-}" ]; then
 fi
 
 TILE_FILE=$(
-	cd tileold
-	ls -- *-"${VERSION}".pivotal 2>/dev/null || true
+	ls -- tileold/*-"${VERSION}".pivotal 2>/dev/null || true
 )
 if [ -z "${TILE_FILE}" ]; then
 	echo "No files matching tileold/*-${VERSION}.pivotal"

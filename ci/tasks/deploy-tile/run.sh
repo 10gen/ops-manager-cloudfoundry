@@ -16,8 +16,7 @@ if [ -z "${VERSION:-}" ]; then
 fi
 
 TILE_FILE=$(
-	cd artifacts
-	ls -- *-"${VERSION}".pivotal 2>/dev/null || true
+	ls -- artifacts/*-"${VERSION}".pivotal 2>/dev/null || true
 )
 if [ -z "${TILE_FILE}" ]; then
 	echo "No files matching artifacts/*-${VERSION}.pivotal"
