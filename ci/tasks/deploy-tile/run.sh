@@ -1,16 +1,18 @@
 #!/usr/local/bin/dumb-init /bin/bash
+# shellcheck shell=bash
+
 set -euo pipefail
 [[ ${DEBUG:-} == true ]] && set -x
 
-base=$PWD
 PCF_URL="$PCF_URL"
 PCF_USERNAME="$PCF_USERNAME"
 PCF_PASSWORD="$PCF_PASSWORD"
 UPDATE_PAS="$UPDATE_PAS"
 
-. "$base/ops-manager-cloudfoundry/ci/tasks/helpers/tmp-helper.sh"
+# shellcheck source=ci/tasks/helpers/tmp-helper.sh
+source "ops-manager-cloudfoundry/ci/tasks/helpers/tmp-helper.sh"
 
-VERSION=$(cat "$base"/version/number)
+VERSION=$(cat version/number)
 if [ -z "${VERSION:-}" ]; then
 	echo "missing version number"
 	exit 1
@@ -18,26 +20,26 @@ fi
 
 TILE_FILE=$(
 	cd artifacts
-	ls *-${VERSION}.pivotal
+	ls -- *-"${VERSION}".pivotal
 )
 if [ -z "${TILE_FILE}" ]; then
-	echo "No files matching artifacts/*.pivotal"
+	echo "No files matching artifacts/*-${VERSION}.pivotal"
 	ls -lR artifacts
 	exit 1
 fi
 
 STEMCELL_FILE=$(
 	cd stemcell
-	ls *bosh-stemcell-*.tgz
+	ls -- *bosh-stemcell-*.tgz
 )
 if [ -z "${STEMCELL_FILE}" ]; then
-	echo "No files matching stemcell/*.tgz"
+	echo "No files matching stemcell/*bosh-stemcell-*.tgz"
 	ls -lR stemcell
 	exit 1
 fi
 
-PRODUCT="$(cat $base/ops-manager-cloudfoundry/tile/tile.yml | grep '^name' | cut -d' ' -f 2)"
-echo "Product " $PRODUCT
+PRODUCT="$(yq r ops-manager-cloudfoundry/tile/tile.yml name)"
+echo "Product $PRODUCT"
 # if [ -z "${PRODUCT}" ]; then
 # 	PRODUCT=mongodb-on-demand
 # fi
@@ -51,10 +53,11 @@ ${om} available-products
 ${om} stage-product --product-name "$PRODUCT" --product-version "$VERSION"
 ${om} stage-product --product-name cf --product-version "$cf_version"
 
-config_path=$base/ops-manager-cloudfoundry/ci/tasks/deploy-tile/config.pie
-make_env_config $config_path
-export OM_API_USER=$(yq r $config_path product-properties[.properties.username].value)
-export OM_API_KEY=$(yq r $config_path product-properties[.properties.api_key].value.secret)
+config_path=ops-manager-cloudfoundry/ci/tasks/deploy-tile/config.pie
+make_env_config "$config_path"
+OM_API_USER=$(yq r "$config_path" 'product-properties[.properties.username].value')
+OM_API_KEY=$(yq r "$config_path" 'product-properties[.properties.api_key].value.secret')
+export OM_API_KEY OM_API_USER
 ${om} configure-product --config "$config_path" --vars-env OM_API
 
 STAGED=$(${om} curl --path /api/v0/staged/products)

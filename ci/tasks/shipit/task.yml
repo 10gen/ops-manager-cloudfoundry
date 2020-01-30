@@ -7,16 +7,12 @@ image_resource:
     repository: leori/ci
 
 inputs:
-- name: ops-manager-cloudfoundry
-- name: on-demand-service-broker-release
-- name: bpm-release
-- name: syslog-migration-release
-- name: pcf-mongodb-helpers
-- name: mongodb
-- name: version
+  - name: ops-manager-cloudfoundry
+  - name: artifacts
+  - name: version
 
 outputs:
-- name: release
+  - name: release
 
 run:
   path: ops-manager-cloudfoundry/ci/tasks/shipit/run.sh

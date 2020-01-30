@@ -346,6 +346,11 @@ jobs:
       - get: version
         params:
           bump: final
+      - task: build-tile
+        file: ops-manager-cloudfoundry/ci/tasks/build-tile/task.yml
+        params:
+          AWS_KEY: ((aws-access-key))
+          AWS_SECRET_KEY: ((aws-secret-access-key))
       - task: shipit
         file: ops-manager-cloudfoundry/ci/tasks/shipit/task.yml
         params:
