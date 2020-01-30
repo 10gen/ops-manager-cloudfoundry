@@ -27,7 +27,6 @@ type CFTestContext struct {
 
 var _ = Describe("MongoDB Service", func() {
 	var (
-		// client = adapter.NewPCGCClient(mongodbConfig.URL, mongodbConfig.UserName, mongodbConfig.UserAPIKey)
 		testCF = smokeTestCF.CF{
 			ShortTimeout: time.Minute * 3,
 			LongTimeout:  time.Minute * 15,
