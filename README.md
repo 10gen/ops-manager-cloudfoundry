@@ -7,3 +7,8 @@ This project depends on the on-demand-sdk version 0.5.0 (which can be downloaded
 
 Prior knowledge of building BOSH releases is expected, or recommended.
 
+
+## Developer Notes
+
+TODO: Create an empty creds yaml and provide info about how to run pipelines.
+
