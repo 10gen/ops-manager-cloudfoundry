@@ -134,7 +134,9 @@ jobs:
       - get: ops-manager-cloudfoundry
         trigger: true
         passed: [delete-tile]
-      - get: version
+      - get: artifacts
+        params:
+          file: artifacts/mongodb-on-demand-*.pivotal
       - get: stemcell
         params:
           globs: [((globs-param))]
@@ -146,6 +148,7 @@ jobs:
           PCF_USERNAME: ((pcf-username))
           PCF_PASSWORD: ((pcf-password))
           CONFIG: ((env-config))
+          UPDATE_PAS: true
           VERSION: *tile-version
         on_failure:
           put: "deploy-status"
