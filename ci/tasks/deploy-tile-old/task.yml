@@ -9,7 +9,6 @@ image_resource:
 inputs:
   - name: ops-manager-cloudfoundry
   - name: stemcell
-  - name: artifacts
   - name: tileold
 
 params:
@@ -17,6 +16,8 @@ params:
   PCF_USERNAME:
   PCF_PASSWORD:
   CONFIG:
+  UPDATE_PAS:
+  VERSION:
 
 run:
   path: ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/run.sh

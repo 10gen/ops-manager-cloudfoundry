@@ -59,17 +59,9 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 		previousMongoProperties = mongoPlanProperties(*params.PreviousManifest)
 	}
 
-	adminPassword, err := passwordForMongoServer(previousMongoProperties)
-	if err != nil {
-		return serviceadapter.GenerateManifestOutput{}, err
-	}
-
-	id, err := idForMongoServer(previousMongoProperties)
-	if err != nil {
-		return serviceadapter.GenerateManifestOutput{}, err
-	}
-
-	group, err := groupForMongoServer(id, oc, oc404, arbitraryParams)
+	adminPassword := passwordForMongoServer(previousMongoProperties)
+	id := idForMongoServer(previousMongoProperties)
+	group, err := groupForMongoServer(id, oc, oc404, previousMongoProperties, arbitraryParams)
 	if err != nil {
 		return serviceadapter.GenerateManifestOutput{}, fmt.Errorf("could not create new group (%s)", err.Error())
 	}
@@ -203,10 +195,8 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 	default:
 		return serviceadapter.GenerateManifestOutput{}, fmt.Errorf("unknown plan: %s", planID)
 	}
-	authKey, err := authKeyForMongoServer(previousMongoProperties)
-	if err != nil {
-		return serviceadapter.GenerateManifestOutput{}, err
-	}
+
+	authKey := authKeyForMongoServer(previousMongoProperties)
 	backupEnabled := false
 	if planID != PlanStandalone {
 		e := getArbitraryParam("backup_enabled", "backup_enabled", arbitraryParams, previousMongoProperties)
@@ -228,11 +218,7 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 
 	agentPassword := ""
 	if params.PreviousManifest == nil {
-		var err error
-		agentPassword, err = GeneratePassword(32)
-		if err != nil {
-			panic(err)
-		}
+		agentPassword = GenerateString(32, true)
 	}
 
 	// if manifest updates we should use password from previous manifest
@@ -428,34 +414,35 @@ func mongoPlanProperties(manifest bosh.BoshManifest) map[interface{}]interface{}
 	return manifest.InstanceGroups[1].Properties["mongo_ops"].(map[interface{}]interface{})
 }
 
-func passwordForMongoServer(previousManifestProperties map[interface{}]interface{}) (string, error) {
+func passwordForMongoServer(previousManifestProperties map[interface{}]interface{}) string {
 	if previousManifestProperties != nil {
-		return previousManifestProperties["admin_password"].(string), nil
+		return previousManifestProperties["admin_password"].(string)
 	}
 
-	return GeneratePassword(20)
+	return GenerateString(20, true)
 }
 
-func idForMongoServer(previousManifestProperties map[interface{}]interface{}) (string, error) {
+func idForMongoServer(previousManifestProperties map[interface{}]interface{}) string {
 	if previousManifestProperties != nil {
-		return previousManifestProperties["id"].(string), nil
+		return previousManifestProperties["id"].(string)
 	}
 
-	return GeneratePassword(8)
+	return GenerateString(8, true)
 }
 
-func authKeyForMongoServer(previousManifestProperties map[interface{}]interface{}) (string, error) {
+func authKeyForMongoServer(previousManifestProperties map[interface{}]interface{}) string {
 	if previousManifestProperties != nil {
-		return previousManifestProperties["auth_key"].(string), nil
+		return previousManifestProperties["auth_key"].(string)
 	}
 
-	return GeneratePassword(8)
+	return GenerateString(8, false)
 }
 
 func groupForMongoServer(
 	mongoID string,
 	oc opsmanager.Client,
 	oc404 opsmanager.Client,
+	previousMongoProperties map[interface{}]interface{},
 	arbitraryParams map[string]interface{},
 ) (opsmanager.ProjectResponse, error) {
 	name := ""
@@ -468,7 +455,7 @@ func groupForMongoServer(
 		orgID = p.(string)
 	}
 
-	// TODO: tags are never used when creating a group - investigate?
+	// TODO: investigate the use of tags
 	// tags := []string{}
 	// if p := planProperties["mongo_ops"].(map[string]interface{})["tags"]; p != nil {
 	// 	t := p.([]interface{})
@@ -477,15 +464,13 @@ func groupForMongoServer(
 	// 	}
 	// }
 
-	// if previousMongoProperties != nil {
-	// 	group, err := oc.SetProjectTags(previousMongoProperties["group_id"].(string), tags)
-	// 	if err != nil {
-	// 		return opsmanager.ProjectResponse{}, err
-	// 	}
-	// 	// AgentAPIKey is empty for PATCH and GET requests in OM 3.6, taking the value from previous manifest instead
-	// 	group.AgentAPIKey = previousMongoProperties["agent_api_key"].(string)
-	// 	return group, nil
-	// }
+	if previousMongoProperties != nil {
+		group, err := oc.GetProjectByID(previousMongoProperties["group_id"].(string))
+
+		// AgentAPIKey is empty for PATCH and GET requests in OM 3.6, taking the value from previous manifest instead
+		group.AgentAPIKey = previousMongoProperties["agent_api_key"].(string)
+		return group, err
+	}
 
 	// CreateGroup(mongoID, req)
 	log.Println(fmt.Sprintf("CreateGroup: id %q, name %q", mongoID, name))
