@@ -6,7 +6,8 @@ import (
 	"os"
 )
 
-type testMatrix struct {
+//TestMatrix matrix for generation test-cases enviroments for service suite
+type TestMatrix struct {
 	ServiceName    string         `json:"service_name"`
 	PlanNames      []string       `json:"plan_names"`
 	Retry          retryConfig    `json:"retry"`
@@ -16,8 +17,8 @@ type testMatrix struct {
 	OpsMan         OpsManagerCred `json:"mongo_ops"`
 }
 
-//test if all parameters in pipeline was provided
-func (testConfig *testMatrix) SetDefaultForNonDefinedParameters() {
+//SetDefaultForNonDefinedParameters test if all parameters in pipeline was provided
+func (testConfig *TestMatrix) SetDefaultForNonDefinedParameters() {
 	if testConfig.ServiceName == "" {
 		testConfig.ServiceName = "mongodb-odb"
 	}
@@ -35,8 +36,8 @@ func (testConfig *testMatrix) SetDefaultForNonDefinedParameters() {
 	}
 }
 
-//generateTestServiceParameters generate cases of service parameters from testMatrix
-func generateTestServiceParameters(testConfig testMatrix) []ServiceParameters {
+//GenerateTestServiceParameters generate cases of service parameters from testMatrix
+func GenerateTestServiceParameters(testConfig TestMatrix) []ServiceParameters {
 	var testServiceParameters []ServiceParameters
 	for _, planName := range testConfig.PlanNames {
 		for _, backup := range testConfig.Backup {
@@ -51,8 +52,8 @@ func generateTestServiceParameters(testConfig testMatrix) []ServiceParameters {
 	return testServiceParameters
 }
 
-//print result of generateServiceParameters
-func printGeneratedServiceParameters(testConfig []ServiceParameters) {
+//PrintGeneratedServiceParameters print result of generateServiceParameters
+func PrintGeneratedServiceParameters(testConfig []ServiceParameters) {
 	for i, element := range testConfig {
 		fmt.Printf("==== Case %d ====\n", i+1)
 		fmt.Printf("Service Name: %s \n", element.ServiceName)
@@ -64,7 +65,8 @@ func printGeneratedServiceParameters(testConfig []ServiceParameters) {
 	}
 }
 
-func loadMongodbTestConfig(path string) testMatrix {
+//LoadMongodbTestConfig load test matrix from file
+func LoadMongodbTestConfig(path string) TestMatrix {
 	file, err := os.Open(path)
 	if err != nil {
 		panic(err)
@@ -72,7 +74,7 @@ func loadMongodbTestConfig(path string) testMatrix {
 
 	defer file.Close()
 
-	config := testMatrix{}
+	config := TestMatrix{}
 	if err := json.NewDecoder(file).Decode(&config); err != nil {
 		panic(err)
 	}

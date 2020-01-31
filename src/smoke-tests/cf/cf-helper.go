@@ -4,8 +4,8 @@ import(
 	"github.com/pivotal-cf-experimental/cf-test-helpers/services"
 )
 
-//loadCFTestConfig use pivotal functions for getting configuration
-func loadCFTestConfig(path string) services.Config {
+//LoadCFTestConfig use pivotal functions for getting configuration
+func LoadCFTestConfig(path string) services.Config {
 	config := services.Config{}
 
 	if err := services.LoadConfig(path, &config); err != nil {

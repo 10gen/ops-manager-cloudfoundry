@@ -1,17 +1,18 @@
 package service_test
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"time"
+	"encoding/json"
 
 	"mongodb-service-adapter/adapter"
 
 	smokeTestCF "smoke-tests/cf"
 	"smoke-tests/mongodb"
 	"smoke-tests/service/reporter"
+	prepare "smoke-tests/service/configuration"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -220,7 +221,7 @@ var _ = Describe("MongoDB Service", func() {
 		afterSuiteSteps[0].Perform()
 	})
 
-	AssertLifeCycleBehavior := func(sp ServiceParameters) {
+	AssertLifeCycleBehavior := func(sp prepare.ServiceParameters) {
 		It(sp.PrintParameters()+": create, bind to, write to, read from, unbind, and destroy a service instance", func() {
 			var skip bool
 
@@ -301,8 +302,8 @@ var _ = Describe("MongoDB Service", func() {
 
 	Context("for each plan", func() {
 		mongodbConfig.SetDefaultForNonDefinedParameters()
-		cases := generateTestServiceParameters(mongodbConfig)
-		printGeneratedServiceParameters(cases)
+		cases := prepare.GenerateTestServiceParameters(mongodbConfig)
+		prepare.PrintGeneratedServiceParameters(cases)
 		for _, oneCase := range cases {
 			planName = oneCase.PlanName
 			AssertLifeCycleBehavior(oneCase)

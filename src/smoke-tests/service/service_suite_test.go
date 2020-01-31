@@ -1,25 +1,21 @@
 package service_test
 
 import (
-	"encoding/json"
 	"os"
-	"strings"
 	"testing"
-	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-cf-experimental/cf-test-helpers/services"
 
-	"smoke-tests/retry"
-	"smoke-tests/service/configuration"
 	"smoke-tests/service/reporter"
+	prepare "smoke-tests/service/configuration"
+	cf "smoke-tests/cf"
 )
 
 var (
 	configPath        = os.Getenv("CONFIG_PATH")
-	cfTestConfig      = loadCFTestConfig(configPath)
-	mongodbConfig     = loadMongodbTestConfig(configPath)
+	cfTestConfig      = cf.LoadCFTestConfig(configPath)
+	mongodbConfig     = prepare.LoadMongodbTestConfig(configPath)
 	smokeTestReporter *reporter.SmokeTestReport
 )
 
