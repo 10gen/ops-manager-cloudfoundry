@@ -6,11 +6,7 @@
   end
 
   def nodes
-    if p("mongo_ops.bosh_dns_disable")
-      link("mongod_node").instances.collect{ |x| "#{x.address}" }.join(",")
-    else
-      link("mongod_node").instances.map{ |instance| "#{node_name(instance)}.mongodb.internal" }.join(",")
-    end
+    link("mongod_node").instances.map{ |instance| "#{node_name(instance)}.mongodb.internal" }.join(",")
   end
 
   config = {

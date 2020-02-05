@@ -56,15 +56,14 @@ var _ = Describe("Manifest", func() {
 		plan = serviceadapter.Plan{
 			Properties: serviceadapter.Properties{
 				"mongo_ops": map[string]interface{}{
-					"username":         config.Username,
-					"api_key":          config.APIKey,
-					"bosh_dns_disable": true,
-					"url":              config.URL,
-					"backup_enabled":   true,
-					"ssl_enabled":      false,
-					"ssl_ca_cert":      "ca_cert",
-					"ssl_pem":          "ssl_pem",
-					"tags":             nil,
+					"username":       config.Username,
+					"api_key":        config.APIKey,
+					"url":            config.URL,
+					"backup_enabled": true,
+					"ssl_enabled":    false,
+					"ssl_ca_cert":    "ca_cert",
+					"ssl_pem":        "ssl_pem",
+					"tags":           nil,
 				},
 				"syslog": map[string]interface{}{
 					"address":        "10.0.8.4",
