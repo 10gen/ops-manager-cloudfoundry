@@ -1,9 +1,9 @@
 package configuration
 
-import(
+import (
+	"smoke-tests/retry"
 	"strings"
 	"time"
-	"smoke-tests/retry"
 )
 
 type retryConfig struct {

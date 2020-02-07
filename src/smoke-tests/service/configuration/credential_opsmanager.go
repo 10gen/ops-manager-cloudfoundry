@@ -1,8 +1,6 @@
 package configuration
 
-import(
-
-)
+import ()
 
 //OpsManagerCred used for connection to opsmanager
 type OpsManagerCred struct {

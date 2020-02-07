@@ -18,7 +18,7 @@ type TestMatrix struct {
 }
 
 //SetDefaultForNonDefinedParameters test if all parameters in pipeline was provided
-func (testConfig *TestMatrix) SetDefaultForNonDefinedParameters() {
+func (testConfig *TestMatrix) SetDefaultForNonDefinedParameters() { //TODO recheck
 	if testConfig.ServiceName == "" {
 		testConfig.ServiceName = "mongodb-odb"
 	}
@@ -38,13 +38,17 @@ func (testConfig *TestMatrix) SetDefaultForNonDefinedParameters() {
 
 //GenerateTestServiceParameters generate cases of service parameters from testMatrix
 func GenerateTestServiceParameters(testConfig TestMatrix) []ServiceParameters {
-	var testServiceParameters []ServiceParameters
+	var (
+		testServiceParameters []ServiceParameters
+		names                 InstanceNames
+	)
+	names.GenerateInstanceNames()
 	for _, planName := range testConfig.PlanNames {
 		for _, backup := range testConfig.Backup {
 			for _, ssl := range testConfig.SSL {
 				for _, version := range testConfig.MongoDBVersion {
 					testServiceParameters = append(testServiceParameters,
-						ServiceParameters{testConfig.ServiceName, planName, "", backup, ssl, version, "", "", "", "", ""})
+						ServiceParameters{names, testConfig.ServiceName, planName, "", backup, ssl, version, "", "", "", "", ""})
 				}
 			}
 		}
@@ -56,7 +60,7 @@ func GenerateTestServiceParameters(testConfig TestMatrix) []ServiceParameters {
 func PrintGeneratedServiceParameters(testConfig []ServiceParameters) {
 	for i, element := range testConfig {
 		fmt.Printf("==== Case %d ====\n", i+1)
-		fmt.Printf("Service Name: %s \n", element.ServiceName)
+		fmt.Printf("Service Name: %s \n", element.MarketPlaceServiceName)
 		fmt.Printf("PlanName: %s \n", element.PlanName)
 		fmt.Printf("Backup: %s \n", element.BackupEnable)
 		fmt.Printf("SSL enabled: %s \n", element.SSLEnable)

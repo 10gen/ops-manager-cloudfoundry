@@ -7,9 +7,9 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"smoke-tests/service/reporter"
-	prepare "smoke-tests/service/configuration"
 	cf "smoke-tests/cf"
+	prepare "smoke-tests/service/configuration"
+	"smoke-tests/service/reporter"
 )
 
 var (
