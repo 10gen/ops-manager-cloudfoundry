@@ -2,9 +2,12 @@ package data
 
 import ()
 
-var (
+const (
 	//AppPath path to ruby simple application
-	AppPath = "../assets/cf-mongo-example-app"
+	AppPath = "../assets/cf-mongo-example-app"	
+)
+
+var (
 	//CreateQuotaArgs quota for services
 	CreateQuotaArgs = []string{
 		"-m", "10G",

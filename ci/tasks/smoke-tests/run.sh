@@ -47,7 +47,6 @@ cat >config.json <<EOF
 EOF
 
 export CONFIG_PATH="$base"/config.json
-export GODEBUG=netdns=cgo
 
 PACKAGE_NAME=github.com/10gen/ops-manager-cloudfoundry
 PACKAGE_DIR=$GOPATH/src/$PACKAGE_NAME

@@ -26,7 +26,7 @@ import (
 
 var _ = Describe("MongoDB Service", func() {
 	var (
-		testCF = smokeTestCF.CF{ //TODO this is data provider info
+		testCF = smokeTestCF.CF{
 			ShortTimeout: time.Minute * 3,
 			LongTimeout:  time.Minute * 15,
 			RetryBackoff: mongodbConfig.Retry.Backoff(),
@@ -36,16 +36,13 @@ var _ = Describe("MongoDB Service", func() {
 
 		planName string
 
-		cfTestContext smokeTestCF.CFTestContext
 		caseInstance  prepare.InstanceNames
-		context       services.Context
 	)
 
 	SynchronizedBeforeSuite(func() []byte {
 		caseInstance.GenerateInstanceNames()
-		context = services.NewContext(cfTestConfig, "mongodb-test")
-		regularContext := context.RegularUserContext()
-
+		regularContext := services.NewContext(cfTestConfig, "mongodb-test").RegularUserContext()
+		
 		beforeSuiteSteps := []*reporter.Step{
 			reporter.NewStep(
 				"Connect to CloudFoundry",
@@ -91,17 +88,15 @@ var _ = Describe("MongoDB Service", func() {
 			task.Perform()
 		}
 
-		cfTestContext = smokeTestCF.CFTestContext{
-			Org:   regularContext.Org,
-			Space: regularContext.Space,
-		}
+		caseInstance.Context.Org = regularContext.Org
+		caseInstance.Context.Space = regularContext.Space
 
-		rawTestContext, err := json.Marshal(cfTestContext)
+		rawTestContext, err := json.Marshal(caseInstance.Context)
 		Expect(err).NotTo(HaveOccurred())
 
 		return rawTestContext
 	}, func(data []byte) {
-		err := json.Unmarshal(data, &cfTestContext)
+		err := json.Unmarshal(data, &caseInstance.Context)
 		Expect(err).NotTo(HaveOccurred())
 
 		// Set $CF_HOME so that cf cli state is not shared between nodes
@@ -111,7 +106,6 @@ var _ = Describe("MongoDB Service", func() {
 	})
 
 	BeforeEach(func() {
-
 		specSteps := []*reporter.Step{
 			reporter.NewStep(
 				"Connect to CloudFoundry",
@@ -122,8 +116,8 @@ var _ = Describe("MongoDB Service", func() {
 				testCF.Auth(cfTestConfig.AdminUser, cfTestConfig.AdminPassword),
 			),
 			reporter.NewStep(
-				fmt.Sprintf("Target '%s' org and '%s' space", cfTestContext.Org, cfTestContext.Space),
-				testCF.TargetOrgAndSpace(cfTestContext.Org, cfTestContext.Space),
+				fmt.Sprintf("Target '%s' org and '%s' space", caseInstance.Context.Org, caseInstance.Context.Space),
+				testCF.TargetOrgAndSpace(caseInstance.Context.Org, caseInstance.Context.Space),
 			),
 			reporter.NewStep(
 				"Push the MongoDB sample app to Cloud Foundry",
@@ -181,8 +175,8 @@ var _ = Describe("MongoDB Service", func() {
 				testCF.EnsureAllServiceInstancesGone(),
 			),
 			reporter.NewStep(
-				fmt.Sprintf("Delete org '%s'", cfTestContext.Org),
-				testCF.DeleteOrg(cfTestContext.Org),
+				fmt.Sprintf("Delete org '%s'", caseInstance.Context.Org),
+				testCF.DeleteOrg(caseInstance.Context.Org),
 			),
 			reporter.NewStep(
 				"Log out",
@@ -198,8 +192,6 @@ var _ = Describe("MongoDB Service", func() {
 	AssertLifeCycleBehavior := func(sp prepare.ServiceParameters) {
 		It(sp.PrintParameters()+": create, bind to, write to, read from, unbind, and destroy a service instance", func() {
 			var skip bool
-			//TODO ???
-			// sp.Instance = caseInstance
 			uri := fmt.Sprintf("https://%s.%s", caseInstance.AppName, cfTestConfig.AppsDomain)
 			app := mongodb.NewApp(uri, testCF.ShortTimeout, retryInterval)
 			testValue := uuid.NewRandom().String()
@@ -225,7 +217,7 @@ var _ = Describe("MongoDB Service", func() {
 				),
 				reporter.NewStep(
 					fmt.Sprintf("Create and bind security group '%s' for running smoke tests", caseInstance.SecurityGroupName),
-					testCF.CreateAndBindSecurityGroup(caseInstance.SecurityGroupName, cfTestContext.Org, cfTestContext.Space),
+					testCF.CreateAndBindSecurityGroup(caseInstance.SecurityGroupName, caseInstance.Context.Org, caseInstance.Context.Space),
 				),
 				reporter.NewStep(
 					"Start the app",
@@ -281,8 +273,7 @@ var _ = Describe("MongoDB Service", func() {
 		prepare.PrintGeneratedServiceParameters(cases)
 		for _, oneCase := range cases {
 			planName = oneCase.PlanName
-			oneCase.Instance = caseInstance
-			fmt.Printf(oneCase.Instance.AppName)
+			// oneCase.Instance = caseInstance
 			AssertLifeCycleBehavior(oneCase)
 		}
 	})

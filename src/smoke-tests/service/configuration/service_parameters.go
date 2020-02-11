@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/pborman/uuid"
+	. "smoke-tests/cf"
 )
 
 //ServiceParameters supported parameter list for creating\updating services from CF
@@ -23,13 +24,14 @@ type ServiceParameters struct {
 	BoshDNSDisable         string //TODO depricated?
 }
 
-//InstanceNames instance coordinates (names, key)
+//InstanceNames instance coordinates (names, key, orgs, space)
 type InstanceNames struct {
 	AppName           string
 	ServiceTestName   string
 	SecurityGroupName string
 	ServiceKeyName    string
-	Plan              string
+	Context	CFTestContext
+	// Plan              string
 }
 
 //PrintParameters is printing parameters used in tests
@@ -43,6 +45,13 @@ func (i *InstanceNames) GenerateInstanceNames() {
 	i.ServiceTestName = RandomName()
 	i.SecurityGroupName = RandomName()
 	i.ServiceKeyName = RandomName()
+	i.Context = CFTestContext{Org: "MongoDB-test", Space: "MongoDB-test"}
+}
+
+//NewInstanceNames create random name for instance
+func NewInstanceNames() InstanceNames {
+	i := InstanceNames{RandomName(), RandomName(), RandomName(), RandomName(), CFTestContext{Org: "MongoDB-test", Space: "MongoDB-test"}}
+	return i
 }
 
 //RandomName gen new name
