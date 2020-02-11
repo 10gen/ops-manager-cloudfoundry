@@ -51,6 +51,11 @@ forms:
         description:
           Enables or disables SSL by default for all service plans. Can be
           overwritten by "ssl_enabled" parameter at service creation time.
+      - name: max_upgrade_inflight
+        type: integer
+        configurable: true
+        label: Maximum number of parallel upgrade workers
+        description: TODO
       - name: tags
         type: collection
         optional: true
@@ -509,6 +514,7 @@ packages:
             ssl_pem: (( .properties.rsa_certificate.cert_and_private_key_pems || "" ))
             ssl_key: (( .properties.rsa_certificate.private_key_pem || "" ))
             ssl_crt: (( .properties.rsa_certificate.cert_pem || "" ))
+            max_upgrade_inflight: (( .properties.max_upgrade_inflight.value ))
           service_adapter:
             path: /var/vcap/packages/mongodb-service-adapter/bin/mongodb-service-adapter
           service_deployment:
@@ -597,6 +603,7 @@ packages:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
                     bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
+                    max_upgrade_inflight: (( .properties.max_upgrade_inflight.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -644,6 +651,7 @@ packages:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
                     bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
+                    max_upgrade_inflight: (( .properties.max_upgrade_inflight.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -691,6 +699,7 @@ packages:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
                     bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
+                    max_upgrade_inflight: (( .properties.max_upgrade_inflight.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -738,6 +747,7 @@ packages:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
                     bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
+                    max_upgrade_inflight: (( .properties.max_upgrade_inflight.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -785,6 +795,7 @@ packages:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
                     bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
+                    max_upgrade_inflight: (( .properties.max_upgrade_inflight.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -832,6 +843,7 @@ packages:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
                     bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
+                    max_upgrade_inflight: (( .properties.max_upgrade_inflight.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -879,6 +891,7 @@ packages:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
                     bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
+                    max_upgrade_inflight: (( .properties.max_upgrade_inflight.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -926,6 +939,7 @@ packages:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
                     bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
+                    max_upgrade_inflight: (( .properties.max_upgrade_inflight.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -973,6 +987,7 @@ packages:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
                     bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
+                    max_upgrade_inflight: (( .properties.max_upgrade_inflight.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))

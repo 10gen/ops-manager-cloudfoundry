@@ -89,6 +89,7 @@ type mongodbTestConfig struct {
 	Retry          retryConfig       `json:"retry"`
 	Backup         []string          `json:"backup_enabled"`
 	SSL            []string          `json:"ssl_enabled"`
+	MaxInFlight    int               `json:"max_upgrade_inflight"`
 	MongoDBVersion []string          `json:"mongodb_version"`
 	OpsMan         mongoDBOpsManCred `json:"mongo_ops"`
 }

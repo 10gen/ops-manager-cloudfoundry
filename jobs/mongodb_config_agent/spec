@@ -87,3 +87,5 @@ properties:
     description: "MongoDB server CA certificate"
   mongo_ops.ssl_pem:
     description: "MongoDB SSL certificate (PEM file)"
+  mongo_ops.max_upgrade_inflight:
+    description: "Maximum number of parallel upgrade workers"

@@ -22,6 +22,7 @@ cat >config.json <<EOF
   "plan_names": $PLAN_NAMES,
   "backup_enabled": $BACKUP_ENABLED,
   "ssl_enabled": $SSL_ENABLED,
+  "max_upgrade_inflight": 1,
   "retry": {
     "max_attempts": 10,
     "backoff": "linear",
