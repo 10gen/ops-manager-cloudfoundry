@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	"smoke-tests/cf"
+
 	"github.com/pborman/uuid"
-	. "smoke-tests/cf"
 )
 
 //ServiceParameters supported parameter list for creating\updating services from CF
@@ -30,7 +31,7 @@ type InstanceNames struct {
 	ServiceTestName   string
 	SecurityGroupName string
 	ServiceKeyName    string
-	Context	CFTestContext
+	Context           cf.TestContext
 	// Plan              string
 }
 
@@ -45,13 +46,7 @@ func (i *InstanceNames) GenerateInstanceNames() {
 	i.ServiceTestName = RandomName()
 	i.SecurityGroupName = RandomName()
 	i.ServiceKeyName = RandomName()
-	i.Context = CFTestContext{Org: "MongoDB-test", Space: "MongoDB-test"}
-}
-
-//NewInstanceNames create random name for instance
-func NewInstanceNames() InstanceNames {
-	i := InstanceNames{RandomName(), RandomName(), RandomName(), RandomName(), CFTestContext{Org: "MongoDB-test", Space: "MongoDB-test"}}
-	return i
+	i.Context = cf.TestContext{Org: "MongoDB-test", Space: "MongoDB-test"}
 }
 
 //RandomName gen new name

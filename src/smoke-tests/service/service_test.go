@@ -14,6 +14,7 @@ import (
 	prepare "smoke-tests/service/configuration"
 	"smoke-tests/service/data"
 	"smoke-tests/service/reporter"
+
 	// "smoke-tests/service/steps"
 
 	. "github.com/onsi/ginkgo"
@@ -36,13 +37,13 @@ var _ = Describe("MongoDB Service", func() {
 
 		planName string
 
-		caseInstance  prepare.InstanceNames
+		caseInstance prepare.InstanceNames
 	)
 
 	SynchronizedBeforeSuite(func() []byte {
 		caseInstance.GenerateInstanceNames()
 		regularContext := services.NewContext(cfTestConfig, "mongodb-test").RegularUserContext()
-		
+
 		beforeSuiteSteps := []*reporter.Step{
 			reporter.NewStep(
 				"Connect to CloudFoundry",

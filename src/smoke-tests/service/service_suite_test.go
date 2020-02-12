@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	cf "smoke-tests/cf"
+	"smoke-tests/cf"
 	prepare "smoke-tests/service/configuration"
 	"smoke-tests/service/reporter"
 )

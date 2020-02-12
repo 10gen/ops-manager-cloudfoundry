@@ -1,10 +1,8 @@
 package data
 
-import ()
-
 const (
 	//AppPath path to ruby simple application
-	AppPath = "../assets/cf-mongo-example-app"	
+	AppPath = "../assets/cf-mongo-example-app"
 )
 
 var (

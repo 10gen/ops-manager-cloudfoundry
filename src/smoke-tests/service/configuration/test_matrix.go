@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-//TestMatrix matrix for generation test-cases enviroments for service suite
+//TestMatrix matrix for generation test-cases environments for service suite
 type TestMatrix struct {
 	ServiceName    string         `json:"service_name"`
 	PlanNames      []string       `json:"plan_names"`
