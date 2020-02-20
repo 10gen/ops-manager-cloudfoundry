@@ -3,7 +3,6 @@ package adapter
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -13,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/mongodb-labs/pcgc/pkg/opsmanager"
+	"github.com/pkg/errors"
 	"github.com/tidwall/gjson"
 
 	"mongodb-service-adapter/adapter/config"
@@ -106,14 +106,14 @@ func validateVersionManifest(version string) (string, error) {
 	if err != nil {
 		b, err = ioutil.ReadFile(versionsManifest2)
 		if err != nil {
-			return "", err
+			return "", errors.Wrapf(err, "cannot read version manifest from %q or %q", versionsManifest1, versionsManifest2)
 		}
 	}
 
 	v := gjson.GetBytes(b, fmt.Sprintf(`versions.#[name="%s"].name`, version))
 	log.Printf("Using %q version of MongoDB", v.String())
 	if v.String() == "" {
-		return "", errors.New("failed to find expected version, continue with provided versions ")
+		return "", errors.Errorf("failed to find expected version %q, continue with provided versions ", version)
 	}
 
 	return version, nil
