@@ -80,6 +80,8 @@ func main() {
 		logger.Fatalf("unknown plan ID %q", cfg.PlanID)
 	}
 
+	// automation.Version++
+
 	logger.Println("Modified AutomationConfig:")
 	printConfig(logger, ac)
 

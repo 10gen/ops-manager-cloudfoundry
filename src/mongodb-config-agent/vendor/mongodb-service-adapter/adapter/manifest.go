@@ -62,7 +62,7 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 
 	adminPassword := passwordForMongoServer(previousMongoProperties)
 	id := idForMongoServer(previousMongoProperties)
-	group, err := groupForMongoServer(id, oc, oc404, previousMongoProperties, arbitraryParams)
+	group, err := groupForMongoServer(id, oc, oc404, params.Plan.Properties, previousMongoProperties, arbitraryParams)
 	if err != nil {
 		return serviceadapter.GenerateManifestOutput{}, errors.Wrap(err, "cannot create new group")
 	}
@@ -447,6 +447,7 @@ func groupForMongoServer(
 	mongoID string,
 	oc opsmanager.Client,
 	oc404 opsmanager.Client,
+	planProperties map[string]interface{},
 	previousMongoProperties map[interface{}]interface{},
 	arbitraryParams map[string]interface{},
 ) (opsmanager.ProjectResponse, error) {
@@ -461,13 +462,13 @@ func groupForMongoServer(
 	}
 
 	// TODO: investigate the use of tags
-	// tags := []string{}
-	// if p := planProperties["mongo_ops"].(map[string]interface{})["tags"]; p != nil {
-	// 	t := p.([]interface{})
-	// 	for _, tag := range t {
-	// 		tags = append(tags, tag.(map[string]interface{})["tag_name"].(string))
-	// 	}
-	// }
+	tags := []string{}
+	if p := planProperties["mongo_ops"].(map[string]interface{})["tags"]; p != nil {
+		t := p.([]interface{})
+		for _, tag := range t {
+			tags = append(tags, tag.(map[string]interface{})["tag_name"].(string))
+		}
+	}
 
 	if previousMongoProperties != nil {
 		previousID, ok := previousMongoProperties["group_id"].(string)
@@ -480,7 +481,10 @@ func groupForMongoServer(
 				)
 		}
 
-		group, err := oc.GetProjectByID(previousID)
+		group, err := oc.SetProjectTags(previousMongoProperties["group_id"].(string), tags)
+		if err != nil {
+			return opsmanager.ProjectResponse{}, errors.Wrap(err, "cannot set project tags")
+		}
 		// AgentAPIKey is empty for PATCH and GET requests in OM 3.6, taking the value from previous manifest instead
 		group.AgentAPIKey = previousMongoProperties["agent_api_key"].(string)
 		return group, errors.Wrapf(err, "cannot get project %q", previousID)
@@ -514,6 +518,11 @@ func groupForMongoServer(
 	if err != nil {
 		log.Printf("CreateGroup CreateOneProject: name %q, orgID %q error: %v", name, orgID, err)
 		return group, errors.Wrapf(err, "cannot create project %q in org %q", name, orgID)
+	}
+
+	resp, err = oc.SetProjectTags(resp.ID, tags)
+	if err != nil {
+		return group, errors.Wrap(err, "cannot set project tags")
 	}
 
 	return resp, nil
