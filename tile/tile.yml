@@ -61,6 +61,7 @@ forms:
           - name: tag_name
             type: string
             label: Tag name
+            configurable: true
             constraints:
               - must_match_regex: ^[A-Z,0-9,.,_,-]{1,32}$
                 error_message:
