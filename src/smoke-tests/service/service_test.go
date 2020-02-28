@@ -11,7 +11,11 @@ import (
 
 	smokeTestCF "smoke-tests/cf"
 	"smoke-tests/mongodb"
+	prepare "smoke-tests/service/configuration"
+	"smoke-tests/service/data"
 	"smoke-tests/service/reporter"
+
+	// "smoke-tests/service/steps"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -21,45 +25,24 @@ import (
 	"github.com/pivotal-cf-experimental/cf-test-helpers/services"
 )
 
-type CFTestContext struct {
-	Org, Space string
-}
-
 var _ = Describe("MongoDB Service", func() {
 	var (
-		// client = adapter.NewPCGCClient(mongodbConfig.URL, mongodbConfig.UserName, mongodbConfig.UserAPIKey)
 		testCF = smokeTestCF.CF{
 			ShortTimeout: time.Minute * 3,
 			LongTimeout:  time.Minute * 15,
 			RetryBackoff: mongodbConfig.Retry.Backoff(),
 			MaxRetries:   mongodbConfig.Retry.MaxRetries(),
 		}
-
 		retryInterval = time.Second
 
-		appPath             = "../assets/cf-mongo-example-app"
-		serviceInstanceName string
-		appName             string
-		planName            string
-		securityGroupName   string
-		serviceKeyName      string
+		planName string
 
-		cfTestContext CFTestContext
-
-		context services.Context
+		caseInstance prepare.InstanceNames
 	)
 
 	SynchronizedBeforeSuite(func() []byte {
-		context = services.NewContext(cfTestConfig, "mongodb-test")
-
-		createQuotaArgs := []string{
-			"-m", "10G",
-			"-r", "1000",
-			"-s", "100",
-			"--allow-paid-service-plans",
-		}
-
-		regularContext := context.RegularUserContext()
+		caseInstance.GenerateInstanceNames()
+		regularContext := services.NewContext(cfTestConfig, "mongodb-test").RegularUserContext()
 
 		beforeSuiteSteps := []*reporter.Step{
 			reporter.NewStep(
@@ -72,7 +55,7 @@ var _ = Describe("MongoDB Service", func() {
 			),
 			reporter.NewStep(
 				"Create 'mongodb-smoke-tests' quota",
-				testCF.CreateQuota("mongodb-smoke-test-quota", createQuotaArgs...),
+				testCF.CreateQuota("mongodb-smoke-test-quota", data.CreateQuotaArgs...),
 			),
 			reporter.NewStep(
 				fmt.Sprintf("Create '%s' org", regularContext.Org),
@@ -106,17 +89,15 @@ var _ = Describe("MongoDB Service", func() {
 			task.Perform()
 		}
 
-		cfTestContext = CFTestContext{
-			Org:   regularContext.Org,
-			Space: regularContext.Space,
-		}
+		caseInstance.Context.Org = regularContext.Org
+		caseInstance.Context.Space = regularContext.Space
 
-		rawTestContext, err := json.Marshal(cfTestContext)
+		rawTestContext, err := json.Marshal(caseInstance.Context)
 		Expect(err).NotTo(HaveOccurred())
 
 		return rawTestContext
 	}, func(data []byte) {
-		err := json.Unmarshal(data, &cfTestContext)
+		err := json.Unmarshal(data, &caseInstance.Context)
 		Expect(err).NotTo(HaveOccurred())
 
 		// Set $CF_HOME so that cf cli state is not shared between nodes
@@ -126,18 +107,6 @@ var _ = Describe("MongoDB Service", func() {
 	})
 
 	BeforeEach(func() {
-		appName = randomName()
-		serviceInstanceName = randomName()
-		securityGroupName = randomName()
-		serviceKeyName = randomName()
-
-		pushArgs := []string{
-			"-m", "256M",
-			"-p", appPath,
-			"-s", "cflinuxfs3",
-			"--no-start",
-		}
-
 		specSteps := []*reporter.Step{
 			reporter.NewStep(
 				"Connect to CloudFoundry",
@@ -148,12 +117,12 @@ var _ = Describe("MongoDB Service", func() {
 				testCF.Auth(cfTestConfig.AdminUser, cfTestConfig.AdminPassword),
 			),
 			reporter.NewStep(
-				fmt.Sprintf("Target '%s' org and '%s' space", cfTestContext.Org, cfTestContext.Space),
-				testCF.TargetOrgAndSpace(cfTestContext.Org, cfTestContext.Space),
+				fmt.Sprintf("Target '%s' org and '%s' space", caseInstance.Context.Org, caseInstance.Context.Space),
+				testCF.TargetOrgAndSpace(caseInstance.Context.Org, caseInstance.Context.Space),
 			),
 			reporter.NewStep(
 				"Push the MongoDB sample app to Cloud Foundry",
-				testCF.Push(appName, pushArgs...),
+				testCF.Push(caseInstance.AppName, data.PushArgs...),
 			),
 		}
 
@@ -169,26 +138,26 @@ var _ = Describe("MongoDB Service", func() {
 		specSteps := []*reporter.Step{
 			reporter.NewStep(
 				fmt.Sprintf("Unbind the %q plan instance", planName),
-				testCF.UnbindService(appName, serviceInstanceName),
+				testCF.UnbindService(caseInstance.AppName, caseInstance.ServiceTestName),
 			),
 			reporter.NewStep(
-				fmt.Sprintf("Delete the service key %s for the %q plan instance", serviceKeyName, planName),
-				testCF.DeleteServiceKey(serviceInstanceName, serviceKeyName),
+				fmt.Sprintf("Delete the service key %s for the %q plan instance", caseInstance.ServiceKeyName, planName),
+				testCF.DeleteServiceKey(caseInstance.ServiceTestName, caseInstance.ServiceKeyName),
 			),
 			reporter.NewStep(
 				fmt.Sprintf("Delete the %q plan instance", planName),
-				testCF.DeleteService(serviceInstanceName),
+				testCF.DeleteService(caseInstance.ServiceTestName),
 			),
 			reporter.NewStep(
 				fmt.Sprintf("Ensure service instance for plan %q has been deleted", planName),
-				testCF.EnsureServiceInstanceGone(serviceInstanceName),
+				testCF.EnsureServiceInstanceGone(caseInstance.ServiceTestName),
 			),
 			reporter.NewStep(
 				"Delete the app",
-				testCF.Delete(appName),
+				testCF.Delete(caseInstance.AppName),
 			),
 			reporter.NewStep(
-				fmt.Sprintf("Delete security group '%s'", securityGroupName),
+				fmt.Sprintf("Delete security group '%s'", caseInstance.SecurityGroupName),
 				testCF.DeleteSecurityGroup("mongodb-smoke-tests-sg"),
 			),
 		}
@@ -207,54 +176,53 @@ var _ = Describe("MongoDB Service", func() {
 				testCF.EnsureAllServiceInstancesGone(),
 			),
 			reporter.NewStep(
-				fmt.Sprintf("Delete org '%s'", cfTestContext.Org),
-				testCF.DeleteOrg(cfTestContext.Org),
+				fmt.Sprintf("Delete org '%s'", caseInstance.Context.Org),
+				testCF.DeleteOrg(caseInstance.Context.Org),
 			),
 			reporter.NewStep(
 				"Log out",
 				testCF.Logout(),
 			),
 		}
-
 		smokeTestReporter.RegisterAfterSuiteSteps(afterSuiteSteps)
-
-		afterSuiteSteps[0].Perform()
+		for _, step := range afterSuiteSteps {
+			step.Perform()
+		}
 	})
 
-	AssertLifeCycleBehavior := func(sp ServiceParameters) {
+	AssertLifeCycleBehavior := func(sp prepare.ServiceParameters) {
 		It(sp.PrintParameters()+": create, bind to, write to, read from, unbind, and destroy a service instance", func() {
 			var skip bool
-
-			uri := fmt.Sprintf("https://%s.%s", appName, cfTestConfig.AppsDomain)
+			uri := fmt.Sprintf("https://%s.%s", caseInstance.AppName, cfTestConfig.AppsDomain)
 			app := mongodb.NewApp(uri, testCF.ShortTimeout, retryInterval)
-			testValue := randomName()
+			testValue := uuid.NewRandom().String()
 			serviceConfig := fmt.Sprintf(`{"enable_backup":"%s", "version":"%s"}`, sp.BackupEnable, sp.MongoDBVersion)
-			fmt.Println("serviceName : ", sp.ServiceName, " planName: ", sp.PlanName, " serviceInstanceName: ", serviceInstanceName,
+			fmt.Println("serviceName : ", sp.MarketPlaceServiceName, " planName: ", sp.PlanName, " serviceInstanceName: ", caseInstance.ServiceTestName,
 				"configuration : -c ", serviceConfig)
 
 			serviceCreateStep := reporter.NewStep(
 				fmt.Sprintf("Create a '%s' plan instance of MongoDB", sp.PlanName),
-				testCF.CreateService(sp.ServiceName, sp.PlanName, serviceInstanceName, serviceConfig, &skip),
+				testCF.CreateService(sp.MarketPlaceServiceName, sp.PlanName, caseInstance.ServiceTestName, serviceConfig, &skip),
 			)
 
 			smokeTestReporter.RegisterSpecSteps([]*reporter.Step{serviceCreateStep})
 
 			specSteps := []*reporter.Step{
 				reporter.NewStep(
-					fmt.Sprintf("Bind the mongodb sample app '%s' to the '%s' plan instance '%s' of MongoDB", appName, planName, serviceInstanceName),
-					testCF.BindService(appName, serviceInstanceName),
+					fmt.Sprintf("Bind the mongodb sample app '%s' to the '%s' plan instance '%s' of MongoDB", caseInstance.AppName, sp.PlanName, caseInstance.ServiceTestName),
+					testCF.BindService(caseInstance.AppName, caseInstance.ServiceTestName),
 				),
 				reporter.NewStep(
-					fmt.Sprintf("Create service key for the '%s' plan instance '%s' of MongoDB", planName, serviceInstanceName),
-					testCF.CreateServiceKey(serviceInstanceName, serviceKeyName),
+					fmt.Sprintf("Create service key for the '%s' plan instance '%s' of MongoDB", sp.PlanName, caseInstance.ServiceTestName),
+					testCF.CreateServiceKey(caseInstance.ServiceTestName, caseInstance.ServiceKeyName),
 				),
 				reporter.NewStep(
-					fmt.Sprintf("Create and bind security group '%s' for running smoke tests", securityGroupName),
-					testCF.CreateAndBindSecurityGroup(securityGroupName, cfTestContext.Org, cfTestContext.Space),
+					fmt.Sprintf("Create and bind security group '%s' for running smoke tests", caseInstance.SecurityGroupName),
+					testCF.CreateAndBindSecurityGroup(caseInstance.SecurityGroupName, caseInstance.Context.Org, caseInstance.Context.Space),
 				),
 				reporter.NewStep(
 					"Start the app",
-					testCF.Start(appName),
+					testCF.Start(caseInstance.AppName),
 				),
 				reporter.NewStep(
 					"Verify that the app is responding",
@@ -272,7 +240,7 @@ var _ = Describe("MongoDB Service", func() {
 					"Backup configuration",
 					func() {
 						client := adapter.NewPCGCClient(mongodbConfig.OpsMan.URL, mongodbConfig.OpsMan.UserName, mongodbConfig.OpsMan.UserAPIKey)
-						groupID := testCF.GetGroupID(serviceInstanceName)
+						groupID := testCF.GetGroupID(caseInstance.ServiceTestName)
 						fmt.Printf("Got groupID/ProjectID: %s", groupID)
 						backupConfigs, err := client.GetBackupConfigs(groupID)
 						Expect(err).NotTo(HaveOccurred())
@@ -288,7 +256,7 @@ var _ = Describe("MongoDB Service", func() {
 			smokeTestReporter.RegisterSpecSteps(specSteps)
 
 			serviceCreateStep.Perform()
-			serviceCreateStep.Description = fmt.Sprintf("Create a '%s' plan instance of MongoDB", planName)
+			serviceCreateStep.Description = fmt.Sprintf("Create a '%s' plan instance of MongoDB", sp.PlanName)
 
 			if skip {
 				serviceCreateStep.Result = "SKIPPED"
@@ -302,10 +270,11 @@ var _ = Describe("MongoDB Service", func() {
 
 	Context("for each plan", func() {
 		mongodbConfig.SetDefaultForNonDefinedParameters()
-		cases := generateTestServiceParameters(mongodbConfig)
-		printGeneratedServiceParameters(cases)
+		cases := prepare.GenerateTestServiceParameters(mongodbConfig)
+		prepare.PrintGeneratedServiceParameters(cases)
 		for _, oneCase := range cases {
 			planName = oneCase.PlanName
+			// oneCase.Instance = caseInstance
 			AssertLifeCycleBehavior(oneCase)
 		}
 	})
@@ -317,8 +286,4 @@ func convertedBackupStatus(backupEnable string) string {
 		return "STARTED"
 	}
 	return "INACTIVE"
-}
-
-func randomName() string {
-	return uuid.NewRandom().String()
 }
