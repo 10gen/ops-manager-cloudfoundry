@@ -64,7 +64,7 @@ func (r *AutomationConfig) ToShardedCluster(ctx *DocContext) {
 
 	r.MongoDBVersions, r.BackupVersions, r.MonitoringVersions = getDefaultVersions(ctx.Version, ctx.Cluster.ConfigServers[0])
 
-	protocolVersion := "0"
+	protocolVersion := ""
 	if ctx.CompatibilityVersion == "4.0" {
 		protocolVersion = "1"
 	}
@@ -208,7 +208,7 @@ func (r *AutomationConfig) ToReplicaSet(ctx *DocContext) {
 
 	r.MongoDBVersions, r.BackupVersions, r.MonitoringVersions = getDefaultVersions(ctx.Version, ctx.Nodes[0])
 
-	protocolVersion := "0"
+	protocolVersion := ""
 	if ctx.CompatibilityVersion == "4.0" {
 		protocolVersion = "1"
 	}
