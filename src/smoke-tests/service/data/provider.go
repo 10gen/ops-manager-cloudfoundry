@@ -3,6 +3,7 @@ package data
 const (
 	//AppPath path to ruby simple application
 	AppPath = "../assets/cf-mongo-example-app"
+	TileConfig = ".."
 )
 
 var (

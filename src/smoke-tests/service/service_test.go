@@ -12,10 +12,9 @@ import (
 	smokeTestCF "smoke-tests/cf"
 	"smoke-tests/mongodb"
 	prepare "smoke-tests/service/configuration"
-	"smoke-tests/service/data"
 	"smoke-tests/service/reporter"
+	"smoke-tests/service/steps"
 
-	// "smoke-tests/service/steps"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -43,54 +42,10 @@ var _ = Describe("MongoDB Service", func() {
 	SynchronizedBeforeSuite(func() []byte {
 		caseInstance.GenerateInstanceNames()
 		regularContext := services.NewContext(cfTestConfig, "mongodb-test").RegularUserContext()
-
-		beforeSuiteSteps := []*reporter.Step{
-			reporter.NewStep(
-				"Connect to CloudFoundry",
-				testCF.API(cfTestConfig.ApiEndpoint, cfTestConfig.SkipSSLValidation),
-			),
-			reporter.NewStep(
-				"Log in as admin",
-				testCF.Auth(cfTestConfig.AdminUser, cfTestConfig.AdminPassword),
-			),
-			reporter.NewStep(
-				"Create 'mongodb-smoke-tests' quota",
-				testCF.CreateQuota("mongodb-smoke-test-quota", data.CreateQuotaArgs...),
-			),
-			reporter.NewStep(
-				fmt.Sprintf("Create '%s' org", regularContext.Org),
-				testCF.CreateOrg(regularContext.Org, "mongodb-smoke-test-quota"),
-			),
-			reporter.NewStep(
-				fmt.Sprintf("Enable service access for '%s' org", regularContext.Org),
-				testCF.EnableServiceAccess(regularContext.Org, mongodbConfig.ServiceName),
-			),
-			reporter.NewStep(
-				fmt.Sprintf("Target '%s' org", regularContext.Org),
-				testCF.TargetOrg(regularContext.Org),
-			),
-			reporter.NewStep(
-				fmt.Sprintf("Create '%s' space", regularContext.Space),
-				testCF.CreateSpace(regularContext.Space),
-			),
-			reporter.NewStep(
-				fmt.Sprintf("Target '%s' org and '%s' space", regularContext.Org, regularContext.Space),
-				testCF.TargetOrgAndSpace(regularContext.Org, regularContext.Space),
-			),
-			reporter.NewStep(
-				"Log out",
-				testCF.Logout(),
-			),
-		}
-
-		smokeTestReporter.RegisterBeforeSuiteSteps(beforeSuiteSteps)
-
-		for _, task := range beforeSuiteSteps {
-			task.Perform()
-		}
-
 		caseInstance.Context.Org = regularContext.Org
 		caseInstance.Context.Space = regularContext.Space
+
+		smokeTestReporter.RegisterBeforeSuiteSteps(steps.CreateOrganization(testCF, caseInstance, cfTestConfig, mongodbConfig.ServiceName))
 
 		rawTestContext, err := json.Marshal(caseInstance.Context)
 		Expect(err).NotTo(HaveOccurred())
@@ -107,87 +62,16 @@ var _ = Describe("MongoDB Service", func() {
 	})
 
 	BeforeEach(func() {
-		specSteps := []*reporter.Step{
-			reporter.NewStep(
-				"Connect to CloudFoundry",
-				testCF.API(cfTestConfig.ApiEndpoint, cfTestConfig.SkipSSLValidation),
-			),
-			reporter.NewStep(
-				"Log in as admin",
-				testCF.Auth(cfTestConfig.AdminUser, cfTestConfig.AdminPassword),
-			),
-			reporter.NewStep(
-				fmt.Sprintf("Target '%s' org and '%s' space", caseInstance.Context.Org, caseInstance.Context.Space),
-				testCF.TargetOrgAndSpace(caseInstance.Context.Org, caseInstance.Context.Space),
-			),
-			reporter.NewStep(
-				"Push the MongoDB sample app to Cloud Foundry",
-				testCF.Push(caseInstance.AppName, data.PushArgs...),
-			),
-		}
-
 		smokeTestReporter.ClearSpecSteps()
-		smokeTestReporter.RegisterSpecSteps(specSteps)
-
-		for _, task := range specSteps {
-			task.Perform()
-		}
+		smokeTestReporter.RegisterSpecSteps(steps.PushApplication(testCF, caseInstance, cfTestConfig))
 	})
 
 	AfterEach(func() {
-		specSteps := []*reporter.Step{
-			reporter.NewStep(
-				fmt.Sprintf("Unbind the %q plan instance", planName),
-				testCF.UnbindService(caseInstance.AppName, caseInstance.ServiceTestName),
-			),
-			reporter.NewStep(
-				fmt.Sprintf("Delete the service key %s for the %q plan instance", caseInstance.ServiceKeyName, planName),
-				testCF.DeleteServiceKey(caseInstance.ServiceTestName, caseInstance.ServiceKeyName),
-			),
-			reporter.NewStep(
-				fmt.Sprintf("Delete the %q plan instance", planName),
-				testCF.DeleteService(caseInstance.ServiceTestName),
-			),
-			reporter.NewStep(
-				fmt.Sprintf("Ensure service instance for plan %q has been deleted", planName),
-				testCF.EnsureServiceInstanceGone(caseInstance.ServiceTestName),
-			),
-			reporter.NewStep(
-				"Delete the app",
-				testCF.Delete(caseInstance.AppName),
-			),
-			reporter.NewStep(
-				fmt.Sprintf("Delete security group '%s'", caseInstance.SecurityGroupName),
-				testCF.DeleteSecurityGroup("mongodb-smoke-tests-sg"),
-			),
-		}
-
-		smokeTestReporter.RegisterSpecSteps(specSteps)
-
-		for _, task := range specSteps {
-			task.Perform()
-		}
+		smokeTestReporter.RegisterSpecSteps(steps.DeleteServiceSteps(testCF, caseInstance, planName))
 	})
 
 	SynchronizedAfterSuite(func() {}, func() {
-		afterSuiteSteps := []*reporter.Step{
-			reporter.NewStep(
-				"Ensure no service-instances left",
-				testCF.EnsureAllServiceInstancesGone(),
-			),
-			reporter.NewStep(
-				fmt.Sprintf("Delete org '%s'", caseInstance.Context.Org),
-				testCF.DeleteOrg(caseInstance.Context.Org),
-			),
-			reporter.NewStep(
-				"Log out",
-				testCF.Logout(),
-			),
-		}
-		smokeTestReporter.RegisterAfterSuiteSteps(afterSuiteSteps)
-		for _, step := range afterSuiteSteps {
-			step.Perform()
-		}
+		smokeTestReporter.RegisterAfterSuiteSteps(steps.DeleteOrganization(testCF, caseInstance))
 	})
 
 	AssertLifeCycleBehavior := func(sp prepare.ServiceParameters) {
@@ -248,6 +132,20 @@ var _ = Describe("MongoDB Service", func() {
 							Expect(config).To(MatchFields(IgnoreExtras, Fields{
 								"StatusName": Equal(convertedBackupStatus(sp.BackupEnable)),
 							}))
+						}
+					},
+				),
+				reporter.NewStep(
+					"Check requared version",
+					func() {
+						client := adapter.NewPCGCClient(mongodbConfig.OpsMan.URL, mongodbConfig.OpsMan.UserName, mongodbConfig.OpsMan.UserAPIKey)
+						groupID := testCF.GetGroupID(caseInstance.ServiceTestName)
+						autoConfig, err := client.GetAutomationConfig(groupID)
+						Expect(err).NotTo(HaveOccurred())
+						for _, process := range autoConfig.Processes {
+							Expect(process).To(PointTo(MatchFields(IgnoreExtras, Fields{
+								"Version": Equal(sp.MongoDBVersion),
+							})))
 						}
 					},
 				),
