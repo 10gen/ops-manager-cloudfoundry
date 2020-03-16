@@ -2,10 +2,10 @@ package adapter
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
+
+	"github.com/pkg/errors"
 )
 
 type Config struct {
@@ -25,21 +25,21 @@ func LoadConfig(configFile string) (config *Config, err error) {
 
 	file, err := os.Open(configFile)
 	if err != nil {
-		return config, err
+		return config, errors.Wrap(err, "cannot open config")
 	}
 	defer file.Close()
 
 	bytes, err := ioutil.ReadAll(file)
 	if err != nil {
-		return config, err
+		return config, errors.Wrap(err, "cannot read config")
 	}
 
 	if err = json.Unmarshal(bytes, &config); err != nil {
-		return config, err
+		return config, errors.Wrap(err, "cannot unmarshal config JSON")
 	}
 
 	if err = config.Validate(); err != nil {
-		return config, fmt.Errorf("Validating config contents: %s", err)
+		return config, errors.Wrap(err, "cannot validate config")
 	}
 
 	return config, nil
