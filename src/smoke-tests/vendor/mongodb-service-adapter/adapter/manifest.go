@@ -421,7 +421,10 @@ func mongoPlanProperties(manifest bosh.BoshManifest) map[interface{}]interface{}
 
 func passwordForMongoServer(previousManifestProperties map[interface{}]interface{}) string {
 	if previousManifestProperties != nil {
-		return previousManifestProperties["admin_password"].(string)
+		pass, ok := previousManifestProperties["admin_password"].(string)
+		if ok {
+			return pass
+		}
 	}
 
 	return GenerateString(20, true)
@@ -429,7 +432,10 @@ func passwordForMongoServer(previousManifestProperties map[interface{}]interface
 
 func idForMongoServer(previousManifestProperties map[interface{}]interface{}) string {
 	if previousManifestProperties != nil {
-		return previousManifestProperties["id"].(string)
+		id, ok := previousManifestProperties["id"].(string)
+		if ok {
+			return id
+		}
 	}
 
 	return GenerateString(8, true)
@@ -437,7 +443,10 @@ func idForMongoServer(previousManifestProperties map[interface{}]interface{}) st
 
 func authKeyForMongoServer(previousManifestProperties map[interface{}]interface{}) string {
 	if previousManifestProperties != nil {
-		return previousManifestProperties["auth_key"].(string)
+		key, ok := previousManifestProperties["auth_key"].(string)
+		if ok {
+			return key
+		}
 	}
 
 	return GenerateString(8, false)
@@ -453,11 +462,11 @@ func groupForMongoServer(
 	name := ""
 	orgID := ""
 	if p, found := arbitraryParams["projectName"]; found {
-		name = p.(string)
+		name, _ = p.(string)
 	}
 
 	if p, found := arbitraryParams["orgId"]; found {
-		orgID = p.(string)
+		orgID, _ = p.(string)
 	}
 
 	// TODO: investigate the use of tags
