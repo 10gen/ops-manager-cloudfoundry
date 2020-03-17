@@ -64,14 +64,9 @@ func (r *AutomationConfig) ToShardedCluster(ctx *DocContext) {
 
 	r.MongoDBVersions, r.BackupVersions, r.MonitoringVersions = getDefaultVersions(ctx.Version, ctx.Cluster.ConfigServers[0])
 
-	protocolVersion := "0"
-	if ctx.CompatibilityVersion == "4.0" {
-		protocolVersion = "1"
-	}
-
 	r.ReplicaSets = []opsmanager.ReplicaSet{{
 		ID:              ctx.ID + "_config",
-		ProtocolVersion: protocolVersion,
+		ProtocolVersion: "1",
 	}}
 
 	r.Processes = nil
@@ -131,7 +126,7 @@ func (r *AutomationConfig) ToShardedCluster(ctx *DocContext) {
 	for ii, shard := range ctx.Cluster.Shards {
 		rs := opsmanager.ReplicaSet{
 			ID:              fmt.Sprintf("%s_shard_%d", ctx.ID, ii),
-			ProtocolVersion: protocolVersion,
+			ProtocolVersion: "1",
 		}
 
 		for i, node := range shard {
@@ -208,14 +203,9 @@ func (r *AutomationConfig) ToReplicaSet(ctx *DocContext) {
 
 	r.MongoDBVersions, r.BackupVersions, r.MonitoringVersions = getDefaultVersions(ctx.Version, ctx.Nodes[0])
 
-	protocolVersion := "0"
-	if ctx.CompatibilityVersion == "4.0" {
-		protocolVersion = "1"
-	}
-
 	r.ReplicaSets = []opsmanager.ReplicaSet{{
 		ID:              "pcf_repl",
-		ProtocolVersion: protocolVersion,
+		ProtocolVersion: "1",
 	}}
 
 	r.Processes = nil
