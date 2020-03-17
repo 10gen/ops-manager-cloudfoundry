@@ -9,6 +9,8 @@ import (
 	"net"
 	"strings"
 
+	"github.com/pkg/errors"
+
 	"github.com/pivotal-cf/on-demand-services-sdk/serviceadapter"
 	mgo "gopkg.in/mgo.v2"
 )
@@ -58,7 +60,7 @@ func (b Binder) CreateBinding(params serviceadapter.CreateBindingParams) (servic
 
 		cluster, err := NodesToCluster(servers, routers, configServers, replicas)
 		if err != nil {
-			return serviceadapter.Binding{}, err
+			return serviceadapter.Binding{}, errors.Wrap(err, "cannot convert node list to cluster")
 		}
 		servers = cluster.Routers
 	}
@@ -67,7 +69,7 @@ func (b Binder) CreateBinding(params serviceadapter.CreateBindingParams) (servic
 		omClient := NewPCGCClient(URL, adminUsername, adminAPIKey)
 		hosts, err := omClient.GetHosts(groupID)
 		if err != nil {
-			return serviceadapter.Binding{}, err
+			return serviceadapter.Binding{}, errors.Wrap(err, "cannot get hosts")
 		}
 
 		servers = ToEndpointList(hosts)
@@ -85,7 +87,7 @@ func (b Binder) CreateBinding(params serviceadapter.CreateBindingParams) (servic
 
 	session, err := GetWithCredentials(servers, adminPassword, ssl)
 	if err != nil {
-		return serviceadapter.Binding{}, err
+		return serviceadapter.Binding{}, errors.Wrap(err, "cannot get session")
 	}
 	defer session.Close()
 
@@ -108,7 +110,7 @@ func (b Binder) CreateBinding(params serviceadapter.CreateBindingParams) (servic
 	}
 
 	if err = session.DB(adminDB).UpsertUser(user); err != nil {
-		return serviceadapter.Binding{}, err
+		return serviceadapter.Binding{}, errors.Wrap(err, "cannot upsert user")
 	}
 
 	url := fmt.Sprintf("mongodb://%s:%s@%s/%s?authSource=admin%s",
@@ -152,7 +154,7 @@ func (Binder) DeleteBinding(params serviceadapter.DeleteBindingParams) error {
 		omClient := NewPCGCClient(URL, adminUsername, adminAPIKey)
 		hosts, err := omClient.GetHosts(groupID)
 		if err != nil {
-			return err
+			return errors.Wrap(err, "cannot get hosts")
 		}
 
 		servers = ToEndpointList(hosts)
@@ -160,11 +162,12 @@ func (Binder) DeleteBinding(params serviceadapter.DeleteBindingParams) error {
 
 	session, err := GetWithCredentials(servers, adminPassword, ssl)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "cannot get session")
 	}
 	defer session.Close()
 
-	return session.DB(adminDB).RemoveUser(username)
+	err = session.DB(adminDB).RemoveUser(username)
+	return errors.Wrapf(err, "cannot remove user %q from DB %q", username, adminDB)
 }
 
 func GetWithCredentials(addrs []string, adminPassword string, ssl bool) (*mgo.Session, error) {
@@ -181,19 +184,21 @@ func GetWithCredentials(addrs []string, adminPassword string, ssl bool) (*mgo.Se
 		tlsConfig.InsecureSkipVerify = true
 		cert, err := tls.LoadX509KeyPair(serverCertPath, serverKeyPath)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrapf(err, "cannot load keypair from %q, %q", serverCertPath, serverKeyPath)
 		}
 		tlsConfig.Certificates = []tls.Certificate{cert}
 
 		dialInfo.DialServer = func(addrs *mgo.ServerAddr) (net.Conn, error) {
 			conn, err := tls.Dial("tcp", addrs.String(), tlsConfig)
-			return conn, err
+			return conn, errors.Wrapf(err, "cannot tls.Dial %q", addrs.String())
 		}
 	}
-	return mgo.DialWithInfo(dialInfo)
+
+	result, err := mgo.DialWithInfo(dialInfo)
+	return result, errors.Wrapf(err, "cannot dial mongo cluster %q (ssl: %v)", addrs, ssl)
 }
 
-func mkUsername(binddingID string) string {
-	b64 := base64.StdEncoding.EncodeToString([]byte(binddingID))
+func mkUsername(bindingID string) string {
+	b64 := base64.StdEncoding.EncodeToString([]byte(bindingID))
 	return fmt.Sprintf("pcf_%x", md5.Sum([]byte(b64)))
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/mongodb-labs/pcgc/pkg/opsmanager"
 	"github.com/pivotal-cf/on-demand-services-sdk/bosh"
 	"github.com/pivotal-cf/on-demand-services-sdk/serviceadapter"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -44,7 +45,6 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 
 	username := mongoOps["username"].(string)
 	apiKey := mongoOps["api_key"].(string)
-	boshDNSDisable := mongoOps["bosh_dns_disable"].(bool)
 
 	// trim trailing slash
 	url := mongoOps["url"].(string)
@@ -63,7 +63,7 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 	id := idForMongoServer(previousMongoProperties)
 	group, err := groupForMongoServer(id, oc, oc404, previousMongoProperties, arbitraryParams)
 	if err != nil {
-		return serviceadapter.GenerateManifestOutput{}, fmt.Errorf("could not create new group (%s)", err.Error())
+		return serviceadapter.GenerateManifestOutput{}, errors.Wrap(err, "cannot create new group")
 	}
 	m.logf("created group %s", group.ID)
 
@@ -77,39 +77,32 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 
 	mongodInstanceGroup := findInstanceGroup(params.Plan, MongodInstanceGroupName)
 	if mongodInstanceGroup == nil {
-		return serviceadapter.GenerateManifestOutput{}, fmt.Errorf("no definition found for instance group '%s'", MongodInstanceGroupName)
+		return serviceadapter.GenerateManifestOutput{}, errors.Errorf("no definition found for instance group %q", MongodInstanceGroupName)
 	}
 
-	mongodJobs, err := gatherJobs(params.ServiceDeployment.Releases, []string{MongodJobName})
+	mongodJobNames := []string{MongodJobName}
+	configAgentJobNames := []string{ConfigAgentJobName, CleanupErrandJobName, PostSetupErrandJobName}
+	addonsJobNames := []string{BoshDNSEnableJobName}
+
+	if syslogProps["address"].(string) != "" {
+		mongodJobNames = append(mongodJobNames, SyslogJobName)
+		configAgentJobNames = append(configAgentJobNames, SyslogJobName)
+	}
+
+	mongodJobs, err := gatherJobs(params.ServiceDeployment.Releases, mongodJobNames)
 	if err != nil {
-		return serviceadapter.GenerateManifestOutput{}, err
+		return serviceadapter.GenerateManifestOutput{}, errors.Wrapf(err, "cannot gather jobs %q", mongodJobNames)
 	}
 	mongodJobs[0].AddSharedProvidesLink(MongodJobName)
-	if syslogProps["address"].(string) != "" {
-		mongodJobs, err = gatherJobs(params.ServiceDeployment.Releases, []string{MongodJobName, SyslogJobName})
-		if err != nil {
-			return serviceadapter.GenerateManifestOutput{}, err
-		}
-		mongodJobs[0].AddSharedProvidesLink(MongodJobName)
+
+	configAgentJobs, err := gatherJobs(params.ServiceDeployment.Releases, configAgentJobNames)
+	if err != nil {
+		return serviceadapter.GenerateManifestOutput{}, errors.Wrapf(err, "cannot gather jobs %q", configAgentJobNames)
 	}
 
-	configAgentJobs, err := gatherJobs(params.ServiceDeployment.Releases, []string{ConfigAgentJobName, CleanupErrandJobName, PostSetupErrandJobName})
+	addonsJobs, err := gatherJobs(params.ServiceDeployment.Releases, addonsJobNames)
 	if err != nil {
-		return serviceadapter.GenerateManifestOutput{}, err
-	}
-	if syslogProps["address"].(string) != "" {
-		configAgentJobs, err = gatherJobs(params.ServiceDeployment.Releases, []string{ConfigAgentJobName, CleanupErrandJobName, SyslogJobName, PostSetupErrandJobName})
-		if err != nil {
-			return serviceadapter.GenerateManifestOutput{}, err
-		}
-	}
-
-	addonsJobs, err := gatherJobs(params.ServiceDeployment.Releases, []string{BoshDNSEnableJobName})
-	if err != nil {
-		return serviceadapter.GenerateManifestOutput{}, err
-	}
-	if boshDNSDisable {
-		addonsJobs = []bosh.Job{}
+		return serviceadapter.GenerateManifestOutput{}, errors.Wrapf(err, "cannot gather jobs %q", addonsJobNames)
 	}
 
 	mongodNetworks := []bosh.Network{}
@@ -117,7 +110,7 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 		mongodNetworks = append(mongodNetworks, bosh.Network{Name: network})
 	}
 	if len(mongodNetworks) == 0 {
-		return serviceadapter.GenerateManifestOutput{}, fmt.Errorf("no networks definition found for instance group '%s'", MongodInstanceGroupName)
+		return serviceadapter.GenerateManifestOutput{}, errors.Errorf("no networks definition found for instance group %q", MongodInstanceGroupName)
 	}
 
 	var engineVersion string
@@ -125,7 +118,12 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 	if version == nil {
 		engineVersion, err = getLatestVersion(oc, group.ID)
 		if err != nil {
-			return serviceadapter.GenerateManifestOutput{}, fmt.Errorf("unable to find the latest MongoDB version from the MongoDB Ops Manager API. Please contact your system administrator to ensure versions are available in the Version Manager for project '%s' in MongoDB Ops Manager. If your MongoDB Ops Manager is running in Local Mode, then after validating versions are available, please indicate a specific MongoDB version using 'version’ paramater when calling 'create-service'", group.Name)
+			return serviceadapter.GenerateManifestOutput{},
+				errors.Wrapf(
+					err,
+					"unable to find the latest MongoDB version from the MongoDB Ops Manager API. Please contact your system administrator to ensure versions are available in the Version Manager for project %q in MongoDB Ops Manager. If your MongoDB Ops Manager is running in Local Mode, then after validating versions are available, please indicate a specific MongoDB version using 'version’ paramater when calling 'create-service'",
+					group.Name,
+				)
 		}
 	} else {
 		skipVersionValidation := false
@@ -136,7 +134,7 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 		if !skipVersionValidation {
 			engineVersion, err = validateVersionManifest(version.(string))
 			if err != nil {
-				return serviceadapter.GenerateManifestOutput{}, err
+				return serviceadapter.GenerateManifestOutput{}, errors.Wrap(err, "cannot validate version manifest")
 			}
 		} else {
 			engineVersion = version.(string)
@@ -193,7 +191,7 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 
 		instances = routers + configServers + shards*replicas
 	default:
-		return serviceadapter.GenerateManifestOutput{}, fmt.Errorf("unknown plan: %s", planID)
+		return serviceadapter.GenerateManifestOutput{}, errors.Errorf("unknown plan: %q", planID)
 	}
 
 	authKey := authKeyForMongoServer(previousMongoProperties)
@@ -206,14 +204,13 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 			backupEnabled = mongoOps["backup_enabled"].(bool)
 		}
 	}
+
 	requireSSL := false
-	if !boshDNSDisable {
-		e := getArbitraryParam("ssl_enabled", "ssl_enabled", arbitraryParams, previousMongoProperties)
-		if e != nil {
-			requireSSL = e.(bool)
-		} else {
-			requireSSL = mongoOps["ssl_enabled"].(bool)
-		}
+	e := getArbitraryParam("ssl_enabled", "ssl_enabled", arbitraryParams, previousMongoProperties)
+	if e != nil {
+		requireSSL = e.(bool)
+	} else {
+		requireSSL = mongoOps["ssl_enabled"].(bool)
 	}
 
 	agentPassword := ""
@@ -225,7 +222,7 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 	if agentPassword == "" && params.PreviousManifest != nil {
 		cfg, err := oc.GetAutomationConfig(group.ID)
 		if err != nil {
-			panic(err)
+			return serviceadapter.GenerateManifestOutput{}, errors.Wrapf(err, "cannote get automation config for group %q", group.ID)
 		}
 
 		agentPassword = cfg.Auth.AutoPwd
@@ -299,26 +296,25 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 						"enabled": boolPointer(true),
 					},
 					"mongo_ops": map[string]interface{}{
-						"id":               id,
-						"url":              url,
-						"agent_api_key":    group.AgentAPIKey,
-						"api_key":          apiKey,
-						"auth_key":         authKey,
-						"username":         username,
-						"auth_pwd":         agentPassword,
-						"group_id":         group.ID,
-						"plan_id":          planID,
-						"admin_password":   adminPassword,
-						"engine_version":   engineVersion,
-						"routers":          routers,
-						"config_servers":   configServers,
-						"replicas":         replicas,
-						"shards":           shards,
-						"backup_enabled":   backupEnabled,
-						"require_ssl":      requireSSL,
-						"ssl_ca_cert":      caCert,
-						"ssl_pem":          sslPem,
-						"bosh_dns_disable": boshDNSDisable,
+						"id":             id,
+						"url":            url,
+						"agent_api_key":  group.AgentAPIKey,
+						"api_key":        apiKey,
+						"auth_key":       authKey,
+						"username":       username,
+						"auth_pwd":       agentPassword,
+						"group_id":       group.ID,
+						"plan_id":        planID,
+						"admin_password": adminPassword,
+						"engine_version": engineVersion,
+						"routers":        routers,
+						"config_servers": configServers,
+						"replicas":       replicas,
+						"shards":         shards,
+						"backup_enabled": backupEnabled,
+						"require_ssl":    requireSSL,
+						"ssl_ca_cert":    caCert,
+						"ssl_pem":        sslPem,
 					},
 				},
 			},
@@ -362,8 +358,11 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 
 func getLatestVersion(oc opsmanager.Client, groupID string) (string, error) {
 	cfg, err := oc.GetAutomationConfig(groupID)
-	if err != nil || len(cfg.MongoDBVersions) == 0 {
-		return "", fmt.Errorf("unable to find the latest MongoDB version from the MongoDB Ops Manager API. Please contact your system administrator to ensure versions are available in the Version Manager for group '%q' in MongoDB Ops Manager. If your MongoDB Ops Manager is running in Local Mode, then after validating versions are available, please indicate a specific MongoDB version using 'version’ paramater when calling 'create-service'", groupID)
+	if err != nil {
+		return "", errors.Wrapf(err, "cannot get automation config for group %q", groupID)
+	}
+	if len(cfg.MongoDBVersions) == 0 {
+		return "", errors.Errorf("no MongoDB versions for group %q", groupID)
 	}
 
 	versions := make([]string, len(cfg.MongoDBVersions))
@@ -394,7 +393,7 @@ func gatherJobs(releases serviceadapter.ServiceReleases, requiredJobs []string) 
 	for _, requiredJob := range requiredJobs {
 		release, err := findReleaseForJob(releases, requiredJob)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrapf(err, "cannot find release for job %q", requiredJob)
 		}
 
 		job := bosh.Job{
@@ -416,7 +415,10 @@ func mongoPlanProperties(manifest bosh.BoshManifest) map[interface{}]interface{}
 
 func passwordForMongoServer(previousManifestProperties map[interface{}]interface{}) string {
 	if previousManifestProperties != nil {
-		return previousManifestProperties["admin_password"].(string)
+		pass, ok := previousManifestProperties["admin_password"].(string)
+		if ok {
+			return pass
+		}
 	}
 
 	return GenerateString(20, true)
@@ -424,7 +426,10 @@ func passwordForMongoServer(previousManifestProperties map[interface{}]interface
 
 func idForMongoServer(previousManifestProperties map[interface{}]interface{}) string {
 	if previousManifestProperties != nil {
-		return previousManifestProperties["id"].(string)
+		id, ok := previousManifestProperties["id"].(string)
+		if ok {
+			return id
+		}
 	}
 
 	return GenerateString(8, true)
@@ -432,7 +437,10 @@ func idForMongoServer(previousManifestProperties map[interface{}]interface{}) st
 
 func authKeyForMongoServer(previousManifestProperties map[interface{}]interface{}) string {
 	if previousManifestProperties != nil {
-		return previousManifestProperties["auth_key"].(string)
+		key, ok := previousManifestProperties["auth_key"].(string)
+		if ok {
+			return key
+		}
 	}
 
 	return GenerateString(8, false)
@@ -448,11 +456,11 @@ func groupForMongoServer(
 	name := ""
 	orgID := ""
 	if p, found := arbitraryParams["projectName"]; found {
-		name = p.(string)
+		name, _ = p.(string)
 	}
 
 	if p, found := arbitraryParams["orgId"]; found {
-		orgID = p.(string)
+		orgID, _ = p.(string)
 	}
 
 	// TODO: investigate the use of tags
@@ -465,11 +473,20 @@ func groupForMongoServer(
 	// }
 
 	if previousMongoProperties != nil {
-		group, err := oc.GetProjectByID(previousMongoProperties["group_id"].(string))
+		previousID, ok := previousMongoProperties["group_id"].(string)
+		if !ok {
+			return opsmanager.ProjectResponse{},
+				errors.Errorf(
+					"previous group_id is not a string: %q (%T)",
+					previousMongoProperties["group_id"],
+					previousMongoProperties["group_id"],
+				)
+		}
 
+		group, err := oc.GetProjectByID(previousID)
 		// AgentAPIKey is empty for PATCH and GET requests in OM 3.6, taking the value from previous manifest instead
 		group.AgentAPIKey = previousMongoProperties["agent_api_key"].(string)
-		return group, err
+		return group, errors.Wrapf(err, "cannot get project %q", previousID)
 	}
 
 	// CreateGroup(mongoID, req)
@@ -482,7 +499,7 @@ func groupForMongoServer(
 	group, err := oc404.GetProjectByName(name)
 	if err != nil {
 		log.Printf("CreateGroup GetGroupByName with name: %q, error: %v", name, err)
-		return group, err
+		return group, errors.Wrapf(err, "cannot get project by name %q", name)
 	}
 
 	if group.Name == name {
@@ -490,7 +507,7 @@ func groupForMongoServer(
 		apiKey, err := oc.CreateAgentAPIKEY(group.ID, "MongoDB On-Demand broker generated Agent API Key")
 		if err != nil {
 			log.Printf("CreateGroup CreateGroupAPIKey group.ID: %s, error: %v", group.ID, err)
-			return group, err
+			return group, errors.Wrapf(err, "cannot create agent API key for group %q", name)
 		}
 		group.AgentAPIKey = apiKey.Key
 		return group, nil
@@ -499,7 +516,7 @@ func groupForMongoServer(
 	resp, err := oc.CreateOneProject(name, orgID)
 	if err != nil {
 		log.Printf("CreateGroup CreateOneProject: name %q, orgID %q error: %v", name, orgID, err)
-		return group, err
+		return group, errors.Wrapf(err, "cannot create project %q in org %q", name, orgID)
 	}
 
 	return resp, nil
@@ -517,7 +534,7 @@ func findReleaseForJob(releases serviceadapter.ServiceReleases, requiredJob stri
 	}
 
 	if len(releasesThatProvideRequiredJob) == 0 {
-		return serviceadapter.ServiceRelease{}, fmt.Errorf("no release provided for job '%s'", requiredJob)
+		return serviceadapter.ServiceRelease{}, errors.Errorf("no release provided for job %q", requiredJob)
 	}
 
 	if len(releasesThatProvideRequiredJob) > 1 {
@@ -526,7 +543,7 @@ func findReleaseForJob(releases serviceadapter.ServiceReleases, requiredJob stri
 			releaseNames = append(releaseNames, release.Name)
 		}
 
-		return serviceadapter.ServiceRelease{}, fmt.Errorf("job '%s' defined in multiple releases: %s", requiredJob, strings.Join(releaseNames, ", "))
+		return serviceadapter.ServiceRelease{}, errors.Errorf("job %q defined in multiple releases: %s", requiredJob, strings.Join(releaseNames, ", "))
 	}
 
 	return releasesThatProvideRequiredJob[0], nil

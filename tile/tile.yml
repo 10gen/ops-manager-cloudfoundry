@@ -83,15 +83,6 @@ forms:
         options:
           - name: public_ip
             label: Allow outbound internet access from service instances (IaaS-dependent)
-      - name: bosh_dns_disable
-        type: boolean
-        configurable: true
-        default: false
-        label: Disable BOSH DNS
-        description:
-          Enabling the BOSH DNS plugin is recommended. However, if you experience
-          issues with BOSH DNS, you can disable the plugin and rollback to the configuration
-          with plain IP addresses.
   - name: plan_standalone
     label: Standalone Service Plan
     description: Standalone service plan configuration
@@ -505,7 +496,6 @@ packages:
                 username: (( ..cf.uaa.admin_credentials.identity ))
                 password: (( ..cf.uaa.admin_credentials.password ))
           mongo_ops:
-            bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
             ssl_ca_cert: (( .properties.ca_cert.value || "" ))
             ssl_pem: (( .properties.rsa_certificate.cert_and_private_key_pems || "" ))
             ssl_key: (( .properties.rsa_certificate.private_key_pem || "" ))
@@ -597,7 +587,6 @@ packages:
                     ssl_pem:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
-                    bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -644,7 +633,6 @@ packages:
                     ssl_pem:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
-                    bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -691,7 +679,6 @@ packages:
                     ssl_pem:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
-                    bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -738,7 +725,6 @@ packages:
                     ssl_pem:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
-                    bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -785,7 +771,6 @@ packages:
                     ssl_pem:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
-                    bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -832,7 +817,6 @@ packages:
                     ssl_pem:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
-                    bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -879,7 +863,6 @@ packages:
                     ssl_pem:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
-                    bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -926,7 +909,6 @@ packages:
                     ssl_pem:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
-                    bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -973,7 +955,6 @@ packages:
                     ssl_pem:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
-                    bosh_dns_disable: (( .properties.bosh_dns_disable.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))

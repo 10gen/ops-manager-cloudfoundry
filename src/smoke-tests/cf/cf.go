@@ -22,6 +22,11 @@ type CF struct {
 	RetryBackoff retry.Backoff
 }
 
+//TestContext - cloud foundry context
+type TestContext struct {
+	Org, Space string
+}
+
 func (cf *CF) API(endpoint string, skipSSLValidation bool) func() {
 	apiCmd := []string{"api", endpoint}
 

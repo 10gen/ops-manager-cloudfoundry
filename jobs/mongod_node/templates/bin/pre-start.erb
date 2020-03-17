@@ -65,11 +65,7 @@ chmod -R 777 /var/vcap/packages/mongod-node/bin
   hosts = link('mongod_node').instances.collect{ |x| "#{x.address} #{x.name.gsub('_', '-')}-#{x.index}" }.join("\\n")
 %>
 
-<% if conn.p('mongo_ops.bosh_dns_disable') %>
-hostnamectl set-hostname <%= spec.address %>
-<% else %>
 hostnamectl set-hostname '<%= spec.id %>.mongodb.internal'
-<% end %>
 
 # Install libsnmp30
 
