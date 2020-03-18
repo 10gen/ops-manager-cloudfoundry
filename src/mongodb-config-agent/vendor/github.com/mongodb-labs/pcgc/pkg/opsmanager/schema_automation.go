@@ -34,7 +34,7 @@ type AutomationConfig struct {
 	MongoTs            []map[string]interface{} `json:"mongots,omitempty"`
 	Options            *Options                 `json:"options"`
 	SSL                *SSL                     `json:"ssl,omitempty"`
-	Version            int                      `json:"version,omitempty"`
+	Version            *int                     `json:"version,omitempty"`
 	Sharding           []Sharding               `json:"sharding,omitempty"`
 	UIBaseURL          string                   `json:"uiBaseUrl,omitempty"`
 }

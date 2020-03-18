@@ -24,7 +24,6 @@ provides:
   - mongo_ops.api_key
   - mongo_ops.auth_key
   - mongo_ops.backup_enabled
-  - mongo_ops.bosh_dns_disable
   - mongo_ops.group_id
   - mongo_ops.id
   - mongo_ops.plan_id
@@ -79,8 +78,6 @@ properties:
     description: "Replicas number for each shard"
   mongo_ops.backup_enabled:
     description: "Enables backup for all clusters in a deployment."
-  mongo_ops.bosh_dns_disable:
-    description: "Disables BOSH DNS for all clusters in a deployment."
   mongo_ops.require_ssl:
     description: "Enables SSL for deployment communication"
   mongo_ops.ssl_ca_cert:

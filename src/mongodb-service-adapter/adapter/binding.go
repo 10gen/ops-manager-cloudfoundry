@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"net/url"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -75,16 +76,6 @@ func (b Binder) CreateBinding(params serviceadapter.CreateBindingParams) (servic
 		servers = ToEndpointList(hosts)
 	}
 
-	sslOption := ""
-	if ssl {
-		sslOption = "&ssl=true"
-	}
-	replicaSetName := ""
-	if plan == PlanReplicaSet {
-		replicaSetName = "&replicaSet=pcf_repl"
-	}
-	connectionOptions := []string{sslOption, replicaSetName}
-
 	session, err := GetWithCredentials(servers, adminPassword, ssl)
 	if err != nil {
 		return serviceadapter.Binding{}, errors.Wrap(err, "cannot get session")
@@ -113,13 +104,22 @@ func (b Binder) CreateBinding(params serviceadapter.CreateBindingParams) (servic
 		return serviceadapter.Binding{}, errors.Wrap(err, "cannot upsert user")
 	}
 
-	url := fmt.Sprintf("mongodb://%s:%s@%s/%s?authSource=admin%s",
-		username,
-		password,
-		strings.Join(servers, ","),
-		defaultDB,
-		strings.Join(connectionOptions, ""),
-	)
+	connectionOpts := url.Values{}
+	connectionOpts.Add("authSource", adminDB)
+	if ssl {
+		connectionOpts.Add("ssl", "true")
+	}
+	if plan == PlanReplicaSet {
+		connectionOpts.Add("replicaSet", "pcf_repl")
+	}
+
+	url := url.URL{
+		Scheme:   "mongodb",
+		Host:     strings.Join(servers, ","),
+		User:     url.UserPassword(username, password),
+		Path:     defaultDB,
+		RawQuery: connectionOpts.Encode(),
+	}
 
 	return serviceadapter.Binding{
 		Credentials: map[string]interface{}{
@@ -128,7 +128,7 @@ func (b Binder) CreateBinding(params serviceadapter.CreateBindingParams) (servic
 			"database": defaultDB,
 			"servers":  servers,
 			"ssl":      ssl,
-			"uri":      url,
+			"uri":      url.String(),
 		},
 	}, nil
 }
