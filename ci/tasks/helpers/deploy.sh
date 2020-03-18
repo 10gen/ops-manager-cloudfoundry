@@ -13,10 +13,10 @@ install_product() {
 
 	STEMCELL_FILE=$(
 		cd stemcell
-		ls -- bosh-stemcell-*.tgz
+		ls -- light-bosh-stemcell-*.tgz
 	)
 	if [ -z "${STEMCELL_FILE}" ]; then
-		echo "No files matching stemcell/*bosh-stemcell-*.tgz"
+		echo "No files matching stemcell/light-bosh-stemcell-*.tgz"
 		ls -lR stemcell
 		exit 1
 	fi
