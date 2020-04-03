@@ -64,6 +64,7 @@ github.com/pivotal-cf/on-demand-services-sdk v0.35.0 h1:xmyOFy92iKcO445XC3Mq9j//
 github.com/pivotal-cf/on-demand-services-sdk v0.35.0/go.mod h1:k0+f7kRxEPcg8qSS/s6IXOGRg9x8b5ER8HUtpN6V7/8=
 github.com/pivotal-cf/on-demand-services-sdk v0.37.0 h1:Cf29dNGbL/+Gzpfyb4HU/42Og8/vzh2FUjzm/UfpkuY=
 github.com/pivotal-cf/on-demand-services-sdk v0.38.0 h1:dDtM2d0mQP51hQ7S6toCeTuSWEm19K9t8STWurMhIfc=
+github.com/pivotal-cf/on-demand-services-sdk v0.39.0 h1:ct1UH5/7hPWpp7kPOvNBtTSGpCBIX7eKmdrG0PjowCU=
 github.com/pkg/errors v0.8.1 h1:iURUrRGxPUNPdy5/HRSm+Yj6okJ6UtLINN0Q9M4+h3I=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=

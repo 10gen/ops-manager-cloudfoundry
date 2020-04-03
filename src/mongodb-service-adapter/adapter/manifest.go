@@ -238,14 +238,15 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 	}
 
 	maxInFlight := getArbitraryParam("max_in_flight", "max_in_flight", arbitraryParams, previousMongoProperties)
-	// fallback to 1 if wrong type
-	if err := bosh.ValidateMaxInFlight(maxInFlight); err != nil {
+	// fallback to 1 if wrong type or value
+	if v, ok := maxInFlight.(int); !ok || v <= 0 {
 		maxInFlight = 1
 	}
 
-	// fallback to 1 if wrong value
-	if v, ok := maxInFlight.(int); ok && v <= 0 {
-		maxInFlight = 1
+	canaries := getArbitraryParam("canaries", "canaries", arbitraryParams, previousMongoProperties)
+	// fallback to 1 if wrong type or value
+	if v, ok := canaries.(int); !ok || v <= 0 {
+		canaries = 1
 	}
 
 	manifest := bosh.BoshManifest{
@@ -324,7 +325,7 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 			},
 		},
 		Update: &bosh.Update{
-			Canaries:        1,
+			Canaries:        canaries.(int),
 			CanaryWatchTime: "3000-180000",
 			UpdateWatchTime: "3000-180000",
 			MaxInFlight:     maxInFlight,
