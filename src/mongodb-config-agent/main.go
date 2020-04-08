@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"golang.org/x/mod/semver"
+
 	"mongodb-service-adapter/adapter"
 	"mongodb-service-adapter/adapter/config"
 )
@@ -52,9 +54,8 @@ func main() {
 		ctx.Password = adapter.GenerateString(32, true)
 	}
 
-	switch c := ctx.Version[:3]; c {
-	case "3.4", "3.6", "4.0":
-		ctx.CompatibilityVersion = c
+	if semver.Compare("v"+ctx.Version, "v3.4.0-ent") >= 0 { // if ctx.Version >= 3.4.0-ent
+		ctx.CompatibilityVersion = semver.MajorMinor("v" + ctx.Version)[1:]
 	}
 
 	ac, err := omClient.GetAutomationConfig(cfg.GroupID)
