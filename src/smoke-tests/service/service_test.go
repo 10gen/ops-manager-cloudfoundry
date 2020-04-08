@@ -197,6 +197,10 @@ var _ = Describe("MongoDB Service", func() {
 			app := mongodb.NewApp(uri, testCF.ShortTimeout, retryInterval)
 			testValue := uuid.NewRandom().String()
 			serviceConfig := fmt.Sprintf(`{"enable_backup":"%s", "version":"%s"}`, sp.BackupEnable, sp.MongoDBVersion)
+			if sp.MongoDBVersion == "" {
+				serviceConfig = fmt.Sprintf(`{"enable_backup":"%s"}`, sp.BackupEnable)
+			}
+			
 			fmt.Println("serviceName : ", sp.MarketPlaceServiceName, " planName: ", sp.PlanName, " serviceInstanceName: ", caseInstance.ServiceTestName,
 				"configuration : -c ", serviceConfig)
 

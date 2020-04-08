@@ -8,12 +8,12 @@ import (
 
 //TestMatrix matrix for generation test-cases environments for service suite
 type TestMatrix struct {
-	ServiceName    string         `json:"service_name"`
-	PlanNames      []string       `json:"plan_names"`
+	ServiceName    string         `json:"service_name,omitempty"`
+	PlanNames      []string       `json:"plan_names,omitempty"`
 	Retry          retryConfig    `json:"retry"`
-	Backup         []string       `json:"backup_enabled"`
-	SSL            []string       `json:"ssl_enabled"`
-	MongoDBVersion []string       `json:"mongodb_version"`
+	Backup         []string       `json:"backup_enabled,omitempty"`
+	SSL            []string       `json:"ssl_enabled,omitempty"`
+	MongoDBVersion []string       `json:"mongodb_version,omitempty"`
 	OpsMan         OpsManagerCred `json:"mongo_ops"`
 }
 
@@ -31,9 +31,6 @@ func (testConfig *TestMatrix) SetDefaultForNonDefinedParameters() { //TODO reche
 	if testConfig.SSL == nil || len(testConfig.SSL) == 0 {
 		testConfig.SSL = []string{"false"}
 	}
-	if testConfig.MongoDBVersion == nil || len(testConfig.MongoDBVersion) == 0 {
-		testConfig.MongoDBVersion = []string{"4.0.9-ent"}
-	}
 }
 
 //GenerateTestServiceParameters generate cases of service parameters from testMatrix
@@ -46,9 +43,14 @@ func GenerateTestServiceParameters(testConfig TestMatrix) []ServiceParameters {
 	for _, planName := range testConfig.PlanNames {
 		for _, backup := range testConfig.Backup {
 			for _, ssl := range testConfig.SSL {
-				for _, version := range testConfig.MongoDBVersion {
+				if testConfig.MongoDBVersion == nil || len(testConfig.MongoDBVersion) == 0 {
 					testServiceParameters = append(testServiceParameters,
-						ServiceParameters{names, testConfig.ServiceName, planName, "", backup, ssl, version, "", "", "", "", ""})
+						ServiceParameters{names, testConfig.ServiceName, planName, "", backup, ssl, "", "", "", "", "", ""})
+				} else {
+					for _, version := range testConfig.MongoDBVersion {
+						testServiceParameters = append(testServiceParameters,
+							ServiceParameters{names, testConfig.ServiceName, planName, "", backup, ssl, version, "", "", "", "", ""})
+					}
 				}
 			}
 		}
