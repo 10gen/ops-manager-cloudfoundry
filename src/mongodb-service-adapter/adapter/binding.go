@@ -133,7 +133,7 @@ func (b Binder) CreateBinding(params serviceadapter.CreateBindingParams) (servic
 	}, nil
 }
 
-func (Binder) DeleteBinding(params serviceadapter.DeleteBindingParams) error {
+func (b Binder) DeleteBinding(params serviceadapter.DeleteBindingParams) error {
 	// create an admin level user
 	username := mkUsername(params.BindingID)
 	properties := params.Manifest.Properties["mongo_ops"].(map[interface{}]interface{})
@@ -167,6 +167,11 @@ func (Binder) DeleteBinding(params serviceadapter.DeleteBindingParams) error {
 	defer session.Close()
 
 	err = session.DB(adminDB).RemoveUser(username)
+	if err == mgo.ErrNotFound {
+		b.logf("ERROR: could not find user %q in DB %q for removal! It could be that something or someone has already removed it. Deleting the binding anyway...", username, adminDB)
+		return nil
+	}
+
 	return errors.Wrapf(err, "cannot remove user %q from DB %q", username, adminDB)
 }
 
