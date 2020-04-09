@@ -2,4 +2,4 @@
 name: versions
 
 files:
-  - mongodb_versions/*
+  - mongodb_versions/versions.json

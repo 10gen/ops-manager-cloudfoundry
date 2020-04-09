@@ -16,6 +16,7 @@ rm -r -f "ops-manager-cloudfoundry/tile/releases/*"
 rm -r -f "ops-manager-cloudfoundry/tile/resources/mongodb-*"
 rm -r -f "artifacts/mongodb-on-demand-${VERSION}.pivotal"
 mkdir -p ops-manager-cloudfoundry/src/mongodb
+mkdir -p ops-manager-cloudfoundry/src/mongodb_versions
 
 cp on-demand-service-broker-release/on-demand-service-broker-*.tgz ops-manager-cloudfoundry/tile/resources
 cp syslog-migration-release/syslog-migration-*.tgz ops-manager-cloudfoundry/tile/resources
@@ -35,6 +36,9 @@ EOF
   rm -r -f dev_releases
   rm -r -f tile/product/*
   rm -r -f tile/resources/mongodb-*
+
+  wget https://opsmanager.mongodb.com/static/version_manifest/4.4.json
+  mv 4.4.json src/mongodb_versions/versions.json
 
   tarball_path="tile/resources/mongodb-${VERSION}.tgz"
   mkdir -p "$(dirname "$tarball_path")"
