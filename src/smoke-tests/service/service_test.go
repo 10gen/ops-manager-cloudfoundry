@@ -200,7 +200,7 @@ var _ = Describe("MongoDB Service", func() {
 			if sp.MongoDBVersion == "" {
 				serviceConfig = fmt.Sprintf(`{"enable_backup":"%s"}`, sp.BackupEnable)
 			}
-			
+
 			fmt.Println("serviceName : ", sp.MarketPlaceServiceName, " planName: ", sp.PlanName, " serviceInstanceName: ", caseInstance.ServiceTestName,
 				"configuration : -c ", serviceConfig)
 
