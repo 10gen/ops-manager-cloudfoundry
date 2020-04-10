@@ -222,7 +222,7 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 	if agentPassword == "" && params.PreviousManifest != nil {
 		cfg, err := oc.GetAutomationConfig(group.ID)
 		if err != nil {
-			return serviceadapter.GenerateManifestOutput{}, errors.Wrapf(err, "cannote get automation config for group %q", group.ID)
+			return serviceadapter.GenerateManifestOutput{}, errors.Wrapf(err, "cannot get automation config for group %q", group.ID)
 		}
 
 		agentPassword = cfg.Auth.AutoPwd
@@ -237,11 +237,16 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 		sslPem = mongoOps["ssl_pem"].(string)
 	}
 
-	updateBlock := &bosh.Update{
-		Canaries:        1,
-		CanaryWatchTime: "3000-180000",
-		UpdateWatchTime: "3000-180000",
-		MaxInFlight:     1,
+	maxInFlight := getArbitraryParam("max_in_flight", "max_in_flight", arbitraryParams, previousMongoProperties)
+	// fallback to 1 if wrong type or value
+	if v, ok := maxInFlight.(int); !ok || v <= 0 {
+		maxInFlight = 1
+	}
+
+	canaries := getArbitraryParam("canaries", "canaries", arbitraryParams, previousMongoProperties)
+	// fallback to 1 if wrong type or value
+	if v, ok := canaries.(int); !ok || v <= 0 {
+		canaries = 1
 	}
 
 	manifest := bosh.BoshManifest{
@@ -319,7 +324,12 @@ func (m ManifestGenerator) GenerateManifest(params serviceadapter.GenerateManife
 				},
 			},
 		},
-		Update: updateBlock,
+		Update: &bosh.Update{
+			Canaries:        canaries.(int),
+			CanaryWatchTime: "3000-180000",
+			UpdateWatchTime: "3000-180000",
+			MaxInFlight:     maxInFlight,
+		},
 		Features: bosh.BoshFeatures{
 			UseDNSAddresses: boolPointer(true),
 		},
