@@ -74,6 +74,20 @@ forms:
         configurable: true
         label: MongoDB availability zone(s)
         description: Select one or more availability zones
+      - name: max_in_flight
+        type: integer
+        default: 1
+        optional: false
+        configurable: true
+        label: Upgrade max-in-flight
+        description: Maximum number of instances to upgrade in parallel
+      - name: canaries
+        type: integer
+        default: 1
+        optional: false
+        configurable: true
+        label: Upgrade canaries
+        description: Maximum number of canary instances for upgrade errand
       - name: vm_extensions
         type: multi_select_options
         optional: true
@@ -587,6 +601,8 @@ packages:
                     ssl_pem:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
+                    max_in_flight: (( .properties.max_in_flight.value ))
+                    canaries: (( .properties.canaries.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -633,6 +649,8 @@ packages:
                     ssl_pem:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
+                    max_in_flight: (( .properties.max_in_flight.value ))
+                    canaries: (( .properties.canaries.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -679,6 +697,8 @@ packages:
                     ssl_pem:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
+                    max_in_flight: (( .properties.max_in_flight.value ))
+                    canaries: (( .properties.canaries.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -725,6 +745,8 @@ packages:
                     ssl_pem:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
+                    max_in_flight: (( .properties.max_in_flight.value ))
+                    canaries: (( .properties.canaries.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -771,6 +793,8 @@ packages:
                     ssl_pem:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
+                    max_in_flight: (( .properties.max_in_flight.value ))
+                    canaries: (( .properties.canaries.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -817,6 +841,8 @@ packages:
                     ssl_pem:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
+                    max_in_flight: (( .properties.max_in_flight.value ))
+                    canaries: (( .properties.canaries.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -863,6 +889,8 @@ packages:
                     ssl_pem:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
+                    max_in_flight: (( .properties.max_in_flight.value ))
+                    canaries: (( .properties.canaries.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -909,6 +937,8 @@ packages:
                     ssl_pem:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
+                    max_in_flight: (( .properties.max_in_flight.value ))
+                    canaries: (( .properties.canaries.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
@@ -955,6 +985,8 @@ packages:
                     ssl_pem:
                       (( .properties.rsa_certificate.cert_and_private_key_pems ||
                       "" ))
+                    max_in_flight: (( .properties.max_in_flight.value ))
+                    canaries: (( .properties.canaries.value ))
                   syslog:
                     address: (( .properties.syslog_address.value || "" ))
                     port: (( .properties.syslog_port.value ))
