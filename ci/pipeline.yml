@@ -374,6 +374,17 @@ jobs:
           PCF_USERNAME: ((pcf-username))
           PCF_PASSWORD: ((pcf-password))
 
+  - name: major
+    plan:
+      - do:
+          - get: version
+            trigger: false
+            params:
+              bump: major
+          - put: version
+            params:
+              file: version/number
+
   - name: minor
     plan:
       - do:
@@ -392,17 +403,6 @@ jobs:
             trigger: false
             params:
               bump: patch
-          - put: version
-            params:
-              file: version/number
-
-  - name: major
-    plan:
-      - do:
-          - get: version
-            trigger: false
-            params:
-              bump: major
           - put: version
             params:
               file: version/number
