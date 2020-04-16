@@ -361,6 +361,12 @@ jobs:
         params:
           file: release/mongodb-on-demand-*.pivotal
           acl: public-read
+      - put: ops-manager-cloudfoundry
+        params:
+          tag: version/number
+          only_tag: true
+          annotate: version/number
+          repository: ops-manager-cloudfoundry
 
   - name: delete-tile
     serial: true
