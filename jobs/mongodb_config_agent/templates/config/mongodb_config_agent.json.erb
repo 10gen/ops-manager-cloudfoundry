@@ -10,21 +10,21 @@
   end
 
   config = {
-    "id" => p("mongo_ops.id"),
-    "url" => p("mongo_ops.url"),
-    "username" => p("mongo_ops.username"),
-    "api_key" => p("mongo_ops.api_key"),
-    "auth_key" => p("mongo_ops.auth_key"),
-    "group" => p("mongo_ops.group_id"),
-    "plan" => p("mongo_ops.plan_id"),
+    "id" => p("mongo_ops.id").to_s,
+    "url" => p("mongo_ops.url").to_s,
+    "username" => p("mongo_ops.username").to_s,
+    "api_key" => p("mongo_ops.api_key").to_s,
+    "auth_key" => p("mongo_ops.auth_key").to_s,
+    "group" => p("mongo_ops.group_id").to_s,
+    "plan" => p("mongo_ops.plan_id").to_s,
     "nodes" => nodes,
-    "admin_password" => p("mongo_ops.admin_password"),
-    "engine_version" => p("mongo_ops.engine_version"),
+    "admin_password" => p("mongo_ops.admin_password").to_s,
+    "engine_version" => p("mongo_ops.engine_version").to_s,
     "routers" => p("mongo_ops.routers"),
     "config_servers" => p("mongo_ops.config_servers"),
     "replicas" => p("mongo_ops.replicas"),
     "require_ssl" => p("mongo_ops.require_ssl"),
-    "auth_pwd" => p("mongo_ops.auth_pwd"),
+    "auth_pwd" => p("mongo_ops.auth_pwd").to_s,
   }
   JSON.pretty_generate(config)
 %>
