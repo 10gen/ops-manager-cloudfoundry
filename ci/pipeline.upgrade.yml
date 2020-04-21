@@ -5,11 +5,18 @@ groups:
       - delete-tile
       - deploy-tile-old
       - deploy-mongodb-service
+      - build-tile
       - use-application
       - update-tile-version
       - check-application
       - cleanup
       - smoke-tests
+      - shipit
+  - name: versioning
+    jobs:
+      - patch
+      - major
+      - minor
 
 constant: &tile-version "1.1.3"
 
@@ -55,12 +62,74 @@ resources:
       access_key_id: ((aws-access-key))
       secret_access_key: ((aws-secret-access-key))
 
+  - name: release
+    type: s3
+    source:
+      bucket: ((release-bucket))
+      regexp: mongodb-on-demand-(1.*).pivotal
+      region_name: eu-west-1
+      access_key_id: ((aws-access-key))
+      secret_access_key: ((aws-secret-access-key))
+
+  - name: on-demand-service-broker-release
+    type: s3
+    source:
+      bucket: ((aws-bucket))
+      region_name: eu-west-1
+      regexp: on-demand-service-broker-(.*).tgz
+      access_key_id: ((aws-access-key))
+      secret_access_key: ((aws-secret-access-key))
+
+  - name: mongodb
+    type: s3
+    source:
+      bucket: ((aws-bucket))
+      region_name: eu-west-1
+      regexp: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
+
+      access_key_id: ((aws-access-key))
+      secret_access_key: ((aws-secret-access-key))
+
+  - name: pcf-mongodb-helpers
+    type: s3
+    source:
+      bucket: ((aws-bucket))
+      region_name: eu-west-1
+      regexp: pcf-mongodb-helpers-(.*).tgz
+      access_key_id: ((aws-access-key))
+      secret_access_key: ((aws-secret-access-key))
+
+  - name: syslog-migration-release
+    type: s3
+    source:
+      bucket: ((aws-bucket))
+      region_name: eu-west-1
+      regexp: syslog-migration-(.*).tgz
+      access_key_id: ((aws-access-key))
+      secret_access_key: ((aws-secret-access-key))
+
+  - name: bpm-release
+    type: s3
+    source:
+      bucket: ((aws-bucket))
+      region_name: eu-west-1
+      regexp: bpm-release-(.*).tgz
+      access_key_id: ((aws-access-key))
+      secret_access_key: ((aws-secret-access-key))
+
+  - name: "build-status"
+    type: "github-status"
+    source:
+      repository: 10gen/ops-manager-cloudfoundry
+      access_token: ((repo-github-token))
+      context: build-tile
+
   - name: "check-service-status"
     type: "github-status"
     source:
       repository: 10gen/ops-manager-cloudfoundry
       access_token: ((repo-github-token))
-      context: check-application-
+      context: check-application
 
   - name: "update-tile-status"
     type: "github-status"
@@ -127,8 +196,109 @@ resource_types:
       tag: "master"
 
 jobs:
+  - name: delete-tile
+    serial: true
+    serial_groups: [same-deployment]
+    build_logs_to_retain: 50
+    plan:
+      - get: version
+      - get: ops-manager-cloudfoundry
+        trigger: true
+      - task: delete-tile
+        file: ops-manager-cloudfoundry/ci/tasks/delete-tile/task.yml
+        params:
+          PCF_URL: ((pcf-url))
+          PCF_USERNAME: ((pcf-username))
+          PCF_PASSWORD: ((pcf-password))
+        on_failure:
+          put: "delete-tile-status"
+          params:
+            state: "failure"
+            commit: "ops-manager-cloudfoundry"
+        on_error:
+          put: "delete-tile-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+        on_abort:
+          put: "delete-tile-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+            description: aborted
+      - put: "delete-tile-status"
+        params:
+          state: "success"
+          commit: "ops-manager-cloudfoundry"
+
+  - name: build-tile
+    serial: true
+    build_logs_to_retain: 5
+    plan:
+      - get: ops-manager-cloudfoundry
+        trigger: true
+      - in_parallel:
+          - get: on-demand-service-broker-release
+            params:
+              filename: on-demand-service-broker-(.*).tgz
+          - get: syslog-migration-release
+            params:
+              filename: syslog-migration-(.*).tgz
+          - get: pcf-mongodb-helpers
+            params:
+              filename: pcf-mongodb-helpers-(.*).tgz
+          - get: bpm-release
+            params:
+              filename: bpm-release-(.*).tgz
+          - get: mongodb
+            params:
+              filename: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
+          - get: version
+            params:
+              pre: rc
+          - put: "build-status"
+            params:
+              state: "pending"
+              commit: "ops-manager-cloudfoundry"
+      - in_parallel:
+          - task: lint
+            file: ops-manager-cloudfoundry/ci/tasks/lint/task.yml
+          - task: build-tile
+            file: ops-manager-cloudfoundry/ci/tasks/build-tile/task.yml
+            params:
+              AWS_KEY: ((aws-access-key))
+              AWS_SECRET_KEY: ((aws-secret-access-key))
+        on_failure:
+          put: "build-status"
+          params:
+            state: "failure"
+            commit: "ops-manager-cloudfoundry"
+        on_error:
+          put: "build-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+        on_abort:
+          put: "build-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+            description: aborted
+      - in_parallel:
+          - put: artifacts
+            params:
+              file: artifacts/mongodb-on-demand-*.pivotal
+          - put: version
+            params:
+              pre: rc
+          - put: "build-status"
+            params:
+              state: "success"
+              commit: "ops-manager-cloudfoundry"
+
   - name: deploy-tile-old
     serial: true
+    serial_groups: [same-deployment]
     build_logs_to_retain: 50
     plan:
       - get: ops-manager-cloudfoundry
@@ -164,6 +334,45 @@ jobs:
             commit: "ops-manager-cloudfoundry"
             description: aborted
       - put: "deploy-status"
+        params:
+          state: "success"
+          commit: "ops-manager-cloudfoundry"
+
+  - name: deploy-mongodb-service
+    serial: true
+    serial_groups: [same-deployment]
+    build_logs_to_retain: 50
+    plan:
+      - get: ops-manager-cloudfoundry
+        trigger: true
+        passed: [deploy-tile-old]
+      - task: deploy-mongodb-service
+        file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task-create-service.yml
+        params:
+          PCF_URL: ((pcf-url))
+          PCF_USERNAME: ((pcf-username))
+          PCF_PASSWORD: ((pcf-password))
+          INSTALL_TIMEOUT: 120
+          SET_PLAN: replica_set_small
+          BACKUP_ENABLED: true
+          MONGO_VERSION: 4.0.9-ent
+        on_failure:
+          put: "deploy-service-status"
+          params:
+            state: "failure"
+            commit: "ops-manager-cloudfoundry"
+        on_error:
+          put: "deploy-service-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+        on_abort:
+          put: "deploy-service-status"
+          params:
+            state: "error"
+            commit: "ops-manager-cloudfoundry"
+            description: aborted
+      - put: "deploy-service-status"
         params:
           state: "success"
           commit: "ops-manager-cloudfoundry"
@@ -204,11 +413,12 @@ jobs:
 
   - name: update-tile-version
     serial: true
+    serial_groups: [same-deployment]
     build_logs_to_retain: 50
     plan:
       - get: ops-manager-cloudfoundry
         trigger: true
-        passed: [deploy-mongodb-service]
+        passed: [deploy-mongodb-service, build-tile]
       - get: deploy-service-status
       - get: artifacts
         params:
@@ -248,6 +458,7 @@ jobs:
 
   - name: check-application
     serial: true
+    serial_groups: [same-deployment]
     build_logs_to_retain: 50
     plan:
       - get: ops-manager-cloudfoundry
@@ -314,46 +525,9 @@ jobs:
           state: "success"
           commit: "ops-manager-cloudfoundry"
 
-  - name: deploy-mongodb-service
-    serial: true
-    build_logs_to_retain: 50
-    plan:
-      - get: ops-manager-cloudfoundry
-        trigger: true
-        passed: [deploy-tile-old]
-      - task: deploy-mongodb-service
-        file: ops-manager-cloudfoundry/ci/tasks/deploy-mongodb-service/task-create-service.yml
-        params:
-          PCF_URL: ((pcf-url))
-          PCF_USERNAME: ((pcf-username))
-          PCF_PASSWORD: ((pcf-password))
-          INSTALL_TIMEOUT: 120
-          SET_PLAN: replica_set_small
-          BACKUP_ENABLED: true
-          MONGO_VERSION: 4.0.9-ent
-        on_failure:
-          put: "deploy-service-status"
-          params:
-            state: "failure"
-            commit: "ops-manager-cloudfoundry"
-        on_error:
-          put: "deploy-service-status"
-          params:
-            state: "error"
-            commit: "ops-manager-cloudfoundry"
-        on_abort:
-          put: "deploy-service-status"
-          params:
-            state: "error"
-            commit: "ops-manager-cloudfoundry"
-            description: aborted
-      - put: "deploy-service-status"
-        params:
-          state: "success"
-          commit: "ops-manager-cloudfoundry"
-
   - name: smoke-tests
     serial: true
+    serial_groups: [same-deployment]
     build_logs_to_retain: 50
     plan:
       - get: ops-manager-cloudfoundry
@@ -414,36 +588,76 @@ jobs:
           state: "success"
           commit: "ops-manager-cloudfoundry"
 
-  - name: delete-tile
+  - name: shipit
     serial: true
+    serial_groups: [same-deployment]
     build_logs_to_retain: 50
     plan:
-      - get: version
       - get: ops-manager-cloudfoundry
-        trigger: true
-      - task: delete-tile
-        file: ops-manager-cloudfoundry/ci/tasks/delete-tile/task.yml
+        passed: [smoke-tests]
+      - get: on-demand-service-broker-release
         params:
-          PCF_URL: ((pcf-url))
-          PCF_USERNAME: ((pcf-username))
-          PCF_PASSWORD: ((pcf-password))
-        on_failure:
-          put: "delete-tile-status"
-          params:
-            state: "failure"
-            commit: "ops-manager-cloudfoundry"
-        on_error:
-          put: "delete-tile-status"
-          params:
-            state: "error"
-            commit: "ops-manager-cloudfoundry"
-        on_abort:
-          put: "delete-tile-status"
-          params:
-            state: "error"
-            commit: "ops-manager-cloudfoundry"
-            description: aborted
-      - put: "delete-tile-status"
+          filename: on-demand-service-broker-(.*).tgz
+      - get: syslog-migration-release
         params:
-          state: "success"
-          commit: "ops-manager-cloudfoundry"
+          filename: syslog-migration-(.*).tgz
+      - get: pcf-mongodb-helpers
+        params:
+          filename: pcf-mongodb-helpers-(.*).tgz
+      - get: bpm-release
+        params:
+          filename: bpm-release-(.*).tgz
+      - get: mongodb
+        params:
+          filename: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
+      - get: version
+        params:
+          bump: final
+      - task: build-tile
+        file: ops-manager-cloudfoundry/ci/tasks/build-tile/task.yml
+        params:
+          AWS_KEY: ((aws-access-key))
+          AWS_SECRET_KEY: ((aws-secret-access-key))
+      - task: shipit
+        file: ops-manager-cloudfoundry/ci/tasks/shipit/task.yml
+        params:
+          RELEASE_BUCKET_NAME: ((release-bucket))
+          AWS_KEY: ((aws-access-key))
+          AWS_SECRET_KEY: ((aws-secret-access-key))
+      - put: release
+        params:
+          file: release/mongodb-on-demand-*.pivotal
+          acl: public-read
+
+  - name: major
+    plan:
+      - do:
+          - get: version
+            trigger: false
+            params:
+              bump: major
+          - put: version
+            params:
+              file: version/number
+
+  - name: minor
+    plan:
+      - do:
+          - get: version
+            trigger: false
+            params:
+              bump: minor
+          - put: version
+            params:
+              file: version/number
+
+  - name: patch
+    plan:
+      - do:
+          - get: version
+            trigger: false
+            params:
+              bump: patch
+          - put: version
+            params:
+              file: version/number
