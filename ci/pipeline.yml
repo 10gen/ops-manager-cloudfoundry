@@ -26,7 +26,7 @@ resources:
     source:
       api_token: ((pivnet-token))
       product_slug: stemcells-ubuntu-xenial
-      product_version: 170.*
+      product_version: 315.*
 
   - name: version
     type: semver

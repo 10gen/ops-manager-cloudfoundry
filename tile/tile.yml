@@ -7,7 +7,7 @@ service_broker: true
 minimum_version_for_upgrade: 1.0.1
 stemcell_criteria:
   os: ubuntu-xenial
-  version: "170"
+  version: "315"
 properties:
   - name: broker_basic_auth
     type: simple_credentials
