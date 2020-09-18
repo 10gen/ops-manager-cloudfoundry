@@ -48,7 +48,7 @@ resources:
       driver: s3
       bucket: ((aws-bucket))
       key: version
-      region_name: eu-west-1
+      region_name: ((aws-region))
       access_key_id: ((aws-access-key))
       secret_access_key: ((aws-secret-access-key))
       initial_version: 1.1.1
@@ -57,7 +57,7 @@ resources:
     type: s3
     source:
       bucket: ((aws-bucket))
-      region_name: eu-west-1
+      region_name: ((aws-region))
       regexp: mongodb-on-demand-(1.*).pivotal
       access_key_id: ((aws-access-key))
       secret_access_key: ((aws-secret-access-key))
@@ -67,7 +67,7 @@ resources:
     source:
       bucket: ((release-bucket))
       regexp: mongodb-on-demand-(1.*).pivotal
-      region_name: eu-west-1
+      region_name: ((aws-region))
       access_key_id: ((aws-access-key))
       secret_access_key: ((aws-secret-access-key))
 
@@ -75,7 +75,7 @@ resources:
     type: s3
     source:
       bucket: ((aws-bucket))
-      region_name: eu-west-1
+      region_name: ((aws-region))
       regexp: on-demand-service-broker-(.*).tgz
       access_key_id: ((aws-access-key))
       secret_access_key: ((aws-secret-access-key))
@@ -84,7 +84,7 @@ resources:
     type: s3
     source:
       bucket: ((aws-bucket))
-      region_name: eu-west-1
+      region_name: ((aws-region))
       regexp: mongodb-linux-x86_64-ubuntu1604-(.*).tgz
 
       access_key_id: ((aws-access-key))
@@ -94,7 +94,7 @@ resources:
     type: s3
     source:
       bucket: ((aws-bucket))
-      region_name: eu-west-1
+      region_name: ((aws-region))
       regexp: pcf-mongodb-helpers-(.*).tgz
       access_key_id: ((aws-access-key))
       secret_access_key: ((aws-secret-access-key))
@@ -103,7 +103,7 @@ resources:
     type: s3
     source:
       bucket: ((aws-bucket))
-      region_name: eu-west-1
+      region_name: ((aws-region))
       regexp: syslog-migration-(.*).tgz
       access_key_id: ((aws-access-key))
       secret_access_key: ((aws-secret-access-key))
@@ -112,7 +112,7 @@ resources:
     type: s3
     source:
       bucket: ((aws-bucket))
-      region_name: eu-west-1
+      region_name: ((aws-region))
       regexp: bpm-release-(.*).tgz
       access_key_id: ((aws-access-key))
       secret_access_key: ((aws-secret-access-key))
@@ -306,7 +306,7 @@ jobs:
         passed: [delete-tile]
       - get: stemcell
         params:
-          globs: [((globs-param))]
+          globs: [((stemcell-architecture))]
       - get: tileold
       - task: deploy-tile-old
         file: ops-manager-cloudfoundry/ci/tasks/deploy-tile-old/task.yml
@@ -426,7 +426,7 @@ jobs:
       - get: version
       - get: stemcell
         params:
-          globs: [((globs-param))]
+          globs: [((stemcell-architecture))]
       - task: deploy-tile
         file: ops-manager-cloudfoundry/ci/tasks/deploy-tile/task.yml
         params:
@@ -630,6 +630,7 @@ jobs:
           acl: public-read
 
   - name: major
+    serial: true
     plan:
       - do:
           - get: version
@@ -641,6 +642,7 @@ jobs:
               file: version/number
 
   - name: minor
+    serial: true
     plan:
       - do:
           - get: version
@@ -652,6 +654,7 @@ jobs:
               file: version/number
 
   - name: patch
+    serial: true
     plan:
       - do:
           - get: version
