@@ -31,7 +31,10 @@ install_product() {
 	${om} upload-stemcell --stemcell "stemcell/$STEMCELL_FILE"
 	${om} available-products
 	${om} stage-product --product-name "$PRODUCT" --product-version "$VERSION"
-	${om} stage-product --product-name cf --product-version "$cf_version"
+
+	if [ "${UPDATE_PAS}" == "true" ]; then
+		${om} stage-product --product-name cf --product-version "$cf_version"
+	fi
 
 	config_path=ops-manager-cloudfoundry/ci/tasks/deploy-tile/config.pie
 	make_env_config "$config_path"

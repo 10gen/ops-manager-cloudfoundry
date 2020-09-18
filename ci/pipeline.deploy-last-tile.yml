@@ -26,7 +26,7 @@ resources:
       driver: s3
       bucket: ((aws-bucket))
       key: version
-      region_name: eu-west-1
+      region_name: ((aws-region))
       access_key_id: ((aws-access-key))
       secret_access_key: ((aws-secret-access-key))
       initial_version: 1.2.0
@@ -35,7 +35,7 @@ resources:
     type: s3
     source:
       bucket: ((aws-bucket))
-      region_name: eu-west-1
+      region_name: ((aws-region))
       regexp: mongodb-on-demand-(1.*).pivotal
       access_key_id: ((aws-access-key))
       secret_access_key: ((aws-secret-access-key))
@@ -85,7 +85,7 @@ jobs:
           - get: version
           - get: stemcell
             params:
-              globs: [((globs-param))]
+              globs: [((stemcell-architecture))]
           - put: "deploy-status"
             params:
               state: "pending"
@@ -139,7 +139,7 @@ jobs:
               PLAN_NAMES: '["standalone_small"]'
               BACKUP_ENABLED: '["false"]'
               SSL_ENABLED: '["false"]'
-              MONGO_VERSION: '[]'
+              MONGO_VERSION: "[]"
               CONFIG: ((env-config))
           - task: replica_set_small
             file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
@@ -150,7 +150,7 @@ jobs:
               PLAN_NAMES: '["replica_set_small"]'
               BACKUP_ENABLED: '["false"]'
               SSL_ENABLED: '["false"]'
-              MONGO_VERSION: '[]'
+              MONGO_VERSION: "[]"
               CONFIG: ((env-config))
           - task: sharded_cluster_small
             file: ops-manager-cloudfoundry/ci/tasks/smoke-tests/task.yml
@@ -161,7 +161,7 @@ jobs:
               PLAN_NAMES: '["sharded_cluster_small"]'
               BACKUP_ENABLED: '["false"]'
               SSL_ENABLED: '["false"]'
-              MONGO_VERSION: '[]'
+              MONGO_VERSION: "[]"
               CONFIG: ((env-config))
         on_failure:
           put: "test-status"
