@@ -40,7 +40,7 @@ resources:
     source:
       api_token: ((pivnet-token))
       product_slug: stemcells-ubuntu-xenial
-      product_version: "315.*"
+      product_version: "170.*"
 
   # - name: tileold
   #   type: pivnet

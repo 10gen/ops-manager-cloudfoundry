@@ -8,7 +8,7 @@ image_resource:
 
 inputs:
   - name: ops-manager-cloudfoundry
-  - name: stemcell
+  - name: stemcell-old
   - name: tileold
 
 params:
