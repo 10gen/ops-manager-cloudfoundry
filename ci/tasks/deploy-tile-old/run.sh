@@ -21,4 +21,7 @@ if [ -z "${TILE_FILE}" ]; then
 	exit 1
 fi
 
+mkdir -p stemcell
+cp stemcell-old/* stemcell/
+
 install_product "$VERSION" "$TILE_FILE"
