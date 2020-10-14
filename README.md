@@ -1,5 +1,9 @@
 # DEPRECATED
 This project is deprecated and no longer supported.
+See
+https://github.com/mongodb/mongodb-enterprise-kubernetes
+&
+https://github.com/mongodb/atlas-osb
 
 # ops-manager-cloudfoundry
 This is the MongoDB release, developed using the on-demand SDK.
